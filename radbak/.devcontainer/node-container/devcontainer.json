@@ -1,0 +1,55 @@
+{
+  "name": "Node Container",
+  "dockerComposeFile": [
+    "../../docker-compose.yml",
+    "../../docker-compose.devcontainer.yml",
+  ],
+  "service": "node-app",
+  "shutdownAction": "none",
+  "workspaceFolder": "/workspace/radbak/node-src",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint",
+        "vunguyentuan.vscode-css-variables",
+        "vunguyentuan.vscode-postcss"
+      ],
+      "settings": {
+        "remote.autoForwardPorts": false,
+        "editor.formatOnSave": true,
+        "[json]": {
+          "editor.defaultFormatter": "vscode.json-language-features"
+        },
+        "[jsonc]": {
+          "editor.defaultFormatter": "vscode.json-language-features"
+        },
+        "[javascript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[javascriptreact]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[typescript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[typescriptreact]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "files.exclude": {
+          "**/node_modules/**": true,
+          "**/dist/**": true,
+          "**/.next/**": true,
+          "**/tsconfig.tsbuildinfo": true
+        },
+        "cssVariables.lookupFiles": [
+          "**/*.css",
+          "**/*.scss",
+          "**/*.sass",
+          "**/*.less",
+          "node_modules/@mantine/core/styles.css"
+        ]
+      }
+    }
+  }
+}
