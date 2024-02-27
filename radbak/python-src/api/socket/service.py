@@ -39,7 +39,6 @@ class TimeoutSocketManager(SocketManager):
         lifespan: float | None = None,
     ) -> None:
         super().__init__()
-
         self.heartbeat = heartbeat
         self.lifespan = lifespan
 

@@ -1,4 +1,5 @@
 import asyncio
+from typing import Literal
 
 import asyncpg_listen
 import sqlalchemy as sa
@@ -16,6 +17,12 @@ router = APIRouter(tags=["WebSocket"])
 lock = asyncio.Lock()
 manager = service.TimeoutSocketManager()
 LISTENER_TASK = None
+
+
+async def pg_notify(conn: deps.GetDb, channel: Literal["all", "dm"], message: str):
+    await conn.execute(
+        sa.text(f"SELECT pg_notify('{channel}', :msg)"), {"msg": message}
+    )
 
 
 async def handle_notifications(
@@ -49,7 +56,6 @@ async def start_task():
                 notification_timeout=5,
             )
         )
-        print(f"Listener started {LISTENER_TASK.done()=} {LISTENER_TASK.cancelled()=}")
 
 
 @router.websocket("/ws")
@@ -57,15 +63,18 @@ async def websocket_endpoint(websocket: WebSocket):
     await start_task()
 
     async with manager.open(websocket) as client_id:
+
+        async with deps.get_db_ctx_ws(websocket) as conn:
+            await pg_notify(conn, "all", f"Client #{client_id} joined")
         await websocket.send_text(f"Client ID: {client_id}")
 
         async for message in manager.iter_text(websocket):
 
             async with deps.get_db_ctx_ws(websocket) as conn:
-                await conn.execute(
-                    sa.text("SELECT pg_notify('all', :msg)"),
-                    {"msg": f"{client_id}: {message}"},
-                )
+                await pg_notify(conn, "all", f"{client_id}:{message}")
+
+    async with deps.get_db_ctx_ws(websocket) as conn:
+        await pg_notify(conn, "all", f"Client #{client_id} left")
 
 
 class Message(BaseModel):
@@ -80,10 +89,7 @@ async def send(m: Message, conn: deps.GetDb):
 
     if m.client_id:
         channel, message = "dm", f"{m.client_id}:{message}"
-
-    await conn.execute(
-        sa.text(f"SELECT pg_notify('{channel}', :msg)"), {"msg": message}
-    )
+    await pg_notify(conn, channel, message)
     return m
 
 
