@@ -1,20 +1,20 @@
 import asyncio
-from uuid import uuid4
 
 import asyncpg_listen
 import sqlalchemy as sa
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, WebSocket
 from fastapi.responses import HTMLResponse
-from fastapi.websockets import WebSocketState
 from pydantic import BaseModel
 
-from api.deps import GetDb
+from api import deps
 from api.settings import get_settings
+
+from . import service
 
 router = APIRouter(tags=["WebSocket"])
 
 lock = asyncio.Lock()
-clients: dict[str, WebSocket] = {}
+manager = service.TimeoutSocketManager()
 LISTENER_TASK = None
 
 
@@ -23,12 +23,11 @@ async def handle_notifications(
 ) -> None:
     if isinstance(notification, asyncpg_listen.Timeout):
         return
-    async with lock:
-        for _, websocket in clients.items():
-            if websocket.client_state == WebSocketState.CONNECTED:
-                await websocket.send_text(
-                    f"{notification.channel}: {notification.payload}"
-                )
+    if notification.channel == "dm" and notification.payload:
+        client_id, payload = notification.payload.split(":", 1)
+        await manager.send_to(client_id, payload)
+    if notification.channel == "all" and notification.payload:
+        await manager.broadcast(notification.payload)
 
 
 async def start_task():
@@ -42,44 +41,49 @@ async def start_task():
         )
         LISTENER_TASK = asyncio.create_task(
             listener.run(
-                {"all": handle_notifications},
+                {
+                    "all": handle_notifications,
+                    "dm": handle_notifications,
+                },
                 policy=asyncpg_listen.ListenPolicy.LAST,
                 notification_timeout=5,
             )
         )
+        print(f"Listener started {LISTENER_TASK.done()=} {LISTENER_TASK.cancelled()=}")
 
 
 @router.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await start_task()
 
-    client_id = uuid4().hex
-    async with lock:
-        clients[client_id] = websocket
-
-    await websocket.accept()
-    try:
+    async with manager.open(websocket) as client_id:
         await websocket.send_text(f"Client ID: {client_id}")
-        async with asyncio.timeout(60) as heartbeat_cm:
-            async for message in websocket.iter_text():
-                heartbeat_cm.reschedule(asyncio.get_running_loop().time() + 60)
-                await websocket.send_text(message)
-    except WebSocketDisconnect:
-        await websocket.close()
 
-    async with lock:
-        del clients[client_id]
-        if not clients and LISTENER_TASK is not None:
-            LISTENER_TASK.cancel()
+        async for message in manager.iter_text(websocket):
+
+            async with deps.get_db_ctx_ws(websocket) as conn:
+                await conn.execute(
+                    sa.text("SELECT pg_notify('all', :msg)"),
+                    {"msg": f"{client_id}: {message}"},
+                )
 
 
 class Message(BaseModel):
     msg: str
+    client_id: str | None = None
 
 
 @router.post("/send")
-async def send_to_all(m: Message, conn: GetDb):
-    await conn.execute(sa.text("SELECT pg_notify('all', :msg)"), {"msg": m.msg})
+async def send(m: Message, conn: deps.GetDb):
+
+    channel, message = "all", m.msg
+
+    if m.client_id:
+        channel, message = "dm", f"{m.client_id}:{message}"
+
+    await conn.execute(
+        sa.text(f"SELECT pg_notify('{channel}', :msg)"), {"msg": message}
+    )
     return m
 
 
@@ -93,6 +97,7 @@ def get_ws_page() -> HTMLResponse:
         </head>
         <body>
             <h1>WebSocket Example</h1>
+            <a href="/ws">Open new tab</a>
             <form action="" onsubmit="sendMessage(event)">
                 <input type="text" id="message" autocomplete="off" required/>
                 <button type="submit">Send</button>
