@@ -1,3 +1,4 @@
 build*
+!BUILDING_AND_FLASHING.md
 .vscode
 log.log
