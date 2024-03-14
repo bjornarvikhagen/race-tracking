@@ -14,7 +14,7 @@ static const struct device *i2c1_dev = DEVICE_DT_GET(I2C1_NODE);
 int main(void)
 {
     if (!device_is_ready(i2c1_dev)) {
-        printk("i2c Device is not ready\n");
+        printk("i2c device is not ready\n");
         return 1;
     }
 
