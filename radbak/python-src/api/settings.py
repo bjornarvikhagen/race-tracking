@@ -2,20 +2,17 @@ import logging
 from functools import lru_cache
 from typing import Annotated
 
-from pydantic import (
-    Field,
-    computed_field,
-)
+from pydantic import Field, computed_field
 from pydantic_core import Url
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Postgres(BaseSettings):
     SCHEME: str = "postgresql+asyncpg"
-    POSTGRES_DB: Annotated[str, Field(validation_alias="POSTGRES_DB")] = "postgres"
-    POSTGRES_HOST: Annotated[str, Field(validation_alias="POSTGRES_HOST")] = "db"
+    POSTGRES_DB: Annotated[str, Field(validation_alias="POSTGRES_DB")] = "test_db"
+    POSTGRES_HOST: Annotated[str, Field(validation_alias="POSTGRES_HOST")] = "localhost"
     POSTGRES_PORT: Annotated[int, Field(validation_alias="POSTGRES_PORT")] = 5432
-    POSTGRES_USER: Annotated[str, Field(validation_alias="POSTGRES_USER")] = "postgres"
+    POSTGRES_USER: Annotated[str, Field(validation_alias="POSTGRES_USER")] = "haraldpaaske"
     POSTGRES_PASSWORD: Annotated[str, Field(validation_alias="POSTGRES_PASSWORD")] = (
         "hushhush"
     )
