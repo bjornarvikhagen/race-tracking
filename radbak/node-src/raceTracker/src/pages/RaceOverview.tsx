@@ -1,37 +1,49 @@
 import { useState, useEffect } from "react";
 import DataTable from "../components/DataTable";
+import { useParams } from "react-router-dom";
+import fetchRaceOverview from "../api/fetchRaceOverview";
+import { useQuery } from "@tanstack/react-query";
+
+interface Runner {
+  id: number;
+  name: string;
+  times: { [checkpoint: number]: string };
+}
+
+interface Checkpoint {
+  id: number;
+  position: number;
+  timeLimit: string | null;
+}
 
 export default function RunnerOverview() {
-  // Dummy data
-  const [runners, setRunners] = useState([
-    {
-      id: "1",
-      name: "Knut",
-      times: {
-        1: "13:10",
-        2: "13:28",
-        3: "13:49",
-        4: "15:56",
-      },
-    },
-    {
-      id: "2",
-      name: "Erik",
-      times: { 1: "12:10" },
-    },
-  ]);
+  const { raceId } = useParams();
+  const intRaceId = parseInt(raceId!);
+  console.log(raceId);
 
-  const checkpoints = [
-    { id: "1", position: 1 },
-    { id: "2", position: 2 },
-    { id: "3", position: 3 },
-    { id: "4", position: 4 },
-    { id: "5", position: 5 },
-  ];
+  // Dummy data
+  const {
+    data: raceOverview,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: [raceId],
+    queryFn: () => fetchRaceOverview(intRaceId),
+  });
+
+  const [runners, setRunners] = useState<Runner[]>([]);
+  const [checkpoints, setCheckpoints] = useState<Checkpoint[]>([]);
+
+  useEffect(() => {
+    if (raceOverview) {
+      setRunners(raceOverview.runners);
+      setCheckpoints(raceOverview.checkpoints);
+    }
+  }, [raceOverview]);
 
   useEffect(() => {
     const updateErikProgress = () => {
-      const erikIndex = runners.findIndex((runner) => runner.id === "2");
+      const erikIndex = runners.findIndex((runner) => runner.id === 2);
       if (erikIndex !== -1) {
         const erik = runners[erikIndex];
         let lastPassedCheckpoint = Object.keys(erik.times).length;
@@ -61,9 +73,14 @@ export default function RunnerOverview() {
     return () => clearInterval(intervalId);
   }, [runners, checkpoints]);
 
+  if (isLoading) return <p>Loading...</p>;
+  if (isError) return <p>Error fetching</p>;
+
   return (
     <>
-      <DataTable runners={runners} checkpoints={checkpoints} />
+      {raceOverview && (
+        <DataTable runners={runners} checkpoints={checkpoints} />
+      )}
     </>
   );
 }
