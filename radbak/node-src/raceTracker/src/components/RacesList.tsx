@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import "./RacesList.css";
 
 const RacesList = ({
   races,
@@ -13,20 +14,20 @@ const RacesList = ({
 
   // return list of races with links to view
   return (
-    <>
+    <div className="race-list-container">
       <h2>List of Races</h2>
-      <ul>
+      <ul className="race-list">
         {races.map((race) => (
           <li
             key={race.id}
+            className="race-list-item"
             onClick={() => handleRaceClick(race.id)}
-            style={{ cursor: "pointer" }}
           >
             {race.name}
           </li>
         ))}
       </ul>
-    </>
+    </div>
   );
 };
 
