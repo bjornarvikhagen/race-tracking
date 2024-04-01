@@ -15,10 +15,7 @@ api_endpoint = "http://localhost:80/send"  # Endpoint to send data
 # Some docs on docker to find ports https://www.emqx.io/docs/en/latest/deploy/install-docker.html
 # And for the dashboard: https://www.emqx.io/docs/en/latest/messaging/publish-and-subscribe.html#dashboard-websocket
 broker_port = 1883  # EMQX default TCP listener
-broker_address = (
-    "host.docker.internal"  # Docker host address
-    # For example, use "broker.emqx.io" for EMQX's public broker
-)
+broker_address = "host.docker.internal"  # Docker host address
 
 topic = "testtopic/1"  # The topic to which you want to publish/listen
 client_id = f"python-mqtt-{random.randint(0, 1000)}"  # Random ID as the MQTT client-ID
@@ -51,8 +48,7 @@ def on_connect(client, userdata, flags, rc, properties):
 
 
 def on_subscribe(client, userdata, mid, reason_code_list, properties):
-
-    print(f"Subscribed to topic {topic} with properties return of {reason_code_list}")
+    print(f"Subscribed to topic {topic} with return properties of {reason_code_list}")
 
 
 def connect_to_mqtt():
