@@ -18,12 +18,7 @@
         status = "okay";
         reg = < 0x24 >;
     };
-    compatible = "nordic,nrf-twi";
-	/* Cannot be used together with spi1. */
-	status = "okay";
-	pinctrl-0 = <&i2c1_default>;
-	pinctrl-1 = <&i2c1_sleep>;
-	pinctrl-names = "default", "sleep";
+    status = "okay";
 };
 &arduino_header {
     gpio-map = <0 0 &gpio0 3 0>,
