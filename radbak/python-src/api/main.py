@@ -2,10 +2,9 @@ import sys
 from contextlib import asynccontextmanager
 from datetime import datetime
 
+from api import db, deps, settings, socket
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
-from api import db, deps, settings, socket
 
 
 @asynccontextmanager
