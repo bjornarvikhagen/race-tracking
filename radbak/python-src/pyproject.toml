@@ -1,0 +1,39 @@
+[tool.poetry]
+name = "api"
+version = "0.1.0"
+description = ""
+authors = ["Endre Krohn <endre@skript.no>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = "^0.109.2"
+uvicorn = { version = "^0.27.1", extras = ["standard"] }
+asyncpg = "^0.29.0"
+sqlalchemy = "^2.0.27"
+pydantic-settings = "^2.2.1"
+asyncpg-listen = "^0.0.6"
+
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.2.2"
+black = "^24.2.0"
+pytest = "^8.0.1"
+pytest-asyncio = "^0.23.5"
+
+
+[tool.poetry.scripts]
+dev = "scripts:dev"
+test = "scripts:test"
+check = "scripts:check"
+lint = "scripts:lint"
+
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+xfail_strict = true
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

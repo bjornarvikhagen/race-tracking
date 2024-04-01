@@ -1,0 +1,16 @@
+version: "3"
+services:
+  python-api:
+    build:
+      dockerfile: ./.devcontainer/python-container/Dockerfile
+    volumes:
+      - ../:/workspace:cached
+    command: sleep infinity
+    links:
+      - node-app
+
+  node-app:
+    image: mcr.microsoft.com/devcontainers/typescript-node:1-20-bookworm
+    volumes:
+      - ../:/workspace:cached
+    command: sleep infinity

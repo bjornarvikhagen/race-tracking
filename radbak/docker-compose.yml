@@ -1,0 +1,31 @@
+x-env-file: &env_file
+  - .env.dev
+
+version: "3"
+services:
+  python-api:
+    command: sleep infinity
+    env_file: *env_file
+  node-app:
+    command: sleep infinity
+    env_file: *env_file
+  queue:
+    image: emqx/emqx:5.5.0
+    ports:
+      - "1883:1883"
+      - "8083:8083"
+      - "8084:8084"
+      - "8883:8883"
+      - "18083:18083"
+    restart: always
+  db:
+    image: postgres:16.2-bookworm
+    env_file: *env_file
+    ports:
+      - "5432:5432"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - pg_data:/var/lib/postgresql/data
+
+volumes:
+  pg_data:
