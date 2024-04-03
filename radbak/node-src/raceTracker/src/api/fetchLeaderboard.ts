@@ -1,3 +1,7 @@
+import { useQuery } from "@tanstack/react-query";
+import { BASEURL } from "../Constants";
+
+
 interface Race {
     id: number;
     name: string;
@@ -14,7 +18,20 @@ interface Race {
     }[];
 }
 
-const fetchRaceOverview = async (raceId: number): Promise<Race | undefined> => {
+const fetchLeaderboard = async (raceId: number): Promise<Race | undefined> => {
+    // Fetch through API
+    // const leaderboardURL = `${BASEURL}/leaderboard/${raceId}`;
+    // // Query to fetch from the URL
+    // const { isPending, error, data } = useQuery({
+    //     queryKey: ['leaderboard'],
+    //     queryFn: () => 
+    //         fetch(leaderboardURL).then((res) => res.json())
+    // })
+
+    // // Process data to correct format
+
+
+
     // mocking getting data from an API
     const races: { [id: string]: Race } = {
         10987265: {
@@ -148,4 +165,4 @@ const fetchRaceOverview = async (raceId: number): Promise<Race | undefined> => {
     return races[raceId];
 };
 
-export default fetchRaceOverview;
+export default fetchLeaderboard;

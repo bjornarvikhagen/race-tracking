@@ -17,14 +17,3 @@
 .nav-item:hover {
   background-color: lightblue;
 }
-
-.login {
-  padding: 15px;
-  color: white;
-  cursor: pointer;
-  margin-left: auto;
-}
-
-.login:hover {
-  background-color: lightblue;
-}

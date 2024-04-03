@@ -1,20 +1,11 @@
 import React from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate from React Router
 import "./DataTable.css";
+import { Checkpoint, Runner } from "../pages/RaceOverview";
 
 type DataTableProps = {
-  runners: {
-    id: number;
-    name: string;
-    times: {
-      [key: string]: string | undefined;
-    };
-  }[];
-  checkpoints: {
-    id: number;
-    position: number;
-    timeLimit: string | null;
-  }[];
+  runners: Array<Runner>;
+  checkpoints: Array<Checkpoint>;
 };
 
 const DataTable: React.FC<DataTableProps> = ({ runners, checkpoints }) => {
@@ -68,7 +59,7 @@ const DataTable: React.FC<DataTableProps> = ({ runners, checkpoints }) => {
   };
 
   return (
-    <div>
+    <>
       <button onClick={handleGoBack} className="go-back-button">
         Go back
       </button>
@@ -135,7 +126,7 @@ const DataTable: React.FC<DataTableProps> = ({ runners, checkpoints }) => {
           })}
         </tbody>
       </table>
-    </div>
+    </>
   );
 };
 export default DataTable;

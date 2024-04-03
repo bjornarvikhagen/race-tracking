@@ -1,22 +1,22 @@
 import { useState, useEffect } from "react";
 import DataTable from "../components/DataTable";
 import { useParams } from "react-router-dom";
-import fetchRaceOverview from "../api/fetchRaceOverview";
+import fetchLeaderboard from "../api/fetchLeaderboard";
 import { useQuery } from "@tanstack/react-query";
 
-interface Runner {
+export interface Runner {
   id: number;
   name: string;
   times: { [checkpoint: number]: string };
 }
 
-interface Checkpoint {
+export interface Checkpoint {
   id: number;
   position: number;
   timeLimit: string | null;
 }
 
-export default function RunnerOverview() {
+const RaceOverview = () => {
   const { raceId } = useParams();
   const intRaceId = parseInt(raceId!);
   console.log(raceId);
@@ -28,7 +28,7 @@ export default function RunnerOverview() {
     isError,
   } = useQuery({
     queryKey: [raceId],
-    queryFn: () => fetchRaceOverview(intRaceId),
+    queryFn: () => fetchLeaderboard(intRaceId),
   });
 
   const [runners, setRunners] = useState<Runner[]>([]);
@@ -41,6 +41,7 @@ export default function RunnerOverview() {
     }
   }, [raceOverview]);
 
+  // Test data, should be removed
   useEffect(() => {
     const updateErikProgress = () => {
       const erikIndex = runners.findIndex((runner) => runner.id === 2);
@@ -83,4 +84,6 @@ export default function RunnerOverview() {
       )}
     </>
   );
-}
+};
+
+export default RaceOverview;

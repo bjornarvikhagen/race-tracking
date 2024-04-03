@@ -60,7 +60,7 @@ async def start_task():
 
 class CheckpointPassing(BaseModel):
     runnerid: int
-    checkpoint: int
+    checkpointid: int
     passingtime: datetime
 
 
@@ -69,9 +69,9 @@ async def add_checkpoint_passing(cp: CheckpointPassing, conn: deps.GetDb):
     query = """
         SELECT MAX(passingtime) 
         FROM checkpointpassing 
-        WHERE runnerid = $1 AND checkpoint = $2
+        WHERE runnerid = $1 AND checkpointid = $2
     """
-    last_checkin_time = await conn.fetchval(query, cp.runnerid, cp.checkpoint)
+    last_checkin_time = await conn.fetchval(query, cp.runnerid, cp.checkpointid)
 
     # Check if there was a last check-in time and calculate the difference
     if last_checkin_time:
@@ -83,10 +83,11 @@ async def add_checkpoint_passing(cp: CheckpointPassing, conn: deps.GetDb):
     
     # Insert the new checkpoint passing into the database
     insert_query = """
-        INSERT INTO checkpointpassing (runnerid, checkpoint, passingtime)
+        INSERT INTO checkpointpassing (runnerid, checkpointid, passingtime)
         VALUES ($1, $2, $3)
     """
-    await conn.execute(insert_query, cp.runnerid, cp.checkpoint, cp.passingtime)
+    await conn.execute(insert_query, cp.runnerid, cp.checkpointid, cp.passingtime)
+
 
 
 @router.websocket("/ws")
@@ -172,3 +173,36 @@ def get_ws_page() -> HTMLResponse:
     </html>
     """
     )
+
+# should return all checkpoint passings for a given runner, i.e.,
+# the checkpoint number and the time the runner passed that checkpoint
+@router.get("/checkpoint_passings/{runner_id}")
+async def get_checkpoint_passings(runner_id: int, conn: deps.GetDb):
+    query = """
+        SELECT checkpointid, passingtime
+        FROM checkpointpassing
+        WHERE runnerid = $1
+    """
+    return await conn.fetch(query, runner_id)
+
+
+# want a getter that, for a given race id (TODO: implement multiple races later), returns the current leaderboard
+# for that, you need to return all runner ids, all checkpoint ids, and the relation between them (which is the time they passed the checkpoint)
+@router.get("/leaderboard/{race_id}")
+async def get_leaderboard(conn: deps.GetDb):
+    query = """
+        SELECT runnerid, checkpointid, passingtime, position, timelimit
+        FROM checkpointpassing JOIN checkpointinrace USING (checkpointid)
+    """
+    return await conn.fetch(query)
+
+
+
+# # want a getter for checkpointinrace, which returns all checkpoints for a given race
+# @router.get("/checkpointsinrace/{race_id}")
+# async def get_checkpointsinrace(conn: deps.GetDb):
+#     query = """
+#         SELECT checkpointid, position, timelimit
+#         FROM checkpointinrace
+#     """
+#     return await conn.fetch(query)
