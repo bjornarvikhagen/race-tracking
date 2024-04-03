@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate from React Router
 import "./DataTable.css";
 
 type DataTableProps = {
@@ -19,6 +20,7 @@ type DataTableProps = {
 const DataTable: React.FC<DataTableProps> = ({ runners, checkpoints }) => {
   const filteredCheckpoints = getFilteredCheckpoints(runners, checkpoints);
   const runnerFellOutMap = getRunnerFellOutMap(runners, filteredCheckpoints);
+  const navigate = useNavigate(); // Initialize useNavigate
 
   // Filter out checkpoints that no runner has passed
   function getFilteredCheckpoints(
@@ -60,70 +62,80 @@ const DataTable: React.FC<DataTableProps> = ({ runners, checkpoints }) => {
     return runnerFellOutMap;
   }
 
+  // Function to handle navigation back to "/races"
+  const handleGoBack = () => {
+    navigate("/races"); // Navigate back to "/races"
+  };
+
   return (
-    <table className="data-table">
-      <thead>
-        <tr>
-          <th>Names</th>
-          <th>IsInRace</th>
-          {filteredCheckpoints.map((checkpoint, index) => (
-            <th key={index}>
-              {checkpoint.timeLimit ? (
-                <>
-                  Checkpoint{index + 1} <br />
-                  Time Limit: {checkpoint.timeLimit}
-                </>
-              ) : (
-                `Checkpoint${index + 1}`
-              )}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {runners.map((runner, rowIndex) => {
-          const isRunnerOut = runnerFellOutMap[runner.id] !== undefined;
-          return (
-            <tr key={rowIndex}>
-              <td>{runner.name}</td>
-              <td>
-                {isRunnerOut ? (
-                  <span style={{ color: "red" }}>Out</span>
+    <div>
+      <button onClick={handleGoBack} className="go-back-button">
+        Go back
+      </button>
+      <table className="data-table">
+        <thead>
+          <tr>
+            <th>Names</th>
+            <th>Still in race</th>
+            {filteredCheckpoints.map((checkpoint, index) => (
+              <th key={index}>
+                {checkpoint.timeLimit ? (
+                  <>
+                    Checkpoint{index + 1} <br />
+                    Time Limit: {checkpoint.timeLimit}
+                  </>
                 ) : (
-                  <span style={{ color: "green" }}>In</span>
+                  `Checkpoint${index + 1}`
                 )}
-              </td>
-              {filteredCheckpoints.map((checkpoint, columnIndex) => {
-                if (runnerFellOutMap[runner.id] === undefined) {
-                  return (
-                    <td key={columnIndex}>
-                      {runner.times[checkpoint.position] || "-"}
-                    </td>
-                  );
-                }
-                const runnerFellOutDirection =
-                  checkpoint.id - runnerFellOutMap[runner.id];
-                if (runnerFellOutDirection === 0) {
-                  return (
-                    <td key={columnIndex}>
-                      Out: [{runner.times[checkpoint.id]}]
-                    </td>
-                  );
-                } else if (runnerFellOutDirection > 0) {
-                  return <td key={columnIndex}> - </td>;
-                } else {
-                  return (
-                    <td key={columnIndex}>
-                      {runner.times[checkpoint.id] || "-"}
-                    </td>
-                  );
-                }
-              })}
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {runners.map((runner, rowIndex) => {
+            const isRunnerOut = runnerFellOutMap[runner.id] !== undefined;
+            return (
+              <tr key={rowIndex}>
+                <td>{runner.name}</td>
+                <td>
+                  {isRunnerOut ? (
+                    <span style={{ color: "red" }}>Out</span>
+                  ) : (
+                    <span style={{ color: "green" }}>In</span>
+                  )}
+                </td>
+                {filteredCheckpoints.map((checkpoint, columnIndex) => {
+                  if (runnerFellOutMap[runner.id] === undefined) {
+                    return (
+                      <td key={columnIndex}>
+                        {runner.times[checkpoint.position] || "-"}
+                      </td>
+                    );
+                  }
+                  const runnerFellOutDirection =
+                    checkpoint.id - runnerFellOutMap[runner.id];
+                  if (runnerFellOutDirection === 0) {
+                    return (
+                      <td key={columnIndex}>
+                        Out: [{runner.times[checkpoint.id]}]
+                      </td>
+                    );
+                  } else if (runnerFellOutDirection > 0) {
+                    return <td key={columnIndex}> - </td>;
+                  } else {
+                    return (
+                      <td key={columnIndex}>
+                        {runner.times[checkpoint.id] || "-"}
+                      </td>
+                    );
+                  }
+                })}
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
   );
 };
 export default DataTable;
