@@ -93,7 +93,7 @@ async def get_checkpoint_passings(
 
 
 class CheckpointPassing(BaseModel):
-    CheckpointID: int
+    DeviceID: int
     RFID: int
     
 @router.post("/checkpoint_passing")
