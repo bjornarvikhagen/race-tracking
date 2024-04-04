@@ -35,7 +35,6 @@ async def post_checkpoints(
     checkpoint: Checkpoint,
     dbc: deps.GetDbCtx
 ):
-    print(f"posted checkpoint: ({checkpoint.CheckpointID})")
     import sqlalchemy as sa
 
     async with dbc as conn:
@@ -43,6 +42,73 @@ async def post_checkpoints(
     #blabla = result.fetchall()
     #print(blabla)
     return result
+
+
+@router.get("/checkpointinrace/{race_id}")
+async def get_checkpoints_in_race(
+    race_id: int,
+    dbc: deps.GetDbCtx
+):
+    import sqlalchemy as sa
+
+    async with dbc as conn:
+        result = await conn.execute(sa.text(f"""
+                    SELECT checkpointid, position, timelimit
+                    FROM checkpointinrace WHERE raceid = {race_id}
+                """))
+    return result
+
+
+
+@router.get("/runners/{race_id}")
+async def get_runners_in_race(
+    race_id: int,
+    dbc: deps.GetDbCtx
+):
+    import sqlalchemy as sa
+
+    async with dbc as conn:
+        result = await conn.execute(sa.text(f"""
+                SELECT runnerid, name
+                FROM runnersinrace NATURAL JOIN runner WHERE raceid = {race_id}
+            """))
+    return result
+
+
+    
+@router.get("/checkpointpassins/{runner_id}")
+async def get_checkpoint_passings(
+    runner_id: int,
+    dbc: deps.GetDbCtx
+):
+    import sqlalchemy as sa
+
+    async with dbc as conn:
+        result = await conn.execute(sa.text(f"""
+                    SELECT checkpointid, passingtime
+                    FROM checkpointpassing
+                    WHERE runnerid = {runner_id}
+                """))
+    return result
+
+
+class CheckpointPassing(BaseModel):
+    CheckpointID: int
+    RFID: int
+    
+@router.post("/checkpoint_passing")
+async def post_checkpoint_passing(
+    passing: CheckpointPassing,
+    dbc: deps.GetDbCtx
+):
+    import sqlalchemy as sa
+
+    async with dbc as conn:
+        result = await conn.execute(sa.text(f))
+        
+    return result
+
+    
 
 @router.post("/setup_db")
 async def setup_db(
@@ -92,6 +158,7 @@ async def setup_db(
                 CheckpointID INT NOT NULL,
                 RaceID INT NOT NULL,
                 Position INT NOT NULL,
+                Timelimit INT NOT NULL,
                 PRIMARY KEY (CheckpointID, RaceID),
                 FOREIGN KEY (CheckpointID) REFERENCES Checkpoint (CheckpointID),
                 FOREIGN KEY (RaceID) REFERENCES Race (RaceID)
@@ -116,6 +183,7 @@ async def setup_db(
                 FOREIGN KEY (RaceID) REFERENCES Race (RaceID)
             );
         """))
+        
         
 @router.post("/delete_db")
 async def delete_db(
