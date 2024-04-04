@@ -69,13 +69,13 @@ async def get_runners_in_race(
     async with dbc as conn:
         result = await conn.execute(sa.text(f"""
                 SELECT runnerid, name
-                FROM runnersinrace NATURAL JOIN runner WHERE raceid = {race_id}
+                FROM runnerinrace NATURAL JOIN runner WHERE raceid = {race_id}
             """))
-    return result
+    return str(result.fetchall())
 
 
     
-@router.get("/checkpointpassins/{runner_id}")
+@router.get("/checkpointpassings/{runner_id}")
 async def get_checkpoint_passings(
     runner_id: int,
     dbc: deps.GetDbCtx
@@ -107,7 +107,7 @@ async def post_checkpoint_passing(
 
     
 
-@router.post("/setup_db")
+@router.get("/setup_db")
 async def setup_db(
     dbc: deps.GetDbCtx
 ):
@@ -182,6 +182,7 @@ async def setup_db(
         await conn.execute(sa.text("""
             INSERT INTO race VALUES (0, 'THE GRAND TEST RACE', TIMESTAMP '2025-01-01 16:00:00' );
         """))
+        
         await conn.execute(sa.text("""
             INSERT INTO runner VALUES (0, 'Ole');
         """))
@@ -190,6 +191,15 @@ async def setup_db(
         """))
         await conn.execute(sa.text("""
             INSERT INTO runner VALUES (2, 'Doffen');
+        """))
+        await conn.execute(sa.text("""
+            INSERT INTO runnerinrace VALUES (0, 0, 'NOTAG');
+        """))
+        await conn.execute(sa.text("""
+            INSERT INTO runnerinrace VALUES (1, 0, 'NOTAG');
+        """))
+        await conn.execute(sa.text("""
+            INSERT INTO runnerinrace VALUES (2, 0, 'NOTAG');
         """))
         
         await conn.execute(sa.text("""
@@ -230,7 +240,9 @@ async def setup_db(
         """))
         
         
-@router.post("/delete_db")
+        
+        
+@router.get("/delete_db")
 async def delete_db(
     dbc: deps.GetDbCtx
 ):
@@ -273,4 +285,4 @@ async def tables(
             FROM INFORMATION_SCHEMA.TABLES
             WHERE TABLE_TYPE='BASE TABLE'"""))
     blabla = [a[0] for a in result.fetchall() if not (a[0].startswith('pg') or a[0].startswith('sql'))]
-    return {"stuff": str(blabla)}
+    return str(blabla)
