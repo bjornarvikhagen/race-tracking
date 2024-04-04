@@ -59,34 +59,70 @@ async def start_task():
 
 
 class CheckpointPassing(BaseModel):
-    runnerid: int
-    checkpoint: int
+    rfid: int
+    device_id: int
     passingtime: datetime
-
 
 @router.post("/add_checkpoint_passing")
 async def add_checkpoint_passing(cp: CheckpointPassing, conn: deps.GetDb):
-    query = """
-        SELECT MAX(passingtime) 
-        FROM checkpointpassing 
-        WHERE runnerid = $1 AND checkpoint = $2
+    # Find the RunnerID associated with the provided RFID
+    runner_query = """
+        SELECT RunnerID
+        FROM RunnerInRace
+        WHERE TagID = $1
     """
-    last_checkin_time = await conn.fetchval(query, cp.runnerid, cp.checkpoint)
+    runner_id = await conn.fetchval(runner_query, cp.rfid)
 
-    # Check if there was a last check-in time and calculate the difference
-    if last_checkin_time:
-        current_time = datetime.now()
-        time_difference = current_time - last_checkin_time
-        if time_difference.total_seconds() / 60 < 30:
-            # If the time difference is less than 30 minutes, raise an exception
-            raise HTTPException(status_code=400, detail="Less than 30 minutes since last check-in")
-    
+    if not runner_id:
+        raise HTTPException(status_code=404, detail="Runner not found for the provided RFID")
+
+    # Find the ID of the last checkpoint checked in by the runner, if any
+    last_checkpoint_query = """
+        SELECT MAX(cp.CheckpointID)
+        FROM CheckpointPassing cp
+        WHERE cp.RunnerID = $1
+    """
+    last_checkpoint_id = await conn.fetchval(last_checkpoint_query, runner_id)
+
+    # Check if the last checkpoint was less than 30 minutes ago
+    if last_checkpoint_id:
+        last_checkpoint_time_query = """
+            SELECT MAX(cp.PassingTime)
+            FROM CheckpointPassing cp
+            WHERE cp.RunnerID = $1 AND cp.CheckpointID = $2
+        """
+        last_checkpoint_time = await conn.fetchval(last_checkpoint_time_query, runner_id, last_checkpoint_id)
+
+        if last_checkpoint_time:
+            current_time = datetime.now()
+            time_difference = current_time - last_checkpoint_time
+            if time_difference.total_seconds() / 60 < 30:
+                # If the time difference is less than 30 minutes, abandon the operation
+                raise HTTPException(status_code=400, detail="Less than 30 minutes since last check-in")
+
+    # Get the ID of the next checkpoint
+    next_checkpoint_id = last_checkpoint_id + 1 if last_checkpoint_id else 1
+
+    # Verify that the next checkpoint has the correct device ID
+    checkpoint_device_query = """
+        SELECT 1
+        FROM CheckpointInRace
+        WHERE RaceID IN (SELECT RaceID FROM RunnerInRace WHERE RunnerID = $1)
+        AND Position = $2
+        AND DeviceID = $3
+    """
+    valid_device = await conn.fetchval(checkpoint_device_query, runner_id, next_checkpoint_id, cp.device_id)
+
+    if not valid_device:
+        raise HTTPException(status_code=400, detail="Device ID does not match the expected device for the next checkpoint")
+
     # Insert the new checkpoint passing into the database
     insert_query = """
-        INSERT INTO checkpointpassing (runnerid, checkpoint, passingtime)
+        INSERT INTO CheckpointPassing (RunnerID, CheckpointID, PassingTime)
         VALUES ($1, $2, $3)
     """
-    await conn.execute(insert_query, cp.runnerid, cp.checkpoint, cp.passingtime)
+    await conn.execute(insert_query, runner_id, next_checkpoint_id, cp.passingtime)
+
 
 
 @router.websocket("/ws")
