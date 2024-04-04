@@ -47,7 +47,7 @@ def on_message(client, userdata, message):
         "timestamp": timestamp,
     }  # TODO: Double check format, especially on the timestamp
 
-    dummy_payload = {"msg": str(api_payload), "client_id": client_id}
+    dummy_payload = {"msg": str(api_payload)}
     print("dummy payload: ", dummy_payload)
 
     # Make a POST request to the API with the message data
@@ -56,7 +56,11 @@ def on_message(client, userdata, message):
         api_endpoint,
         data=json.dumps(dummy_payload),
     )  # TODO: Adjust to the correct endpoint, using payload as data instead of data instead
-    print("HTTP response: ", response.text)
+
+    if response.status_code == 200:
+        print("Data successfully forwarded to API!")
+    else:
+        print("Failed to send data to API...")
 
 
 # Callback when the client receives a CONNACK response from the server. I.e. This is called once we have a connection.
