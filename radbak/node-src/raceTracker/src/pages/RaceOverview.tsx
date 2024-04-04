@@ -19,15 +19,13 @@ export interface Checkpoint {
 const RaceOverview = () => {
   const { raceId } = useParams();
   const intRaceId = parseInt(raceId!);
-  console.log(raceId);
 
-  // Dummy data
   const {
     data: raceOverview,
     isLoading,
     isError,
   } = useQuery({
-    queryKey: [raceId],
+    queryKey: ["leaderboard", intRaceId],
     queryFn: () => fetchLeaderboard(intRaceId),
   });
 
@@ -40,6 +38,18 @@ const RaceOverview = () => {
       setCheckpoints(raceOverview.checkpoints);
     }
   }, [raceOverview]);
+
+  // Dummy data
+  // const {
+  //   data: raceOverview,
+  //   isLoading,
+  //   isError,
+  // } = useQuery({
+  //   queryKey: [raceId],
+  //   queryFn: () => fetchLeaderboard(intRaceId),
+  // });
+
+  // Fetch leaderboard data using useQuery
 
   // Test data, should be removed
   useEffect(() => {

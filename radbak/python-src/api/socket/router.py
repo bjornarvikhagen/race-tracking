@@ -174,9 +174,27 @@ def get_ws_page() -> HTMLResponse:
     """
     )
 
+# want a getter for checkpointinrace, which returns all checkpoints, their positions, and their time limits for a given race
+@router.get("/checkpointinrace/{race_id}")
+async def get_checkpointinrace(race_id: int, conn: deps.GetDb):
+    query = """
+        SELECT checkpointid, position, timelimit
+        FROM checkpointinrace WHERE raceid = $1
+    """
+    return await conn.fetch(query, race_id)
+
+# want a getter for all runners in a race, based on runnersinrace
+@router.get("/runner/{race_id}")
+async def get_runners(race_id: int, conn: deps.GetDb):
+    query = """
+        SELECT runnerid, name
+        FROM runnersinrace NATURAL JOIN runner WHERE raceid = $1
+    """
+    return await conn.fetch(query, race_id)
+
 # should return all checkpoint passings for a given runner, i.e.,
 # the checkpoint number and the time the runner passed that checkpoint
-@router.get("/checkpoint_passings/{runner_id}")
+@router.get("/checkpointpassing/{runner_id}")
 async def get_checkpoint_passings(runner_id: int, conn: deps.GetDb):
     query = """
         SELECT checkpointid, passingtime
@@ -184,25 +202,3 @@ async def get_checkpoint_passings(runner_id: int, conn: deps.GetDb):
         WHERE runnerid = $1
     """
     return await conn.fetch(query, runner_id)
-
-
-# want a getter that, for a given race id (TODO: implement multiple races later), returns the current leaderboard
-# for that, you need to return all runner ids, all checkpoint ids, and the relation between them (which is the time they passed the checkpoint)
-@router.get("/leaderboard/{race_id}")
-async def get_leaderboard(conn: deps.GetDb):
-    query = """
-        SELECT runnerid, checkpointid, passingtime, position, timelimit
-        FROM checkpointpassing JOIN checkpointinrace USING (checkpointid)
-    """
-    return await conn.fetch(query)
-
-
-
-# # want a getter for checkpointinrace, which returns all checkpoints for a given race
-# @router.get("/checkpointsinrace/{race_id}")
-# async def get_checkpointsinrace(conn: deps.GetDb):
-#     query = """
-#         SELECT checkpointid, position, timelimit
-#         FROM checkpointinrace
-#     """
-#     return await conn.fetch(query)
