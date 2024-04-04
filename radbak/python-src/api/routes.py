@@ -56,7 +56,7 @@ async def get_checkpoints_in_race(
                     SELECT checkpointid, position, timelimit
                     FROM checkpointinrace WHERE raceid = {race_id}
                 """))
-    return result
+    return {"result:": str(result.fetchall())}
 
 
 
@@ -89,11 +89,11 @@ async def get_checkpoint_passings(
                     FROM checkpointpassing
                     WHERE runnerid = {runner_id}
                 """))
-    return result
+    return {"result:": str(result.fetchall())}
 
 
 class CheckpointPassing(BaseModel):
-    CheckpointID: int
+    DeviceID: int
     RFID: int
     
 @router.post("/checkpoint_passing")
@@ -182,6 +182,55 @@ async def setup_db(
                 FOREIGN KEY (OrganizerID) REFERENCES Organizer (OrganizerID),
                 FOREIGN KEY (RaceID) REFERENCES Race (RaceID)
             );
+        """))
+        await conn.execute(sa.text("""
+            INSERT INTO race VALUES (0, 'THE GRAND TEST RACE', TIMESTAMP '2025-01-01 16:00:00' );
+        """))
+        await conn.execute(sa.text("""
+            INSERT INTO runner VALUES (0, 'Ole');
+        """))
+        await conn.execute(sa.text("""
+            INSERT INTO runner VALUES (1, 'Dole');
+        """))
+        await conn.execute(sa.text("""
+            INSERT INTO runner VALUES (2, 'Doffen');
+        """))
+        
+        await conn.execute(sa.text("""
+            INSERT INTO checkpoint VALUES (0, 0, 0);
+        """))
+        await conn.execute(sa.text("""
+            INSERT INTO checkpointinrace VALUES (0, 0, 0);
+        """))
+        await conn.execute(sa.text("""
+            INSERT INTO checkpoint VALUES (1, 1, 0);
+        """))
+        await conn.execute(sa.text("""
+            INSERT INTO checkpointinrace VALUES (1, 0, 1);
+        """))
+        await conn.execute(sa.text("""
+            INSERT INTO checkpoint VALUES (2, 0, 0);
+        """))
+        await conn.execute(sa.text("""
+            INSERT INTO checkpointinrace VALUES (2, 0, 2);
+        """))
+        await conn.execute(sa.text("""
+            INSERT INTO checkpoint VALUES (3, 1, 0);
+        """))
+        await conn.execute(sa.text("""
+            INSERT INTO checkpointinrace VALUES (3, 0, 3);
+        """))
+        await conn.execute(sa.text("""
+            INSERT INTO checkpoint VALUES (4, 0, 0);
+        """))
+        await conn.execute(sa.text("""
+            INSERT INTO checkpointinrace VALUES (4, 0, 4);
+        """))
+        await conn.execute(sa.text("""
+            INSERT INTO checkpoint VALUES (5, 1, 0);
+        """))
+        await conn.execute(sa.text("""
+            INSERT INTO checkpointinrace VALUES (5, 0, 5);
         """))
         
         
