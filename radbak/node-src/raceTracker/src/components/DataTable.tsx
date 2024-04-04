@@ -4,8 +4,8 @@ import "./DataTable.css";
 import { Checkpoint, Runner } from "../pages/RaceOverview";
 
 type DataTableProps = {
-  runners: Array<Runner>;
-  checkpoints: Array<Checkpoint>;
+  runners: Runner[];
+  checkpoints: Checkpoint[];
 };
 
 const DataTable: React.FC<DataTableProps> = ({ runners, checkpoints }) => {
@@ -26,7 +26,7 @@ const DataTable: React.FC<DataTableProps> = ({ runners, checkpoints }) => {
   }
 
   // hashmap displaying each runners id and the checkpoint they fell out of the race
-  // i.e., if runner 1 couldnt reach checkpoint 3 in time, the map would have an entry {1: 3}
+  // i.e., if runner 1 couldnt reach checkpoint with position 3 in time, the map would have an entry {1: 3}
   // if the runner is still in the race, the map will not have an entry for that runner
   function getRunnerFellOutMap(
     runners: DataTableProps["runners"],
@@ -35,27 +35,25 @@ const DataTable: React.FC<DataTableProps> = ({ runners, checkpoints }) => {
     const runnerFellOutMap: { [key: number]: number } = {};
 
     runners.forEach((runner) => {
-      for (let i = 0; i < filteredCheckpoints.length; i++) {
-        const checkpoint = filteredCheckpoints[i];
-        // see if the time is after the time limit
-        if (
-          checkpoint.timeLimit &&
-          new Date(
-            `2000-01-01T${runner.times[checkpoint.position] || ""}:00Z`
-          ) > new Date(`2000-01-01T${checkpoint.timeLimit}:00Z`)
-        ) {
-          runnerFellOutMap[runner.id] = checkpoint.position;
-          break;
+      filteredCheckpoints.forEach((checkpoint) => {
+        const runnerTime = runner.times[checkpoint.position];
+        const checkpointTimeLimit = checkpoint.timeLimit;
+
+        if (runnerTime !== undefined && checkpointTimeLimit !== null) {
+          if (runnerTime > checkpointTimeLimit) {
+            runnerFellOutMap[runner.id] = checkpoint.position;
+            return; // Exit the loop once the runner is marked
+          }
         }
-      }
+      });
     });
 
     return runnerFellOutMap;
   }
 
-  // Function to handle navigation back to "/races"
+  // handle navigation back to "/races"
   const handleGoBack = () => {
-    navigate("/races"); // Navigate back to "/races"
+    navigate("/races");
   };
 
   return (
@@ -66,9 +64,11 @@ const DataTable: React.FC<DataTableProps> = ({ runners, checkpoints }) => {
       <table className="data-table">
         <thead>
           <tr>
+            {/* Display the names of the columns */}
             <th>Names</th>
             <th>Still in race</th>
             {filteredCheckpoints.map((checkpoint, index) => (
+              // Display the checkpoint number and time limit (if it exists)
               <th key={index}>
                 {checkpoint.timeLimit ? (
                   <>
@@ -82,41 +82,58 @@ const DataTable: React.FC<DataTableProps> = ({ runners, checkpoints }) => {
             ))}
           </tr>
         </thead>
+
         <tbody>
           {runners.map((runner, rowIndex) => {
             const isRunnerOut = runnerFellOutMap[runner.id] !== undefined;
             return (
               <tr key={rowIndex}>
+                {/* Display the runner's name and whether they are still in the*/}
                 <td>{runner.name}</td>
                 <td>
                   {isRunnerOut ? (
-                    <span style={{ color: "red" }}>Out</span>
+                    <span style={{ color: "red" }}>Out</span> // Change color to red if the runner fell out
                   ) : (
-                    <span style={{ color: "green" }}>In</span>
+                    <span style={{ color: "green" }}>In</span> // Change color to green if the runner is still in
                   )}
                 </td>
+
+                {/* Display the runner's times at each checkpoint */}
+                {/* For each checkpoint, we check the runner's status */}
                 {filteredCheckpoints.map((checkpoint, columnIndex) => {
+                  // Check if the runner is still in the race
                   if (runnerFellOutMap[runner.id] === undefined) {
                     return (
                       <td key={columnIndex}>
-                        {runner.times[checkpoint.position] || "-"}
+                        {runner.times[checkpoint.position].toLocaleString() ||
+                          "-"}
                       </td>
                     );
                   }
+
+                  // Runner fell out; find where they fell out by comparing the checkpoint position
                   const runnerFellOutDirection =
-                    checkpoint.id - runnerFellOutMap[runner.id];
+                    checkpoint.position - runnerFellOutMap[runner.id];
+
+                  // If the runner fell out at this checkpoint, display the time they fell out in brackets
                   if (runnerFellOutDirection === 0) {
                     return (
                       <td key={columnIndex}>
-                        Out: [{runner.times[checkpoint.id]}]
+                        Out: [{runner.times[checkpoint.id].toLocaleString()}]
                       </td>
                     );
-                  } else if (runnerFellOutDirection > 0) {
+                  }
+
+                  // If the runner fell out before this checkpoint, display a dash
+                  else if (runnerFellOutDirection > 0) {
                     return <td key={columnIndex}> - </td>;
-                  } else {
+                  }
+
+                  // If not, the runner fell out after this checkpoint; display the time they passed the checkpoint
+                  else {
                     return (
                       <td key={columnIndex}>
-                        {runner.times[checkpoint.id] || "-"}
+                        {runner.times[checkpoint.id].toLocaleString() || "-"}
                       </td>
                     );
                   }
