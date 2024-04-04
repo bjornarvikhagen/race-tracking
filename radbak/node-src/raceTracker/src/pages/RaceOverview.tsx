@@ -39,53 +39,14 @@ const RaceOverview = () => {
     }
   }, [raceOverview]);
 
-  // Dummy data
-  // const {
-  //   data: raceOverview,
-  //   isLoading,
-  //   isError,
-  // } = useQuery({
-  //   queryKey: [raceId],
-  //   queryFn: () => fetchLeaderboard(intRaceId),
-  // });
-
-  // Fetch leaderboard data using useQuery
-
-  // Test data, should be removed
-  // useEffect(() => {
-  //   const updateErikProgress = () => {
-  //     const erikIndex = runners.findIndex((runner) => runner.id === 2);
-  //     if (erikIndex !== -1) {
-  //       const erik = runners[erikIndex];
-  //       let lastPassedCheckpoint = Object.keys(erik.times).length;
-  //       if (lastPassedCheckpoint < checkpoints.length) {
-  //         lastPassedCheckpoint++;
-  //         const updatedRunners = [...runners];
-  //         let currentTime = new Date(
-  //           `2000-01-01T${
-  //             erik.times[(lastPassedCheckpoint - 1) as keyof typeof erik.times]
-  //           }:00Z`
-  //         );
-  //         const randomTime = Math.floor(Math.random() * (60 - 1 + 1)) + 1; // Random time in minutes
-  //         currentTime.setMinutes(currentTime.getMinutes() + randomTime);
-  //         updatedRunners[erikIndex].times[
-  //           lastPassedCheckpoint as keyof typeof erik.times
-  //         ] = `${currentTime.getHours()}:${
-  //           currentTime.getMinutes() < 10
-  //             ? "0" + currentTime.getMinutes()
-  //             : currentTime.getMinutes()
-  //         }`;
-  //         setRunners(updatedRunners);
-  //       }
-  //     }
-  //   };
-
-  //   const intervalId = setInterval(updateErikProgress, 5000); // Update every 5 seconds
-  //   return () => clearInterval(intervalId);
-  // }, [runners, checkpoints]);
-
   if (isLoading) return <p>Loading...</p>;
   if (isError) return <p>Error fetching</p>;
+
+  // Check if runners and checkpoints arrays are empty or not
+  if (runners.length === 0 || checkpoints.length === 0) {
+    // If arrays are empty, render loading message or any other indication
+    return <p>Loading data...</p>;
+  }
 
   return (
     <>

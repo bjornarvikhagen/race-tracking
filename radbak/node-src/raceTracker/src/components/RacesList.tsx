@@ -4,7 +4,7 @@ import "./RacesList.css";
 const RacesList = ({
   races,
 }: {
-  races: { id: number; name: string; startTime: string }[];
+  races: { raceid: number; name: string; startTime: string }[];
 }) => {
   const navigate = useNavigate();
 
@@ -19,9 +19,9 @@ const RacesList = ({
       <ul className="race-list">
         {races.map((race) => (
           <li
-            key={race.id}
+            key={race.raceid}
             className="race-list-item"
-            onClick={() => handleRaceClick(race.id)}
+            onClick={() => handleRaceClick(race.raceid)}
           >
             {race.name}
           </li>

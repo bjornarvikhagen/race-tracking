@@ -174,31 +174,31 @@ def get_ws_page() -> HTMLResponse:
     """
     )
 
-# want a getter for checkpointinrace, which returns all checkpoints, their positions, and their time limits for a given race
-@router.get("/checkpointinrace/{race_id}")
-async def get_checkpointinrace(race_id: int, conn: deps.GetDb):
-    query = """
-        SELECT checkpointid, position, timelimit
-        FROM checkpointinrace WHERE raceid = $1
-    """
-    return await conn.fetch(query, race_id)
+# # want a getter for checkpointinrace, which returns all checkpoints, their positions, and their time limits for a given race
+# @router.get("/checkpointinrace/{race_id}")
+# async def get_checkpointinrace(race_id: int, conn: deps.GetDb):
+#     query = """
+#         SELECT checkpointid, position, timelimit
+#         FROM checkpointinrace WHERE raceid = $1
+#     """
+#     return await conn.fetch(query, race_id)
 
-# want a getter for all runners in a race, based on runnersinrace
-@router.get("/runner/{race_id}")
-async def get_runners(race_id: int, conn: deps.GetDb):
-    query = """
-        SELECT runnerid, name
-        FROM runnersinrace NATURAL JOIN runner WHERE raceid = $1
-    """
-    return await conn.fetch(query, race_id)
+# # want a getter for all runners in a race, based on runnersinrace
+# @router.get("/runner/{race_id}")
+# async def get_runners(race_id: int, conn: deps.GetDb):
+#     query = """
+#         SELECT runnerid, name
+#         FROM runnersinrace NATURAL JOIN runner WHERE raceid = $1
+#     """
+#     return await conn.fetch(query, race_id)
 
-# should return all checkpoint passings for a given runner, i.e.,
-# the checkpoint number and the time the runner passed that checkpoint
-@router.get("/checkpointpassing/{runner_id}")
-async def get_checkpoint_passings(runner_id: int, conn: deps.GetDb):
-    query = """
-        SELECT checkpointid, passingtime
-        FROM checkpointpassing
-        WHERE runnerid = $1
-    """
-    return await conn.fetch(query, runner_id)
+# # should return all checkpoint passings for a given runner, i.e.,
+# # the checkpoint number and the time the runner passed that checkpoint
+# @router.get("/checkpointpassing/{runner_id}")
+# async def get_checkpoint_passings(runner_id: int, conn: deps.GetDb):
+#     query = """
+#         SELECT checkpointid, passingtime
+#         FROM checkpointpassing
+#         WHERE runnerid = $1
+#     """
+#     return await conn.fetch(query, runner_id)
