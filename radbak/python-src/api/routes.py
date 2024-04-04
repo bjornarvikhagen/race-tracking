@@ -158,7 +158,7 @@ async def setup_db(
                 CheckpointID INT NOT NULL,
                 RaceID INT NOT NULL,
                 Position INT NOT NULL,
-                Timelimit INT NOT NULL,
+                Timelimit TIMESTAMP,
                 PRIMARY KEY (CheckpointID, RaceID),
                 FOREIGN KEY (CheckpointID) REFERENCES Checkpoint (CheckpointID),
                 FOREIGN KEY (RaceID) REFERENCES Race (RaceID)
