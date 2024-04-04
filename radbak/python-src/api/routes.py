@@ -5,7 +5,7 @@ from fastapi import APIRouter
 from api import deps
 
 from pydantic import BaseModel
-
+import sqlalchemy as sa
 
 
     
@@ -65,7 +65,6 @@ async def get_runners_in_race(
     race_id: int,
     dbc: deps.GetDbCtx
 ):
-    import sqlalchemy as sa
 
     async with dbc as conn:
         result = await conn.execute(sa.text(f"""
@@ -81,7 +80,6 @@ async def get_checkpoint_passings(
     runner_id: int,
     dbc: deps.GetDbCtx
 ):
-    import sqlalchemy as sa
 
     async with dbc as conn:
         result = await conn.execute(sa.text(f"""
@@ -101,7 +99,6 @@ async def post_checkpoint_passing(
     passing: CheckpointPassing,
     dbc: deps.GetDbCtx
 ):
-    import sqlalchemy as sa
 
     async with dbc as conn:
         result = await conn.execute(sa.text(""""""))
@@ -114,7 +111,6 @@ async def post_checkpoint_passing(
 async def setup_db(
     dbc: deps.GetDbCtx
 ):
-    import sqlalchemy as sa
 
     async with dbc as conn:
         await conn.execute(sa.text("""
@@ -238,7 +234,6 @@ async def setup_db(
 async def delete_db(
     dbc: deps.GetDbCtx
 ):
-    import sqlalchemy as sa
 
     async with dbc as conn:
         await conn.execute(sa.text("""
@@ -271,7 +266,6 @@ async def delete_db(
 async def tables(
     dbc: deps.GetDbCtx,
 ):
-    import sqlalchemy as sa
 
     async with dbc as conn:
         result = await conn.execute(sa.text("""
