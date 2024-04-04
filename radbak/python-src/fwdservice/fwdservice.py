@@ -1,6 +1,7 @@
 # MQTT Client subscribing to the MQTT broker and calling the API endpoint with the data
 
 # Import necessary libraries
+import json
 import random
 
 import paho.mqtt.client as mqtt
@@ -8,7 +9,8 @@ import paho.mqtt.enums as mqtt_enums
 import requests
 
 # Define the API endpoint
-api_endpoint = "http://localhost:80/send"  # Endpoint to send data
+api_endpoint = "http://localhost:80/send"  # Proxy endpoint to send data
+# api_endpoint = "http://localhost:80/add_checkpoint_passing"  # Real endpoint to send checkpoint passings
 
 # MQTT broker details
 
@@ -27,11 +29,34 @@ password = "Erik"
 def on_message(client, userdata, message):
     # Extract the message payload
     print("Message recieved!")
-    payload = message.payload.decode()
-    print(f"{message.timestamp} | {payload}")
+    data = message.payload.decode()
+    print(f"{message.timestamp} | {data}")
+
+    # Assume messages are recieved like this:
+    # CheckpointID:RFID:Timestamp
+
+    # Format the message data
+    split_data = data.split(":")
+    checkpoint_id = split_data[0]
+    rfid = split_data[1]
+    timestamp = ":".join(split_data[2:])
+
+    api_payload = {
+        "rfid": rfid,
+        "checkpoint_id": checkpoint_id,
+        "timestamp": timestamp,
+    }  # TODO: Double check format, especially on the timestamp
+
+    dummy_payload = {"msg": str(api_payload), "client_id": client_id}
+    print("dummy payload: ", dummy_payload)
 
     # Make a POST request to the API with the message data
-    requests.post(api_endpoint, data=payload)
+    response = requests.post(
+        # api_endpoint, data=json.dumps(api_payload)
+        api_endpoint,
+        data=json.dumps(dummy_payload),
+    )  # TODO: Adjust to the correct endpoint, using payload as data instead of data instead
+    print("HTTP response: ", response.text)
 
 
 # Callback when the client receives a CONNACK response from the server. I.e. This is called once we have a connection.
@@ -71,7 +96,6 @@ def connect_to_mqtt():
     # Connect to the broker
     print(f"Connecting to {broker_address}")
     client.connect(broker_address, broker_port, keepalive=60)
-    print("Finished connecting")
 
     # Publishing a hello-message to a topic
     client.publish(topic, "Hello, EMQX!")
