@@ -104,7 +104,7 @@ async def post_checkpoint_passing(
     import sqlalchemy as sa
 
     async with dbc as conn:
-        result = await conn.execute(sa.text(f))
+        result = await conn.execute(sa.text(""""""))
         
     return result
 
