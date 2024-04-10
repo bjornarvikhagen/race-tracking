@@ -1,0 +1,61 @@
+/* Base styles */
+
+.container {
+  margin: auto;
+}
+
+.data-table {
+  border-collapse: collapse;
+  width: 100%;
+  table-layout: fixed;
+  max-width: 900px;
+  /* Helps with keeping the layout stable */
+}
+
+.data-table th,
+.data-table td {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+  font-size: 1.2vw;
+}
+
+.data-table th {
+  background-color: #f2f2f2;
+}
+
+/* Hide checkpoint and other columns on mobile, show only the last checkpoint column */
+
+@media screen and (max-width: 1023px) {
+
+  /* Hide all th/td elements that are not the first three or the last */
+  .data-table th:not(:nth-child(-n+2)):not(:last-child),
+  .data-table td:not(:nth-child(-n+2)):not(:last-child) {
+    display: none;
+  }
+
+  /* Adjust the container's width for small screens */
+  .container {
+    width: 100%;
+    padding: 0 5px;
+    /* Add a little padding on small screens */
+  }
+}
+
+/* Styles for larger screens */
+@media screen and (min-width: 1024px) {
+  .container {
+    width: 70vw;
+  }
+
+  .data-table {
+    width: 100%;
+    max-width: none;
+  }
+
+  /* All th and td elements are table cells */
+  .data-table th,
+  .data-table td {
+    font-size: 0.8vw;
+  }
+}
