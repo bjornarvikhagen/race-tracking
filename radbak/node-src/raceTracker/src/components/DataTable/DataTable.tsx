@@ -15,6 +15,18 @@ const formatTime = (time: Date | undefined) => {
     hour: "numeric",
     minute: "2-digit",
     second: "2-digit",
+    hourCycle: 'h23', // Use 24-hour clock
+  };
+  return new Intl.DateTimeFormat("en-US", options).format(time);
+};
+
+const formatTimeLimit = (time: Date | undefined | null) => {
+  if (!time) return "-";
+
+  const options: Intl.DateTimeFormatOptions = {
+    hour: "numeric",
+    minute: "2-digit",
+    hourCycle: 'h23', // Use 24-hour clock
   };
   return new Intl.DateTimeFormat("en-US", options).format(time);
 };
@@ -74,120 +86,83 @@ const DataTable: React.FC<DataTableProps> = ({ runners, checkpoints }) => {
       const posNum = Number(position);
       if (posNum > maxPosition) {
         maxPosition = posNum;
-        lastCheckpoint = `Checkpoint ${posNum}: ${formatTime(time)}`;
+        lastCheckpoint = `${posNum}: ${formatTime(time)}`;
       }
     });
     return lastCheckpoint;
   };
 
-  // handle navigation back to "/races"
-  const handleGoBack = () => {
-    navigate("/races");
-  };
+
 
   return (
     <>
+      <button onClick={() => navigate("/races")} className="go-back-button">
+        Go back
+      </button>
       <div className="container">
-        <button onClick={handleGoBack} className="go-back-button">
-          Go back
-        </button>
-        <table className="data-table">
+        {/* Left Fixed Table for Names and Still in race */}
+        <table className="data-table fixed">
           <thead>
             <tr>
-              {/* Display the names of the columns */}
-              <div className="fixed-columns">
-                <th className="names">Names</th>
-                <th className="inRace">Still in race</th>
-              </div>
-              <div className="scrollable-columns">
-                {checkpoints.map((checkpoint, index) => (
-                  // Display the checkpoint number and time limit (if it exists)
-                  <th className="checkpoint" key={index}>
-                    {checkpoint.timeLimit ? (
-                      <>
-                        Checkpoint{index + 1} <br />
-                        Time Limit: {formatTime(checkpoint.timeLimit)}
-                      </>
-                    ) : (
-                      `Checkpoint${index + 1}`
-                    )}
-                  </th>
-                ))}
-              </div>
-              <div className="fixed-columns">
-                <th className="lastCheckpoint">Last Checkpoint</th>
-              </div>
+              <th className="names">Names</th>
+              <th className="inRace">Still in race</th>
             </tr>
           </thead>
-
           <tbody>
-            {runners.map((runner, rowIndex) => {
-              const isRunnerOut = runnerFellOutMap[runner.id] !== undefined;
-              const lastCheckpoint = getLastCheckpoint(runner.times);
-              return (
-                <tr key={rowIndex}>
-                  {/* Display the runner's name and whether they are still in the*/}
-                  <td>{runner.name}</td>
-                  <td>
-                    {isRunnerOut ? (
-                      <span style={{ color: "red" }}>Out</span> // Change color to red if the runner fell out
-                    ) : (
-                      <span style={{ color: "green" }}>In</span> // Change color to green if the runner is still in
-                    )}
-                  </td>
+            {runners.map((runner, index) => (
+              <tr key={`runner-${index}`}>
+                <td>{runner.name}</td>
+                <td className="inRace">{runnerFellOutMap[runner.id] ? "No" : "Yes"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
 
-                  {/* Display the runner's times at each checkpoint */}
-                  {/* For each checkpoint, we check the runner's status */}
-                  {checkpoints.map((checkpoint, columnIndex) => {
-                    // Check if the runner is still in the race
-                    if (runnerFellOutMap[runner.id] === undefined) {
-                      // Check if the time for this checkpoint is undefined
-                      if (runner.times[checkpoint.position] !== undefined) {
-                        return (
-                          <td key={columnIndex}>
-                            {formatTime(runner.times[checkpoint.position])}
-                          </td>
-                        );
-                      } else {
-                        return <td key={columnIndex}> - </td>;
-                      }
-                    }
+        {/* Scrollable Table for Checkpoints */}
+        <div className="scrollable-section">
+          <table className="data-table">
+            <thead>
+              <tr>
+                {checkpoints.map((checkpoint, index) => (
+                  <th key={index}>
+                    CP {index + 1} deadline: {formatTimeLimit(checkpoint.timeLimit)}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {runners.map((runner, rowIndex) => (
+                <tr key={`checkpoint-row-${rowIndex}`}>
+                  {checkpoints.map((checkpoint, cpIndex) => {
+                    const runnerTime = runner.times[checkpoint.position];
+                    const isTimeBefore = runnerTime && checkpoint.timeLimit && runnerTime <= checkpoint.timeLimit;
+                    const timeClass = isTimeBefore ? 'time-before' : 'time-after';
 
-                    // Runner fell out; find where they fell out by comparing the checkpoint position
-                    const runnerFellOutDirection =
-                      checkpoint.position - runnerFellOutMap[runner.id];
-
-                    // If the runner fell out at this checkpoint, display the time they fell out in brackets
-                    if (runnerFellOutDirection === 0) {
-                      console.log(
-                        checkpoint.id + ": " + runner.times[checkpoint.id]
-                      );
-                      return (
-                        <td key={columnIndex}>
-                          Out: [{formatTime(runner.times[checkpoint.position])}]
-                        </td>
-                      );
-                    }
-
-                    // If the runner fell out before this checkpoint, display a dash
-                    else if (runnerFellOutDirection > 0) {
-                      return <td key={columnIndex}> - </td>;
-                    }
-
-                    // If not, the runner fell out after this checkpoint; display the time they passed the checkpoint
-                    else {
-                      return (
-                        <td key={columnIndex}>
-                          {formatTime(runner.times[checkpoint.position])}
-                        </td>
-                      );
-                    }
+                    return (
+                      <td key={cpIndex} className={runnerTime ? timeClass : ''}>
+                        {runnerTime ? formatTime(runnerTime) : "-"}
+                      </td>
+                    );
                   })}
-                  <td>{lastCheckpoint}</td>
                 </tr>
-              );
-            })}
+              ))}
+            </tbody>
+          </table>
+        </div>
 
+        {/* Right Fixed Table for Last Checkpoint */}
+        <table className="data-table fixed">
+          <thead>
+            <tr>
+              <th>Last CP</th>
+            </tr>
+          </thead>
+          <tbody>
+            {runners.map((runner, index) => (
+              <tr key={`last-${index}`}>
+                <td>{getLastCheckpoint(runner.times)}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
