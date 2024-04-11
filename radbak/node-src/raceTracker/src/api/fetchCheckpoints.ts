@@ -1,10 +1,9 @@
 import { BASEURL } from "../Constants";
 
-
-const fetchRaces = async () => {
+const fetchCheckpoints = async () => {
     try {
-        const racesURL = `${BASEURL}/races`;
-        const response = await fetch(racesURL);
+        const checkpointsURL = `${BASEURL}/checkpoints`;
+        const response = await fetch(checkpointsURL);
         const data = await response.json();
         console.log(data);
         return data;
@@ -13,5 +12,4 @@ const fetchRaces = async () => {
     }
 };
 
-export default fetchRaces;
-
+export default fetchCheckpoints;

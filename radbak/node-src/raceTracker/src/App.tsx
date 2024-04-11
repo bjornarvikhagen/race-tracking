@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import RaceOverview from "./pages/RaceOverview";
 import Login from "./pages/Login";
 import Navbar from "./components/NavBar";
+import AdminPage from "./pages/AdminPage";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
             <Route path="/races" element={<Races />} />
             <Route path="/race/:raceId" element={<RaceOverview />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/admin" element={<AdminPage />} />
           </Routes>
         </>
       </BrowserRouter>
