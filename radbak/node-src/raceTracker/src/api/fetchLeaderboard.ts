@@ -106,9 +106,7 @@ const fetchLeaderboard = async (raceId: number): Promise<Race | undefined> => {
 
         console.log(checkpoints);
         console.log(runners);
-        
-
-
+    
         return { runners: runners, checkpoints: checkpoints };
     } catch (error) {
         console.error("Error fetching leaderboard data:", error);

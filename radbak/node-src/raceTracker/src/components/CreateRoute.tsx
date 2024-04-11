@@ -1,8 +1,15 @@
+import DeviceTable from "./DeviceTable";
 import { useState } from "react";
-import fetchCheckpoints from "../api/fetchCheckpoints";
 
 const CreateRoute = () => {
-  const [deviceIDs, setDeviceIDs] = useState<string[]>([]);
+  const [deviceData, setDeviceData] = useState([]);
+
+  const handleDeviceDataUpdate = (newData) => {
+    console.log(newData);
+    setDeviceData(newData);
+  };
+
+  return <DeviceTable onDataUpdate={handleDeviceDataUpdate} />;
 };
 
 export default CreateRoute;
