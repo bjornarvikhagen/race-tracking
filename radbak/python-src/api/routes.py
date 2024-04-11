@@ -3,7 +3,7 @@ from typing import List
 
 import sqlalchemy as sa
 from api import deps
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
 router = APIRouter()
@@ -262,7 +262,9 @@ async def post_checkpoint_passing(passing: CheckpointPassing, dbc: deps.GetDbCtx
             )
             return {"message": "Checkpoint passing added"}
         else:
-            return {"message": "Invalid TagID"}
+            raise HTTPException(
+                status_code=400, detail="Invalid TagID: No runner found with this TagID"
+            )
 
 
 @router.post("/register_tag")
