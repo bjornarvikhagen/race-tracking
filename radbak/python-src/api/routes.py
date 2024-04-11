@@ -1,10 +1,11 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List
 
 import sqlalchemy as sa
-from api import deps
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
+
+from api import deps
 
 router = APIRouter()
 
@@ -16,6 +17,12 @@ class Race(BaseModel):
 
 class Runner(BaseModel):
     name: str
+
+
+class RunnerInRace(BaseModel):
+    RunnerID: int
+    RaceID: int
+    TagID: str
 
 
 class Checkpoint(BaseModel):
@@ -55,7 +62,6 @@ async def post_checkpoint(checkpoint: Checkpoint, dbc: deps.GetDbCtx):
 @router.post("/setup_db")
 async def setup_db(dbc: deps.GetDbCtx):
     async with dbc as conn:
-        # Create tables
         tables = [
             "CREATE TABLE IF NOT EXISTS Checkpoint (CheckpointID SERIAL PRIMARY KEY, DeviceID VARCHAR(255) NOT NULL, Location VARCHAR(255) NOT NULL);",
             "CREATE TABLE IF NOT EXISTS Runner (RunnerID SERIAL PRIMARY KEY, name VARCHAR(255) NOT NULL);",
@@ -106,7 +112,6 @@ async def tables(dbc: deps.GetDbCtx):
 @router.get("/races", response_model=List[RaceOut])
 async def get_races(dbc: deps.GetDbCtx):
     async with dbc as conn:
-        # Ensure column names here match those expected by the RaceOut model or its aliases
         result = await conn.execute(
             sa.text(
                 "SELECT RaceID as raceid, Name as name, startTime as starttime FROM Race"
@@ -149,49 +154,47 @@ async def seed_db(dbc: deps.GetDbCtx):
     async with dbc as conn:
         # Insert sample races
         await conn.execute(
-            sa.text("INSERT INTO Race (RaceID, Name, startTime) VALUES (1, 'Race 1', '2023-05-01 10:00:00'), (2, 'Race 2', '2023-06-01 12:00:00')")
+            sa.text(
+                "INSERT INTO Race (RaceID, Name, startTime) VALUES (1, 'Race 1', '2023-05-01 10:00:00'), (2, 'Race 2', '2023-06-01 12:00:00')"
+            )
         )
 
         # Insert sample runners
         await conn.execute(
-            sa.text("INSERT INTO Runner (RunnerID, name) VALUES (1, 'John Doe'), (2, 'Jane Smith'), (3, 'Alice Johnson')")
+            sa.text(
+                "INSERT INTO Runner (RunnerID, name) VALUES (1, 'John Doe'), (2, 'Jane Smith'), (3, 'Alice Johnson')"
+            )
         )
-        
+
         # Insert sample runnerinrace
         await conn.execute(
-            sa.text("INSERT INTO RunnerInRace (RunnerID, RaceID, TagID) VALUES (1, 1, '123456'), (2, 1, '654321'), (3, 1, '111111'), (1, 2, '222222'), (2, 2, '333333'), (3, 2, '444444')")
+            sa.text(
+                "INSERT INTO RunnerInRace (RunnerID, RaceID, TagID) VALUES (1, 1, '123456'), (2, 1, '654321'), (3, 1, '111111'), (1, 2, '222222'), (2, 2, '333333'), (3, 2, '444444')"
+            )
         )
-        
+
         # Insert sample checkpoint
         await conn.execute(
-            sa.text("INSERT INTO Checkpoint (CheckpointID, DeviceID, Location) VALUES (1, 1, 'Checkpoint 1'), (2, 2, 'Checkpoint 2'), (3, 3, 'Checkpoint 3'), (4, 4, 'Checkpoint 4'), (5, 5, 'Checkpoint 5'), (6, 6, 'Checkpoint 6'), (7, 7, 'Checkpoint 7'), (8, 8, 'Checkpoint 8'), (9, 9, 'Checkpoint 9'), (10, 10, 'Checkpoint 10')")
+            sa.text(
+                "INSERT INTO Checkpoint (CheckpointID, DeviceID, Location) VALUES (1, 1, 'Checkpoint 1'), (2, 2, 'Checkpoint 2'), (3, 3, 'Checkpoint 3'), (4, 4, 'Checkpoint 4'), (5, 5, 'Checkpoint 5'), (6, 6, 'Checkpoint 6'), (7, 7, 'Checkpoint 7'), (8, 8, 'Checkpoint 8'), (9, 9, 'Checkpoint 9'), (10, 10, 'Checkpoint 10')"
+            )
         )
-        
+
         # Insert sample checkpointinrace
         await conn.execute(
-            sa.text("INSERT INTO CheckpointInRace (CheckpointID, RaceID, Position, TimeLimit) VALUES (1, 1, 1, '2023-05-01 10:30:00'), (2, 1, 2, NULL), (3, 1, 3, '2023-05-01 11:30:00'), (4, 1, 4, '2023-05-01 12:00:00'), (5, 1, 5, '2023-05-01 12:30:00'), (6, 1, 6, '2023-05-01 13:00:00'), (7, 1, 7, '2023-05-01 13:30:00'), (8, 1, 8, '2023-05-01 14:00:00'), (9, 1, 9, '2023-05-01 14:30:00'), (10, 1, 10, '2023-05-01 15:00:00')")
+            sa.text(
+                "INSERT INTO CheckpointInRace (CheckpointID, RaceID, Position, TimeLimit) VALUES (1, 1, 1, '2023-05-01 10:30:00'), (2, 1, 2, NULL), (3, 1, 3, '2023-05-01 11:30:00'), (4, 1, 4, '2023-05-01 12:00:00'), (5, 1, 5, '2023-05-01 12:30:00'), (6, 1, 6, '2023-05-01 13:00:00'), (7, 1, 7, '2023-05-01 13:30:00'), (8, 1, 8, '2023-05-01 14:00:00'), (9, 1, 9, '2023-05-01 14:30:00'), (10, 1, 10, '2023-05-01 15:00:00')"
+            )
         )
-        
+
         # Insert sample checkpointpassing
         await conn.execute(
-            sa.text("INSERT INTO CheckpointPassing (RunnerID, CheckpointID, PassingTime) VALUES (1,1,'2023-05-01 10:00:00'), (1,2,'2023-05-01 10:45:00'), (1,3,'2023-05-01 11:15:00'), (1,4,'2023-05-01 12:00:00'), (1,5,'2023-05-01 12:45:00'), (1,6,'2023-05-01 13:30:00'), (1,7,'2023-05-01 14:00:00'), (1,8,'2023-05-01 14:30:00'), (1,9,'2023-05-01 15:00:00'), (1,10,'2023-05-01 15:30:00'), (2,1,'2023-05-01 11:00:00'), (2,2,'2023-05-01 11:30:00'), (2,3,'2023-05-01 12:00:00'), (2,4,'2023-05-01 12:30:00'), (2,5,'2023-05-01 13:00:00'), (2,6,'2023-05-01 13:30:00'), (2,7,'2023-05-01 14:00:00'), (2,8,'2023-05-01 14:30:00'), (2,9,'2023-05-01 15:00:00'), (2,10,'2023-05-01 15:30:00')")
+            sa.text(
+                "INSERT INTO CheckpointPassing (RunnerID, CheckpointID, PassingTime) VALUES (1,1,'2023-05-01 10:00:00'), (1,2,'2023-05-01 10:45:00'), (1,3,'2023-05-01 11:15:00'), (1,4,'2023-05-01 12:00:00'), (1,5,'2023-05-01 12:45:00'), (1,6,'2023-05-01 13:30:00'), (1,7,'2023-05-01 14:00:00'), (1,8,'2023-05-01 14:30:00'), (1,9,'2023-05-01 15:00:00'), (1,10,'2023-05-01 15:30:00'), (2,1,'2023-05-01 11:00:00'), (2,2,'2023-05-01 11:30:00'), (2,3,'2023-05-01 12:00:00'), (2,4,'2023-05-01 12:30:00'), (2,5,'2023-05-01 13:00:00'), (2,6,'2023-05-01 13:30:00'), (2,7,'2023-05-01 14:00:00'), (2,8,'2023-05-01 14:30:00'), (2,9,'2023-05-01 15:00:00'), (2,10,'2023-05-01 15:30:00')"
+            )
         )
 
     return {"message": "Database seeded with sample data"}
-
-
-@router.get("/races")
-async def get_races(dbc: deps.GetDbCtx):
-    async with dbc as conn:
-        result = await conn.execute(
-            sa.text(
-                f"""
-                    SELECT raceid, name, starttime
-                    FROM races
-                """
-            )
-        )
-    return str(result.fetchall())
 
 
 @router.get("/checkpointinrace/{race_id}")
@@ -215,7 +218,7 @@ async def get_runners_in_race(race_id: int, dbc: deps.GetDbCtx):
         result = await conn.execute(
             sa.text(
                 f"""
-                SELECT runnerid, name
+                SELECT runnerid, name, TagID
                 FROM runnerinrace NATURAL JOIN runner WHERE raceid = {race_id}
             """
             )
@@ -240,12 +243,52 @@ async def get_checkpoint_passings(runner_id: int, dbc: deps.GetDbCtx):
 
 
 class CheckpointPassing(BaseModel):
-    DeviceID: int
-    RFID: int
+    TagID: str
+    CheckpointID: int
+    PassingTime: datetime
 
 
 @router.post("/checkpoint_passing")
 async def post_checkpoint_passing(passing: CheckpointPassing, dbc: deps.GetDbCtx):
+    # Convert PassingTime to offset-naive UTC datetime
+    passing_time_naive = (
+        passing.PassingTime.replace(tzinfo=timezone.utc)
+        .astimezone(tz=None)
+        .replace(tzinfo=None)
+    )
+
     async with dbc as conn:
-        await conn.execute(sa.text(""""""))  # legg til query
-    return {"message": "Checkpoint passing added"}
+        # Retrieve the RunnerID based on the TagID
+        result = await conn.execute(
+            sa.text("SELECT RunnerID FROM RunnerInRace WHERE TagID = :TagID"),
+            {"TagID": passing.TagID},
+        )
+        runner_id = result.scalar()
+
+        if runner_id:
+            parameters = {
+                "RunnerID": runner_id,
+                "CheckpointID": passing.CheckpointID,
+                "PassingTime": passing_time_naive,
+            }
+            await conn.execute(
+                sa.text(
+                    "INSERT INTO CheckpointPassing (RunnerID, CheckpointID, PassingTime) VALUES (:RunnerID, :CheckpointID, :PassingTime)"
+                ),
+                parameters,
+            )
+            return {"message": "Checkpoint passing added"}
+        else:
+            return {"message": "Invalid TagID"}
+
+
+@router.post("/register_tag")
+async def register_tag(runner_in_race: RunnerInRace, dbc: deps.GetDbCtx):
+    async with dbc as conn:
+        await conn.execute(
+            sa.text(
+                "INSERT INTO RunnerInRace (RunnerID, RaceID, TagID) VALUES (:RunnerID, :RaceID, :TagID)"
+            ),
+            runner_in_race.dict(),
+        )
+    return {"message": "Tag registered for runner in race"}
