@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List
 
 import sqlalchemy as sa
@@ -106,7 +106,6 @@ async def tables(dbc: deps.GetDbCtx):
 @router.get("/races", response_model=List[RaceOut])
 async def get_races(dbc: deps.GetDbCtx):
     async with dbc as conn:
-        # Ensure column names here match those expected by the RaceOut model or its aliases
         result = await conn.execute(
             sa.text(
                 "SELECT RaceID as raceid, Name as name, startTime as starttime FROM Race"
@@ -240,12 +239,30 @@ async def get_checkpoint_passings(runner_id: int, dbc: deps.GetDbCtx):
 
 
 class CheckpointPassing(BaseModel):
-    DeviceID: int
-    RFID: int
+    RunnerID: int
+    CheckpointID: int
+    PassingTime: datetime
 
 
 @router.post("/checkpoint_passing")
 async def post_checkpoint_passing(passing: CheckpointPassing, dbc: deps.GetDbCtx):
+    # Convert PassingTime to offset-naive UTC datetime
+    passing_time_naive = (
+        passing.PassingTime.replace(tzinfo=timezone.utc)
+        .astimezone(tz=None)
+        .replace(tzinfo=None)
+    )
+
     async with dbc as conn:
-        await conn.execute(sa.text(""""""))  # legg til query
+        parameters = {
+            "RunnerID": passing.RunnerID,
+            "CheckpointID": passing.CheckpointID,
+            "PassingTime": passing_time_naive,
+        }
+        await conn.execute(
+            sa.text(
+                "INSERT INTO CheckpointPassing (RunnerID, CheckpointID, PassingTime) VALUES (:RunnerID, :CheckpointID, :PassingTime)"
+            ),
+            parameters,
+        )
     return {"message": "Checkpoint passing added"}

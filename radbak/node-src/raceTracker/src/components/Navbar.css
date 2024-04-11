@@ -5,6 +5,7 @@
   width: 100%;
   display: flex;
   justify-content: flex-start;
+  align-items: center;
   background-color: blue;
 }
 
@@ -15,5 +16,16 @@
 }
 
 .nav-item:hover {
+  background-color: lightblue;
+}
+
+.login {
+  margin-left: auto;
+  padding-right: 20px;
+  color: white;
+  cursor: pointer;
+}
+
+.login:hover {
   background-color: lightblue;
 }

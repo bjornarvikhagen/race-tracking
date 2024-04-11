@@ -19,6 +19,9 @@ const Navbar = () => {
       <div className="nav-item" onClick={() => navigateTo("/registerChip")}>
         Register Chip
       </div>
+      <div className="login" onClick={() => navigateTo("/login")}>
+        Login
+      </div>
     </div>
   );
 };
