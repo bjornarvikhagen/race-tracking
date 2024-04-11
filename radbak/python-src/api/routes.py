@@ -73,6 +73,7 @@ async def setup_db(dbc: deps.GetDbCtx):
         ]
         for table_creation_query in tables:
             await conn.execute(sa.text(table_creation_query))
+        return {"message": "Database setup completed successfully"}
 
 
 @router.post("/delete_db")
@@ -90,6 +91,7 @@ async def delete_db(dbc: deps.GetDbCtx):
         ]
         for table in tables:
             await conn.execute(sa.text(f"DROP TABLE IF EXISTS {table} CASCADE;"))
+        return {"message": "Database deletion completed successfully"}
 
 
 @router.get("/tables")
