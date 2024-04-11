@@ -18,6 +18,12 @@ class Runner(BaseModel):
     name: str
 
 
+class RunnerInRace(BaseModel):
+    RunnerID: int
+    RaceID: int
+    TagID: str
+
+
 class Checkpoint(BaseModel):
     CheckpointID: int
     DeviceID: int
@@ -165,6 +171,13 @@ async def seed_db(dbc: deps.GetDbCtx):
             )
         )
 
+        # Insert sample runners in races
+        await conn.execute(
+            sa.text(
+                "INSERT INTO RunnerInRace (RunnerID, RaceID, TagID) VALUES (1, 1, 'tag1'), (2, 1, 'tag2')"
+            )
+        )
+
     return {"message": "Database seeded with sample data"}
 
 
@@ -214,7 +227,7 @@ async def get_checkpoint_passings(runner_id: int, dbc: deps.GetDbCtx):
 
 
 class CheckpointPassing(BaseModel):
-    RunnerID: int
+    TagID: str
     CheckpointID: int
     PassingTime: datetime
 
@@ -229,15 +242,37 @@ async def post_checkpoint_passing(passing: CheckpointPassing, dbc: deps.GetDbCtx
     )
 
     async with dbc as conn:
-        parameters = {
-            "RunnerID": passing.RunnerID,
-            "CheckpointID": passing.CheckpointID,
-            "PassingTime": passing_time_naive,
-        }
+        # Retrieve the RunnerID based on the TagID
+        result = await conn.execute(
+            sa.text("SELECT RunnerID FROM RunnerInRace WHERE TagID = :TagID"),
+            {"TagID": passing.TagID},
+        )
+        runner_id = result.scalar()
+
+        if runner_id:
+            parameters = {
+                "RunnerID": runner_id,
+                "CheckpointID": passing.CheckpointID,
+                "PassingTime": passing_time_naive,
+            }
+            await conn.execute(
+                sa.text(
+                    "INSERT INTO CheckpointPassing (RunnerID, CheckpointID, PassingTime) VALUES (:RunnerID, :CheckpointID, :PassingTime)"
+                ),
+                parameters,
+            )
+            return {"message": "Checkpoint passing added"}
+        else:
+            return {"message": "Invalid TagID"}
+
+
+@router.post("/register_tag")
+async def register_tag(runner_in_race: RunnerInRace, dbc: deps.GetDbCtx):
+    async with dbc as conn:
         await conn.execute(
             sa.text(
-                "INSERT INTO CheckpointPassing (RunnerID, CheckpointID, PassingTime) VALUES (:RunnerID, :CheckpointID, :PassingTime)"
+                "INSERT INTO RunnerInRace (RunnerID, RaceID, TagID) VALUES (:RunnerID, :RaceID, :TagID)"
             ),
-            parameters,
+            runner_in_race.dict(),
         )
-    return {"message": "Checkpoint passing added"}
+    return {"message": "Tag registered for runner in race"}
