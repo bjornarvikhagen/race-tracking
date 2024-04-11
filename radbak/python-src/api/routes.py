@@ -208,7 +208,8 @@ async def get_checkpoints_in_race(race_id: int, dbc: deps.GetDbCtx):
                 """
             )
         )
-    return str(result.fetchall())
+        json_result = result.mappings().all()
+    return json_result
 
 
 @router.get("/runners/{race_id}")
@@ -223,7 +224,8 @@ async def get_runners_in_race(race_id: int, dbc: deps.GetDbCtx):
             """
             )
         )
-    return str(result.fetchall())
+        json_result = result.mappings().all()
+    return json_result
 
 
 @router.get("/checkpointpassings/{runner_id}")
@@ -239,7 +241,8 @@ async def get_checkpoint_passings(runner_id: int, dbc: deps.GetDbCtx):
                """
             )
         )
-    return str(result.fetchall())
+        json_result = result.mappings().all()
+    return json_result
 
 
 class CheckpointPassing(BaseModel):

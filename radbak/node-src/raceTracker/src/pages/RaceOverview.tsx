@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 export interface Runner {
   id: number;
   name: string;
+  tagid: string;
   times: { [checkpoint: number]: Date };
 }
 
