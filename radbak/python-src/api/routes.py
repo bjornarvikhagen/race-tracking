@@ -2,9 +2,10 @@ from datetime import datetime, timezone
 from typing import List
 
 import sqlalchemy as sa
-from api import deps
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
+
+from api import deps
 
 router = APIRouter()
 
@@ -202,7 +203,7 @@ async def get_runners_in_race(race_id: int, dbc: deps.GetDbCtx):
         result = await conn.execute(
             sa.text(
                 f"""
-                SELECT runnerid, name
+                SELECT runnerid, name, TagID
                 FROM runnerinrace NATURAL JOIN runner WHERE raceid = {race_id}
             """
             )
