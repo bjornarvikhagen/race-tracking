@@ -5,7 +5,7 @@ from datetime import datetime
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from api import db, deps, settings, socket
+from api import db, deps, routes, settings, socket
 
 
 @asynccontextmanager
@@ -30,6 +30,7 @@ app.add_middleware(
 )
 
 app.include_router(socket.router.router)
+app.include_router(routes.router)
 
 
 @app.get("/health", tags=["Status"])
