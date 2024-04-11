@@ -125,7 +125,8 @@ const DataTable: React.FC<DataTableProps> = ({ runners, checkpoints }) => {
               <tr>
                 {checkpoints.map((checkpoint, index) => (
                   <th key={index}>
-                    CP {index + 1} deadline: {formatTimeLimit(checkpoint.timeLimit)}
+                    CP {index + 1} {checkpoint.timeLimit && // Conditionally render the deadline text
+                      <> deadline: {formatTimeLimit(checkpoint.timeLimit)}</>}
                   </th>
                 ))}
               </tr>
@@ -135,11 +136,18 @@ const DataTable: React.FC<DataTableProps> = ({ runners, checkpoints }) => {
                 <tr key={`checkpoint-row-${rowIndex}`}>
                   {checkpoints.map((checkpoint, cpIndex) => {
                     const runnerTime = runner.times[checkpoint.position];
-                    const isTimeBefore = runnerTime && checkpoint.timeLimit && runnerTime <= checkpoint.timeLimit;
-                    const timeClass = isTimeBefore ? 'time-before' : 'time-after';
+                    // Check if the checkpoint has a time limit
+                    const hasTimeLimit = checkpoint.timeLimit !== null && checkpoint.timeLimit !== undefined;
+                    const isTimeBefore = hasTimeLimit && runnerTime && runnerTime <= checkpoint.timeLimit;
+                    let timeClass = '';
+
+                    // Assign 'time-before' or 'time-after' class only if there's a time limit for the checkpoint
+                    if (hasTimeLimit) {
+                      timeClass = isTimeBefore ? 'time-before' : 'time-after';
+                    }
 
                     return (
-                      <td key={cpIndex} className={runnerTime ? timeClass : ''}>
+                      <td key={cpIndex} className={timeClass}>
                         {runnerTime ? formatTime(runnerTime) : "-"}
                       </td>
                     );
