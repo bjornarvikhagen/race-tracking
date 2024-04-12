@@ -8,7 +8,7 @@ export interface Runner {
   id: number;
   name: string;
   tagid: string;
-  times: { [checkpoint: number]: Date };
+  times: { [checkpoint: string]: Date };  // TODO: Get consisten naming
 }
 
 export interface Checkpoint {

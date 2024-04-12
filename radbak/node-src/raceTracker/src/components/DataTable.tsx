@@ -8,14 +8,15 @@ type DataTableProps = {
   checkpoints: Checkpoint[];
 };
 
-const formatTime = (time: Date | undefined) => {
-  if (!time) return "-";
+const formatTime = (timeString: Date | undefined) => {
+  if (!timeString) return "-";
 
   const options: Intl.DateTimeFormatOptions = {
     hour: "numeric",
     minute: "2-digit",
     second: "2-digit",
   };
+  const time: Date = new Date(timeString);
   return new Intl.DateTimeFormat("en-US", options).format(time);
 };
 
@@ -59,7 +60,6 @@ const DataTable: React.FC<DataTableProps> = ({ runners, checkpoints }) => {
       });
     });
 
-    console.log(runnerFellOutMap);
     return runnerFellOutMap;
   }
 
