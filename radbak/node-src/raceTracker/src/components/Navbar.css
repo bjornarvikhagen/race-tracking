@@ -1,0 +1,19 @@
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  background-color: blue;
+}
+
+.nav-item {
+  padding: 15px;
+  color: white;
+  cursor: pointer;
+}
+
+.nav-item:hover {
+  background-color: lightblue;
+}
