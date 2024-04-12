@@ -7,7 +7,8 @@ import { useQuery } from "@tanstack/react-query";
 export interface Runner {
   id: number;
   name: string;
-  times: { [checkpoint: number]: Date };
+  tagid: string;
+  times: { [checkpoint: string]: Date };  // TODO: Get consisten naming
 }
 
 export interface Checkpoint {
