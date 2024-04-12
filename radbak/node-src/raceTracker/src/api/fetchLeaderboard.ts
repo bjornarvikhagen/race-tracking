@@ -11,6 +11,34 @@ interface Passing {
     passingTime: Date | null; 
 }
 
+
+const addTimesToRunners = async (runners: Runner[]) => {
+     // Add times to runners
+     const updatedRunners: Runner[] = JSON.parse(JSON.stringify(runners)) // Deep copy
+     await Promise.all(updatedRunners.map(async (runner: Runner) => {
+        const checkpointPassingsURL = `${BASEURL}/checkpointpassings/${runner.id}`;
+        const response = await fetch(checkpointPassingsURL);
+        if (!response.ok) {
+            throw new Error('Failed to fetch checkpoint passings');
+        }
+        const passingsresponse = await response.json();
+
+        // Format passings to correct format // TODO: get consistent naming.
+        const passings = passingsresponse.map((passing: { passingtime: Date | null; checkpointid: string; }) => ({
+            checkpointId: passing.checkpointid,
+            passingTime: passing.passingtime
+        }));
+
+        passings.forEach((passing: Passing) => {
+            if (passing.passingTime !== null) {
+                runner.times[passing.checkpointId] = passing.passingTime;
+            }
+        });
+
+    }));
+    return updatedRunners;
+}
+
 const fetchLeaderboard = async (raceId: number): Promise<Race | undefined> => {
     try {
         const checkpointinraceURL = `${BASEURL}/checkpointinrace/${raceId}`;
@@ -48,29 +76,10 @@ const fetchLeaderboard = async (raceId: number): Promise<Race | undefined> => {
             times: {}
         }));
 
-        // Add times to runners
-        await Promise.all(runners.map(async (runner: Runner) => {
-            const checkpointPassingsURL = `${BASEURL}/checkpointpassings/${runner.id}`;
-            const response = await fetch(checkpointPassingsURL);
-            if (!response.ok) {
-                throw new Error('Failed to fetch checkpoint passings');
-            }
-            const passingsresponse = await response.json();
+       
+        const runnersWithTime = await addTimesToRunners(runners)
 
-            // Format passings to correct format // TODO: get consistent naming.
-            const passings = passingsresponse.map((passing: { passingtime: Date | null; checkpointid: string; }) => ({
-                checkpointId: passing.checkpointid,
-                passingTime: passing.passingtime
-            }));
-
-            passings.forEach((passing: Passing) => {
-                if (passing.passingTime !== null) {
-                    runner.times[passing.checkpointId] = passing.passingTime;
-                }
-            });
-        }));
-
-        return { runners: runners, checkpoints: checkpoints };
+        return { runners: runnersWithTime, checkpoints: checkpoints };
     } catch (error) {
         console.error("Error fetching leaderboard data:", error);
         return undefined;
