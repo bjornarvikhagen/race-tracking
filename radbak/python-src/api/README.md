@@ -2,6 +2,10 @@
 
 The Race Tracking API is designed for managing and tracking participants and events in races. This API lets you interact with a database managing races, runners, checkpoints, and more. Below is the detailed documentation of every endpoint, including their parameters and expected responses.
 
+## Testing the whole flow
+### GET `/Test_flow`
+This endpoint is used to test the whole flow of the application. It will create a race, a runner, a checkpoint, and a checkpoint passing. It will then return the checkpoint passing details with the runner name.
+
 ## Setup and Teardown Endpoints
 
 ### POST `/setup_db`

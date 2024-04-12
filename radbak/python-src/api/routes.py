@@ -45,12 +45,41 @@ class CheckpointPassing(BaseModel):
     PassingTime: datetime
 
 
-@router.get("/test_routes")
+@router.get("/Test_flow")
 async def test_routes(dbc: deps.GetDbCtx):
     async with dbc as conn:
+        # Run delete_db
+        tables = [
+            "Checkpoint",
+            "Runner",
+            "RunnerInRace",
+            "Race",
+            "Organizer",
+            "CheckpointInRace",
+            "CheckpointPassing",
+            "OrganizedBy",
+        ]
+        for table in tables:
+            await conn.execute(sa.text(f"DROP TABLE IF EXISTS {table} CASCADE;"))
 
+        # Run setup_db
+        creation_queries = [
+            "CREATE TABLE IF NOT EXISTS Checkpoint (CheckpointID SERIAL PRIMARY KEY, DeviceID INT NOT NULL, Location VARCHAR(255) NOT NULL);",
+            "CREATE TABLE IF NOT EXISTS Runner (RunnerID SERIAL PRIMARY KEY, name VARCHAR(255) NOT NULL);",
+            "CREATE TABLE IF NOT EXISTS Race (RaceID SERIAL PRIMARY KEY, Name VARCHAR(255) NOT NULL, startTime TIMESTAMP NOT NULL);",
+            "CREATE TABLE IF NOT EXISTS RunnerInRace (RunnerID INT NOT NULL, RaceID INT NOT NULL, TagID VARCHAR(255) NOT NULL, PRIMARY KEY (RunnerID, RaceID), FOREIGN KEY (RunnerID) REFERENCES Runner (RunnerID), FOREIGN KEY (RaceID) REFERENCES Race (RaceID));",
+            "CREATE TABLE IF NOT EXISTS Organizer (OrganizerID SERIAL PRIMARY KEY, Name VARCHAR(255) NOT NULL);",
+            "CREATE TABLE IF NOT EXISTS CheckpointInRace (CheckpointID INT NOT NULL, RaceID INT NOT NULL, Position INT NOT NULL, TimeLimit INT, PRIMARY KEY (CheckpointID, RaceID), FOREIGN KEY (CheckpointID) REFERENCES Checkpoint (CheckpointID), FOREIGN KEY (RaceID) REFERENCES Race (RaceID));",
+            "CREATE TABLE IF NOT EXISTS CheckpointPassing (RunnerID INT NOT NULL, CheckpointID INT NOT NULL, PassingTime TIMESTAMP NOT NULL, PRIMARY KEY (RunnerID, CheckpointID), FOREIGN KEY (RunnerID) REFERENCES Runner (RunnerID), FOREIGN KEY (CheckpointID) REFERENCES Checkpoint (CheckpointID));",
+            "CREATE TABLE IF NOT EXISTS OrganizedBy (OrganizerID INT NOT NULL, RaceID INT NOT NULL, PRIMARY KEY (OrganizerID, RaceID), FOREIGN KEY (OrganizerID) REFERENCES Organizer (OrganizerID), FOREIGN KEY (RaceID) REFERENCES Race (RaceID));",
+        ]
+        for query in creation_queries:
+            await conn.execute(sa.text(query))
         # Test POST /race
-        race_data = {"name": "Test Race", "start_time": "2023-01-01T00:00:00"}
+        race_data = {
+            "name": "Krukes Ultra Trail Challenge",
+            "start_time": "2024-04-12T12:40:40",
+        }
         await conn.execute(
             sa.text(
                 f"INSERT INTO Race (Name, startTime) VALUES ('{race_data['name']}', '{race_data['start_time']}')"
@@ -58,22 +87,70 @@ async def test_routes(dbc: deps.GetDbCtx):
         )
 
         # Test POST /runner
-        runner_data = {"name": "Test Runner"}
+        runner_data = {"name": "Sample Runner"}
         await conn.execute(
             sa.text(f"INSERT INTO Runner (name) VALUES ('{runner_data['name']}')")
         )
 
         # Test POST /checkpoint
         checkpoint_data = {
-            "CheckpointID": 100,
-            "DeviceID": 200,
-            "Location": "Test Location",
+            "CheckpointID": 1,
+            "DeviceID": 1,
+            "Location": "Startline",
         }
         await conn.execute(
             sa.text(
                 f"INSERT INTO checkpoint VALUES ({checkpoint_data['CheckpointID']}, {checkpoint_data['DeviceID']}, '{checkpoint_data['Location']}')"
             )
         )
+
+        # Test POST /register_tag
+        runner_id = await conn.execute(
+            sa.text("SELECT RunnerID FROM Runner ORDER BY RunnerID DESC LIMIT 1")
+        )
+        race_id = await conn.execute(
+            sa.text("SELECT RaceID FROM Race ORDER BY RaceID DESC LIMIT 1")
+        )
+        tag_data = {
+            "RunnerID": runner_id.scalar(),
+            "RaceID": race_id.scalar(),
+            "TagID": "Visakort",
+        }
+        await conn.execute(
+            sa.text(
+                "INSERT INTO RunnerInRace (RunnerID, RaceID, TagID) VALUES (:RunnerID, :RaceID, :TagID)"
+            ),
+            tag_data,
+        )
+
+        passing_data = {
+            "TagID": tag_data["TagID"],
+            "CheckpointID": checkpoint_data["CheckpointID"],
+            "PassingTime": datetime.now(),
+        }
+        await conn.execute(
+            sa.text(
+                "INSERT INTO CheckpointPassing (RunnerID, CheckpointID, PassingTime) VALUES (:RunnerID, :CheckpointID, :PassingTime)"
+            ),
+            {
+                "RunnerID": tag_data["RunnerID"],
+                "CheckpointID": passing_data["CheckpointID"],
+                "PassingTime": passing_data["PassingTime"],
+            },
+        )
+
+        # Retrieve the name of the runner who passed the checkpoint
+        checkpoint_passings_query = """
+        SELECT r.name AS runner_name, cp.CheckpointID, cp.PassingTime
+        FROM CheckpointPassing cp
+        JOIN Runner r ON cp.RunnerID = r.RunnerID
+        WHERE cp.CheckpointID = :CheckpointID
+        """
+        checkpoint_passings_result = await conn.execute(
+            sa.text(checkpoint_passings_query),
+            {"CheckpointID": checkpoint_data["CheckpointID"]},
+        )
+        checkpoint_passings = checkpoint_passings_result.mappings().all()
         # Test GET /races
         races_result = await conn.execute(sa.text("SELECT * FROM Race"))
         races = races_result.mappings().all()
@@ -85,14 +162,16 @@ async def test_routes(dbc: deps.GetDbCtx):
         # Test GET /checkpoints
         checkpoints_result = await conn.execute(sa.text("SELECT * FROM Checkpoint"))
         checkpoints = checkpoints_result.mappings().all()
-
     return {
-        "races": races,
-        "runners": runners,
-        "checkpoints": checkpoints,
         "race_post_test": race_data,
         "runner_post_test": runner_data,
         "checkpoint_post_test": checkpoint_data,
+        "races": races,
+        "runners": runners,
+        "checkpoints": checkpoints,
+        "tag_post_test": tag_data,
+        "passing_post_test": passing_data,
+        "checkpoint_passings": checkpoint_passings,  # Include the checkpoint passing details with runner names
     }
 
 
