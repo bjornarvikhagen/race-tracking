@@ -54,12 +54,12 @@ const DataTable: React.FC<DataTableProps> = ({ runners, checkpoints }) => {
             //     checkpointTimeLimit
             // );
             runnerFellOutMap[runner.id] = checkpoint.position;
+            console.log("runner ", runner.name, " fell out")
             return; // Exit the loop once the runner is marked
           }
         }
       });
     });
-
     return runnerFellOutMap;
   }
 
