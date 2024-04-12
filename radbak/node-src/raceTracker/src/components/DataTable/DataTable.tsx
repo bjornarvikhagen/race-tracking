@@ -8,8 +8,11 @@ type DataTableProps = {
   checkpoints: Checkpoint[];
 };
 
-const formatTime = (time: Date | undefined) => {
+const formatTime = (time: string | undefined) => {
   if (!time) return "-";
+
+  const date = new Date(time);
+  if (isNaN(date.getTime())) return "Invalid time";
 
   const options: Intl.DateTimeFormatOptions = {
     hour: "numeric",
@@ -17,19 +20,25 @@ const formatTime = (time: Date | undefined) => {
     second: "2-digit",
     hourCycle: 'h23', // Use 24-hour clock
   };
-  return new Intl.DateTimeFormat("en-US", options).format(time);
+
+  return new Intl.DateTimeFormat("en-US", options).format(date);
 };
 
-const formatTimeLimit = (time: Date | undefined | null) => {
+const formatTimeLimit = (time: string | undefined | null) => {
   if (!time) return "-";
+
+  const date = new Date(time);
+  if (isNaN(date.getTime())) return "Invalid time";
 
   const options: Intl.DateTimeFormatOptions = {
     hour: "numeric",
     minute: "2-digit",
     hourCycle: 'h23', // Use 24-hour clock
   };
-  return new Intl.DateTimeFormat("en-US", options).format(time);
+
+  return new Intl.DateTimeFormat("en-US", options).format(date);
 };
+
 
 
 
@@ -38,9 +47,6 @@ const DataTable: React.FC<DataTableProps> = ({ runners, checkpoints }) => {
   const navigate = useNavigate(); // Initialize useNavigate
 
 
-  // hashmap displaying each runners id and the checkpoint they fell out of the race
-  // i.e., if runner 1 couldnt reach checkpoint with position 3 in time, the map would have an entry {1: 3}
-  // if the runner is still in the race, the map will not have an entry for that runner
   function getRunnerFellOutMap(
     runners: DataTableProps["runners"],
     filteredCheckpoints: DataTableProps["checkpoints"]
@@ -56,17 +62,10 @@ const DataTable: React.FC<DataTableProps> = ({ runners, checkpoints }) => {
         const checkpointTimeLimit = checkpoint.timeLimit;
 
         if (runnerTime !== undefined && checkpointTimeLimit !== null) {
-          if (runnerTime > checkpointTimeLimit) {
-            // console.log(
-            //   "Runner " +
-            //     runner.id +
-            //     " fell out at checkpoint " +
-            //     checkpoint.position +
-            //     " because their time was " +
-            //     runnerTime +
-            //     " and the time limit was " +
-            //     checkpointTimeLimit
-            // );
+          const runnerDate = new Date(runnerTime);
+          const limitDate = new Date(checkpointTimeLimit);
+
+          if (runnerDate > limitDate) {
             runnerFellOutMap[runner.id] = checkpoint.position;
             return; // Exit the loop once the runner is marked
           }
@@ -105,17 +104,20 @@ const DataTable: React.FC<DataTableProps> = ({ runners, checkpoints }) => {
           <thead>
             <tr>
               <th className="names">Names</th>
-              <th className="inRace">Still in race</th>
+              <th className="inRace">Status</th>
             </tr>
           </thead>
           <tbody>
             {runners.map((runner, index) => (
               <tr key={`runner-${index}`}>
                 <td>{runner.name}</td>
-                <td className="inRace">{runnerFellOutMap[runner.id] ? "No" : "Yes"}</td>
+                <td style={{ color: runnerFellOutMap[runner.id] ? 'green' : 'red' }}>
+                  {runnerFellOutMap[runner.id] ? "Active" : "Out"}
+                </td>
               </tr>
             ))}
           </tbody>
+
         </table>
 
         {/* Scrollable Table for Checkpoints */}
