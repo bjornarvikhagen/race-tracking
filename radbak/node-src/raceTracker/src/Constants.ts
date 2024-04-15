@@ -1,0 +1,1 @@
+export const BASEURL = "http://localhost:80"  // Current local host URL and Port

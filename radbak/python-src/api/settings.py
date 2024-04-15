@@ -2,10 +2,7 @@ import logging
 from functools import lru_cache
 from typing import Annotated
 
-from pydantic import (
-    Field,
-    computed_field,
-)
+from pydantic import Field, computed_field
 from pydantic_core import Url
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
