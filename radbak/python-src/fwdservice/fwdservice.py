@@ -9,17 +9,16 @@ import paho.mqtt.enums as mqtt_enums
 import requests
 
 # Define the API endpoint
-api_endpoint = "http://localhost:80/send"  # Proxy endpoint to send data
-# api_endpoint = "http://localhost:80/add_checkpoint_passing"  # Real endpoint to send checkpoint passings
+api_endpoint = "http://localhost:80/checkpoint_passing"  # Real endpoint to send checkpoint passings
+
 
 # MQTT broker details
-
 # Some docs on docker to find ports https://www.emqx.io/docs/en/latest/deploy/install-docker.html
 # And for the dashboard: https://www.emqx.io/docs/en/latest/messaging/publish-and-subscribe.html#dashboard-websocket
 broker_port = 1883  # EMQX default TCP listener
 broker_address = "host.docker.internal"  # Docker host address
 
-topic = "testtopic/1"  # The topic to which you want to publish/listen
+topic = "testtopic/1"  # The topic to which you want to publish/listen  # TODO: Change to real topic
 client_id = f"python-mqtt-{random.randint(0, 1000)}"  # Random ID as the MQTT client-ID
 username = "Erik"
 password = "Erik"
@@ -34,6 +33,7 @@ def on_message(client, userdata, message):
 
     # Assume messages are recieved like this:
     # CheckpointID:RFID:Timestamp
+    # Example: 3:Tag1:2024-04-15T11:39:02.561Z  # Tag1 belongs to Erik
 
     # Format the message data
     split_data = data.split(":")
@@ -42,20 +42,18 @@ def on_message(client, userdata, message):
     timestamp = ":".join(split_data[2:])
 
     api_payload = {
-        "rfid": rfid,
-        "checkpoint_id": checkpoint_id,
-        "timestamp": timestamp,
-    }  # TODO: Double check format, especially on the timestamp
-
-    dummy_payload = {"msg": str(api_payload)}
-    print("dummy payload: ", dummy_payload)
+        "TagID": rfid,
+        "CheckpointID": checkpoint_id,
+        "PassingTime": timestamp,
+    }
+    print("Sending pyload: ", str(api_payload))
 
     # Make a POST request to the API with the message data
     response = requests.post(
         # api_endpoint, data=json.dumps(api_payload)
         api_endpoint,
-        data=json.dumps(dummy_payload),
-    )  # TODO: Adjust to the correct endpoint, using payload as data instead of data instead
+        data=json.dumps(api_payload),
+    )
 
     if response.status_code == 200:
         print("Data successfully forwarded to API!")
