@@ -274,8 +274,8 @@ async def post_checkpoint(checkpoint: Checkpoint, dbc: deps.GetDbCtx):
     return {"message": "Checkpoint added"}
 
 
-@router.post("/register_tag")
-async def register_tag(runner_in_race: RunnerInRace, dbc: deps.GetDbCtx):
+@router.post("/add_runner_to_race")
+async def add_runner_to_race(runner_in_race: RunnerInRace, dbc: deps.GetDbCtx):
     async with dbc as conn:
         await conn.execute(
             sa.text(
@@ -505,7 +505,6 @@ async def delete_checkpoint(checkpoint_id: int, dbc: deps.GetDbCtx):
 @router.get("/race/{race_id}/details")
 async def get_race_details(race_id: int, dbc: deps.GetDbCtx):
     async with dbc as conn:
-        # Fetch race details
         race_details = await conn.execute(
             sa.text("SELECT RaceID, Name, startTime FROM Race WHERE RaceID = :race_id"),
             {"race_id": race_id},
