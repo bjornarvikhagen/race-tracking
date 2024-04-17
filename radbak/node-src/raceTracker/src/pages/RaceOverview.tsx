@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import DataTable from "../components/DataTable";
+import DataTable from "../components/DataTable/DataTable";
 import { useParams } from "react-router-dom";
 import fetchLeaderboard from "../api/fetchLeaderboard";
 import { useQuery } from "@tanstack/react-query";
@@ -7,7 +7,8 @@ import { useQuery } from "@tanstack/react-query";
 export interface Runner {
   id: number;
   name: string;
-  times: { [checkpoint: number]: Date };
+  tagid: string;
+  times: { [checkpoint: string]: Date };  // TODO: Get consisten naming
 }
 
 export interface Checkpoint {

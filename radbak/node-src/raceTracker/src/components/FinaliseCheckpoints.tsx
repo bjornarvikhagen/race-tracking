@@ -75,16 +75,14 @@ const FinaliseCheckpoints = ({
         </tr>
       </thead>
       <tbody>
-        {Object.keys(checkPoints)
-          .reverse()
-          .map((deviceID, index) => (
-            <tr key={index}>
-              <td>Device {deviceID}</td>
-              {checkPoints[deviceID].map((timeLimit, idx) => (
-                <td key={idx}>{timeLimit}</td>
-              ))}
-            </tr>
-          ))}
+        {Object.keys(checkPoints).map((deviceID, index) => (
+          <tr key={index}>
+            <td>Device {deviceID}</td>
+            {checkPoints[deviceID].map((timeLimit, idx) => (
+              <td key={idx}>{timeLimit}</td>
+            ))}
+          </tr>
+        ))}
       </tbody>
     </table>
   );

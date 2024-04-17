@@ -4,11 +4,12 @@ from typing import Literal
 
 import asyncpg_listen
 import sqlalchemy as sa
-from api import deps
-from api.settings import get_settings
 from fastapi import APIRouter, HTTPException, WebSocket
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
+
+from api import deps
+from api.settings import get_settings
 
 from . import service
 
@@ -56,38 +57,6 @@ async def start_task():
                 notification_timeout=5,
             )
         )
-
-
-class CheckpointPassing(BaseModel):
-    runnerid: int
-    checkpointid: int
-    passingtime: datetime
-
-
-@router.post("/add_checkpoint_passing")
-async def add_checkpoint_passing(cp: CheckpointPassing, conn: deps.GetDb):
-    query = """
-        SELECT MAX(passingtime) 
-        FROM checkpointpassing 
-        WHERE runnerid = $1 AND checkpointid = $2
-    """
-    last_checkin_time = await conn.fetchval(query, cp.runnerid, cp.checkpointid)
-
-    # Check if there was a last check-in time and calculate the difference
-    if last_checkin_time:
-        current_time = datetime.now()
-        time_difference = current_time - last_checkin_time
-        if time_difference.total_seconds() / 60 < 30:
-            # If the time difference is less than 30 minutes, raise an exception
-            raise HTTPException(status_code=400, detail="Less than 30 minutes since last check-in")
-    
-    # Insert the new checkpoint passing into the database
-    insert_query = """
-        INSERT INTO checkpointpassing (runnerid, checkpointid, passingtime)
-        VALUES ($1, $2, $3)
-    """
-    await conn.execute(insert_query, cp.runnerid, cp.checkpointid, cp.passingtime)
-
 
 
 @router.websocket("/ws")
@@ -173,32 +142,3 @@ def get_ws_page() -> HTMLResponse:
     </html>
     """
     )
-
-# # want a getter for checkpointinrace, which returns all checkpoints, their positions, and their time limits for a given race
-# @router.get("/checkpointinrace/{race_id}")
-# async def get_checkpointinrace(race_id: int, conn: deps.GetDb):
-#     query = """
-#         SELECT checkpointid, position, timelimit
-#         FROM checkpointinrace WHERE raceid = $1
-#     """
-#     return await conn.fetch(query, race_id)
-
-# # want a getter for all runners in a race, based on runnersinrace
-# @router.get("/runner/{race_id}")
-# async def get_runners(race_id: int, conn: deps.GetDb):
-#     query = """
-#         SELECT runnerid, name
-#         FROM runnersinrace NATURAL JOIN runner WHERE raceid = $1
-#     """
-#     return await conn.fetch(query, race_id)
-
-# # should return all checkpoint passings for a given runner, i.e.,
-# # the checkpoint number and the time the runner passed that checkpoint
-# @router.get("/checkpointpassing/{runner_id}")
-# async def get_checkpoint_passings(runner_id: int, conn: deps.GetDb):
-#     query = """
-#         SELECT checkpointid, passingtime
-#         FROM checkpointpassing
-#         WHERE runnerid = $1
-#     """
-#     return await conn.fetch(query, runner_id)
