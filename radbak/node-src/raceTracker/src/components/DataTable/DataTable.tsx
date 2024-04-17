@@ -111,8 +111,8 @@ const DataTable: React.FC<DataTableProps> = ({ runners, checkpoints }) => {
             {runners.map((runner, index) => (
               <tr key={`runner-${index}`}>
                 <td>{runner.name}</td>
-                <td style={{ color: runnerFellOutMap[runner.id] ? 'green' : 'red' }}>
-                  {runnerFellOutMap[runner.id] ? "Active" : "Out"}
+                <td className="inRace" style={{ color: runnerFellOutMap[runner.id] ? 'red' : 'green' }}>
+                  {runnerFellOutMap[runner.id] ? "Out" : "Active"}
                 </td>
               </tr>
             ))}
@@ -141,10 +141,10 @@ const DataTable: React.FC<DataTableProps> = ({ runners, checkpoints }) => {
                     // Check if the checkpoint has a time limit
                     const hasTimeLimit = checkpoint.timeLimit !== null && checkpoint.timeLimit !== undefined;
                     const isTimeBefore = runnerTime && (runnerTime <= (checkpoint.timeLimit as Date));
-                    
+
                     // Assign 'time-before' or 'time-after' class only if there's a time limit for the checkpoint
-                    const timeClass = !hasTimeLimit ? '' : 
-                    (isTimeBefore ? 'time-before' : 'time-after');  /// Ugly, but avoids let operators in component
+                    const timeClass = !hasTimeLimit ? '' :
+                      (isTimeBefore ? 'time-before' : 'time-after');  /// Ugly, but avoids let operators in component
 
                     return (
                       <td key={cpIndex} className={timeClass}>

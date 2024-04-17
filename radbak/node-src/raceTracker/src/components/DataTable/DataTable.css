@@ -91,4 +91,7 @@
     margin-right: 0;
   }
 
+  .inRace {
+    display: none;
+  }
 }
