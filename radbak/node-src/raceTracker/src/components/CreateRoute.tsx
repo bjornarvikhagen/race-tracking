@@ -76,13 +76,13 @@ const CreateRoute = () => {
       }
 
       // check if first time limit is empty
-      if (device.position === 1 && device.timeLimit === "") {
+      if (isAutoTime && device.position === 1 && device.timeLimit === "") {
         failed = true;
         return;
       }
 
       // check if timeLimit is within valid bounds
-      if (device.timeLimit !== "") {
+      if (isAutoTime && device.timeLimit !== "") {
         const [hours, minutes] = device.timeLimit.split(":");
         if (parseInt(hours, 10) > 23 || parseInt(minutes, 10) > 59) {
           failed = true;
