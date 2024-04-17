@@ -1,0 +1,58 @@
+.create-route {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: 1fr auto;
+    border: 1px solid #ccc;
+}
+
+.create-route > div {
+    margin : 100px;
+}
+
+.device-table-container {
+    border: 1px solid black;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .device-table-container > button {
+    width : calc(100% - 20px);
+    margin: 10px;
+    padding: 10px;
+}
+
+.create-route-container {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .create-route-input {
+    padding: 10px;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 16px;
+  }
+  
+  .create-route-member {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 10px;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 16px;
+  }
+  
+  .create-route-button {
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  

@@ -1,5 +1,6 @@
 .App {
-    margin: 20px;
+    max-height: 30ch;
+    overflow:scroll;
   }
   
   table {
@@ -7,14 +8,26 @@
     border-collapse: collapse;
     border: 1px solid #ddd;
   }
+
+  thead {
+    position: sticky;
+    top: 0;
+    background-color: #f2f2f2;
+    z-index: 1;
+  }
   
   thead th {
     background-color: #f2f2f2;
     border-bottom: 1px solid #ddd;
+    border-right: 1px solid #ddd;
     padding: 10px;
-    text-align: left;
+    text-align: center;
   }
   
+  thead th:last-child {
+    border-right: none;
+  }
+
   tbody td {
     border-bottom: 1px solid #ddd;
     padding: 10px;
@@ -26,7 +39,13 @@
   }
   
   tbody td:nth-child(2) {
-    width: 80%;
+    width: 40%;
+    border-right: 1px solid #ddd;
+  }
+
+  tbody td:nth-child(3) {
+    width: 40%;
+    border-right: 1px solid #ddd;
   }
   
   tbody td:last-child {
