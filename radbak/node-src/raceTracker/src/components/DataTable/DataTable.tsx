@@ -8,7 +8,7 @@ type DataTableProps = {
   checkpoints: Checkpoint[];
 };
 
-const formatTime = (time: string | undefined) => {
+const formatTime = (time: string | Date | undefined) => {
   if (!time) return "-";
 
   const date = new Date(time);
@@ -24,7 +24,7 @@ const formatTime = (time: string | undefined) => {
   return new Intl.DateTimeFormat("en-US", options).format(date);
 };
 
-const formatTimeLimit = (time: string | undefined | null) => {
+const formatTimeLimit = (time: string | Date | undefined | null) => {
   if (!time) return "-";
 
   const date = new Date(time);
@@ -140,13 +140,11 @@ const DataTable: React.FC<DataTableProps> = ({ runners, checkpoints }) => {
                     const runnerTime = runner.times[checkpoint.position];
                     // Check if the checkpoint has a time limit
                     const hasTimeLimit = checkpoint.timeLimit !== null && checkpoint.timeLimit !== undefined;
-                    const isTimeBefore = hasTimeLimit && runnerTime && runnerTime <= checkpoint.timeLimit;
-                    let timeClass = '';
+                    const isTimeBefore = runnerTime && (runnerTime <= (checkpoint.timeLimit as Date));
 
                     // Assign 'time-before' or 'time-after' class only if there's a time limit for the checkpoint
-                    if (hasTimeLimit) {
-                      timeClass = isTimeBefore ? 'time-before' : 'time-after';
-                    }
+                    const timeClass = !hasTimeLimit ? '' :
+                      (isTimeBefore ? 'time-before' : 'time-after');  /// Ugly, but avoids let operators in component
 
                     return (
                       <td key={cpIndex} className={timeClass}>

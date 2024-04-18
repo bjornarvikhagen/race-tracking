@@ -35,8 +35,21 @@ CMD = [
 ]
 
 
+def _start_fwdservice():
+    # Start fwdservice.py as a subprocess
+    return subprocess.Popen(["python", "fwdservice/fwdservice.py"])
+
+
 def dev():
-    _run(CMD)
+    # Start the forward service
+    fwdservice_process = _start_fwdservice()
+    try:
+        # Start the Uvicorn server
+        _run(CMD)
+    finally:
+        # Ensure fwdservice.py is terminated when the Uvicorn server stops
+        fwdservice_process.terminate()
+        fwdservice_process.wait()
 
 
 def test():
