@@ -513,6 +513,7 @@ async def delete_checkpoint(checkpoint_id: int, dbc: deps.GetDbCtx):
 @router.get("/race/{race_id}/details")
 async def get_race_details(race_id: int, dbc: deps.GetDbCtx):
     async with dbc as conn:
+        # Fetch race details
         race_details = await conn.execute(
             sa.text("SELECT RaceID, Name, startTime FROM Race WHERE RaceID = :race_id"),
             {"race_id": race_id},
@@ -549,15 +550,16 @@ async def get_race_details(race_id: int, dbc: deps.GetDbCtx):
         )
         checkpoints_list = checkpoints.mappings().all()
 
-        # Fetch checkpoint passings for this race, including checkpoint locations
+        # Fetch checkpoint passings for this race, including checkpoint locations and race name
         checkpoint_passings = await conn.execute(
             sa.text(
                 """
-                SELECT cp.CheckpointID, cp.PassingTime, r.name AS RunnerName, c.Location AS CheckpointLocation
+                SELECT cp.CheckpointID, cp.PassingTime, r.name AS RunnerName, c.Location AS CheckpointLocation, ra.Name AS RaceName
                 FROM CheckpointPassing cp
                 JOIN RunnerInRace rir ON cp.email = rir.email
                 JOIN Runner r ON r.email = rir.email
                 JOIN Checkpoint c ON cp.CheckpointID = c.CheckpointID
+                JOIN Race ra ON rir.RaceID = ra.RaceID
                 WHERE rir.RaceID = :race_id
                 """
             ),
