@@ -5,3 +5,4 @@ project(i2ctest)
 
 target_sources(app PRIVATE src/main.c)
 target_sources(app PRIVATE src/nfc.c)
+target_sources(app PRIVATE src/passing_buffer.c)

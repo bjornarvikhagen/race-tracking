@@ -38,10 +38,10 @@ uint8_t SamConfig[12] = {
     0xD4, //D4= host -> PN532
     0x14, //command code
     0x01, //normal mode
-    0x14, //timeout
-    0x00, //dont use IRQ
+    0x00, //timeout: 00->no timeout
+    0x01, //use IRQ
 
-    0x03, //data checksum
+    0x16, //data checksum
     0x00, //postamble
 };
 
@@ -151,10 +151,11 @@ int pn532_nfc_setup(){
     ret = pn532_send_receive_message(i2c1_dev, PN532_I2C_ADDRESS, SamConfig, 12, res_buf, 30, false);
     if(ret){
         printk("Send/Receive error: %d\n", ret);
+        return -1;
     }
 }
 
-int pn532_get_tag(uint32_t *rfid_tag_buffer, int index){
+int pn532_get_tag(uint32_t *rfid_tag_buffer){
 
     int ret;
     
@@ -169,7 +170,7 @@ int pn532_get_tag(uint32_t *rfid_tag_buffer, int index){
         return -1;
     }else{
         uint8_t length = res_buf[13];
-        rfid_tag_buffer[index] = (int)res_buf[14] << 24 | (int)res_buf[15] << 16 | (int)res_buf[16] << 8 | (int)res_buf[17];
+        *rfid_tag_buffer = (int)res_buf[14] << 24 | (int)res_buf[15] << 16 | (int)res_buf[16] << 8 | (int)res_buf[17];
         return 0;
     }
 
