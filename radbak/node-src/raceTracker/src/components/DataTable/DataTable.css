@@ -9,10 +9,11 @@
   overflow-x: auto;
 }
 
+
 .data-table.fixed {
-  /* Styles for fixed tables on the sides */
-  border-collapse: collapse;
+  flex: 0 10 auto;
   white-space: nowrap;
+  border-collapse: collapse;
 }
 
 .data-table.fixed th,
@@ -30,10 +31,11 @@
 }
 
 
-
 .scrollable-section {
+  flex-grow: 1;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  min-width: 0;
 }
 
 .data-table {
@@ -54,10 +56,7 @@
   color: red;
 }
 
-
-
 @media screen and (max-width: 780px) {
-
   #root {
     max-width: calc(100% - 32px);
     padding: 8px;
@@ -68,7 +67,6 @@
   .data-table.fixed th,
   .data-table.fixed td {
     font-size: 14px;
-
   }
 
   .data-table.fixed th,
@@ -76,16 +74,11 @@
     height: 63px;
   }
 
-
   .go-back-button {
     font-size: 16px;
   }
 
-  .scrollable-section {
-    margin-left: 0;
-    margin-right: 0;
-  }
-
+  .scrollable-section,
   .data-table {
     margin-left: 0;
     margin-right: 0;

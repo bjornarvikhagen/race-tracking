@@ -1,4 +1,4 @@
-import CreateRoute from "../components/CreateRoute";
+import CreateRoute from "../components/CreateRoute/CreateRoute";
 import useAdminAuth from "../hooks/useAdminAuth";
 
 const AdminPage = () => {

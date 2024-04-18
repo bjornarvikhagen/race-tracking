@@ -1,4 +1,4 @@
-import DeviceTable from "./CheckpointTable";
+import DeviceTable from "../CheckpointTable/CheckpointTable";
 import { ChangeEvent, useEffect, useState } from "react";
 import "./CreateRoute.css";
 import FinaliseCheckpoints from "./FinaliseCheckpoints";

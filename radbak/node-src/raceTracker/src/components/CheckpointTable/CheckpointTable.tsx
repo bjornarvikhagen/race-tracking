@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import "./CheckpointTable.css";
-import TrashCanSVG from "../assets/trashcan.svg";
+import TrashCanSVG from "../../assets/trashcan.svg";
 
 interface DeviceTableProps {
   onDataUpdate: (newData: any) => void;

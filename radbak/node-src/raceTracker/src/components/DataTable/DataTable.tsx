@@ -111,7 +111,7 @@ const DataTable: React.FC<DataTableProps> = ({ runners, checkpoints }) => {
             {runners.map((runner, index) => (
               <tr key={`runner-${index}`}>
                 <td>{runner.name}</td>
-                <td style={{ color: runnerFellOutMap[runner.id] ? 'red' : 'green' }}>
+                <td className="inRace" style={{ color: runnerFellOutMap[runner.id] ? 'red' : 'green' }}>
                   {runnerFellOutMap[runner.id] ? "Out" : "Active"}
                 </td>
               </tr>

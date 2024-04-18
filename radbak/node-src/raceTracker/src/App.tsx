@@ -18,6 +18,10 @@ function App() {
           <Routes>
             <Route path="/races" element={<Races />} />
             <Route path="/race/:raceId" element={<RaceOverview />} />
+            <Route path="/register-tag" element={<RegisterTag />} />
+            <Route path="/register-user" element={<RegisterUser />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/admin" element={<AdminPage />} />
           </Routes>
         </>
       </BrowserRouter>
