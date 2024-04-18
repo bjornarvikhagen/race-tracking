@@ -2,10 +2,22 @@
 #include <zephyr/device.h>
 #include <zephyr/devicetree.h>
 #include <zephyr/drivers/i2c.h>
+#include <zephyr/drivers/gpio.h>
 #include <zephyr/sys/util.h>
 #include <zephyr/sys/printk.h>
+
 #include "nfc.h"
 #include "passing_buffer.h"
+
+#define SW0_NODE	DT_ALIAS(sw0)
+#if !DT_NODE_HAS_STATUS(SW0_NODE, okay)
+#error "Unsupported board: sw0 devicetree alias is not defined"
+#endif
+
+static const struct gpio_dt_spec button = GPIO_DT_SPEC_GET_OR(SW0_NODE, gpios,
+							      {0});
+static struct gpio_callback button_cb_data;
+
 
 
 struct passing_buffer passing_buffer;
@@ -15,6 +27,14 @@ K_SEM_DEFINE(buffer_semaphore, 1, 1);
 
 uint32_t rfid_tag1;
 uint32_t rfid_tag2;
+
+
+void button_pressed(const struct device *dev, struct gpio_callback *cb,
+		    uint32_t pins)
+{
+	printk("IRQ");
+}
+
 
 void network_thread(struct passing_buffer *buffer, uint32_t *rfid_tag){
 
@@ -70,8 +90,38 @@ K_THREAD_DEFINE(thread1_id, 2048, tag_reader_thread, &passing_buffer, &rfid_tag2
 		6, 0, 1000);
 
 
+int button_setup(){
+    int ret;
+
+	if (!gpio_is_ready_dt(&button)) {
+		printk("Error: button device %s is not ready\n",
+		       button.port->name);
+		return 0;
+	}
+
+	ret = gpio_pin_configure_dt(&button, GPIO_INPUT);
+	if (ret != 0) {
+		printk("Error %d: failed to configure %s pin %d\n",
+		       ret, button.port->name, button.pin);
+		return 0;
+	}
+
+	ret = gpio_pin_interrupt_configure_dt(&button,
+					      GPIO_INT_EDGE_TO_ACTIVE);
+	if (ret != 0) {
+		printk("Error %d: failed to configure interrupt on %s pin %d\n",
+			ret, button.port->name, button.pin);
+		return 0;
+	}
+
+	gpio_init_callback(&button_cb_data, button_pressed, BIT(button.pin));
+	gpio_add_callback(button.port, &button_cb_data);
+	printk("Set up button at %s pin %d\n", button.port->name, button.pin);
+}
+
 //main functions is used for setup code
 int main(){
+    button_setup();
     int ret = pn532_nfc_setup();
     if (ret){
         printk("Setup failed");

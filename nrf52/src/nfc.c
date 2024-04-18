@@ -54,7 +54,7 @@ void print_bytes(uint8_t bytes[], uint32_t len){
 int PN532_wait_for_RDY(){
     uint8_t buf[1];
     int ret;
-    for(int i = 0; i < 100; i++){
+    for(int i = 0; i < 500; i++){
         //give time
         k_msleep(20);
 

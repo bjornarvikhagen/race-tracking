@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "*.embeddedhtml": "html",
-        "cstdint": "c"
+        "cstdint": "c",
+        "passing_buffer.h": "c"
     }
 }
