@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import DataTable from "../components/DataTable";
+import DataTable from "../components/DataTable/DataTable";
 import { useParams } from "react-router-dom";
 import fetchLeaderboard from "../api/fetchLeaderboard";
 import { useQuery } from "@tanstack/react-query";

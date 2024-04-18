@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import fetchRaces from "../api/fetchRaces";
-import RacesList from "../components/RacesList";
+import RacesList from "../components/RacesList/RacesList";
 
 export default function Races() {
   const {
