@@ -1,25 +1,26 @@
 import React, { useState } from 'react';
+import "./RegisterUserForm.css"
 
 interface RegisterUserFormProps {
-  onSubmitUsername: (username: string) => void;
+  onSubmitUser: (name: string) => void;
 }
 
-export const RegisterUserForm: React.FC<RegisterUserFormProps> = ({ onSubmitUsername }) => {
-  const [username, setUsername] = useState('');
+export const RegisterUserForm: React.FC<RegisterUserFormProps> = ({ onSubmitUser }) => {
+  const [name, setName] = useState('');
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    onSubmitUsername(username);
+    onSubmitUser(name);
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <label htmlFor="username">Username:</label>
+    <form onSubmit={handleSubmit} className="register-user-form">
+      <label htmlFor="name">Name:</label>
       <input
         type="text"
-        id="username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
+        id="name"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
         required
       />
       <button type="submit">Submit</button>

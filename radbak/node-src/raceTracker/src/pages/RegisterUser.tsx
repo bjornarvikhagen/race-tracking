@@ -1,23 +1,22 @@
 import React from 'react';
 import { RegisterUserForm } from '../components/RegisterUser/RegisterUserForm';
-import sendUsername from '../api/registerUser';
+import registerUser from '../api/registerUser';
 
 export const Runner: React.FC = () => {
-  const handleUsernameSubmit = async (username: string) => {
+  const handleUserSubmit = async (name: string) => {
     try {
-      const result = await sendUsername(username);
-      console.log('Submission successful:', result);
-      alert('Username submitted successfully!');
+      const result = await registerUser(name);
+      alert('User registered successfully to race');
     } catch (error) {
-      alert('Failed to submit username.');
+      alert('Failed to register participant.');
       console.error(error);
     }
   };
 
   return (
     <div>
-      <h1>Submit Your Username</h1>
-      <RegisterUserForm onSubmitUsername={handleUsernameSubmit} />
+      <h2>Enter name</h2>
+      <RegisterUserForm onSubmitUser={handleUserSubmit} />
     </div>
   );
 };

@@ -16,7 +16,7 @@ const Navbar = () => {
       <div className="nav-item" onClick={() => navigateTo("/races")}>
         Current Races
       </div>
-      <div className="nav-item" onClick={() => navigateTo("/register-chip")}>
+      <div className="nav-item" onClick={() => navigateTo("/register-tag")}>
         Register Chip
       </div>
       <div className="nav-item" onClick={() => navigateTo("/register-user")}>

@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import RaceOverview from "./pages/RaceOverview";
 import Navbar from "./components/Navbar/Navbar";
 import RegisterUser from "./pages/RegisterUser";
-import RaceParticipant from "./pages/RaceParticipant"
+import RegisterTag from "./pages/RegisterTag"
 
 function App() {
   return (
@@ -17,7 +17,7 @@ function App() {
             <Route path="/races" element={<Races />} />
             <Route path="/race/:raceId" element={<RaceOverview />} />
             <Route path="/register-user" element={<RegisterUser />} />
-            <Route path="/register-chip" element={<RaceParticipant />} />
+            <Route path="/register-tag" element={<RegisterTag />} />
           </Routes>
         </>
       </BrowserRouter>
