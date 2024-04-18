@@ -6,6 +6,8 @@ import RaceOverview from "./pages/RaceOverview";
 import Login from "./pages/Login";
 import Navbar from "./components/Navbar/Navbar";
 import AdminPage from "./pages/AdminPage";
+import RegisterUser from "./pages/RegisterUser";
+import RegisterTag from "./pages/RegisterTag"
 
 function App() {
   return (
@@ -16,8 +18,6 @@ function App() {
           <Routes>
             <Route path="/races" element={<Races />} />
             <Route path="/race/:raceId" element={<RaceOverview />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/admin" element={<AdminPage />} />
           </Routes>
         </>
       </BrowserRouter>
