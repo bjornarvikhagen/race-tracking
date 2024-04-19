@@ -1,7 +1,10 @@
 /// <reference types="cypress" />
 
+import BASEURL from "../../src/Constants";
+
 describe("Test load frontend", () => {
   beforeEach(() => {
+    cy.visit("http://localhost:5173/races");
     cy.visit("http://localhost:5173/races");
   });
 
@@ -11,7 +14,7 @@ describe("Test load frontend", () => {
 
   it("Test api-connection through get-request", () => {
     cy.request({
-      url: "http://localhost:80/races", // How can I look for another port?
+      url: `${BASEURL}/races`,
       method: "GET",
       failOnStatusCode: true,
     });
