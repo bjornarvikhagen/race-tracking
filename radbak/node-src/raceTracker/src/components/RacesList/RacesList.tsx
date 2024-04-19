@@ -16,7 +16,7 @@ const RacesList = ({
   return (
     <div className="race-list-container">
       <h2>List of Races</h2>
-      <ul className="race-list">
+      <ul className="race-list" id="race-list">
         {races.map((race) => (
           <li
             key={race.raceid}
