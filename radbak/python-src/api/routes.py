@@ -201,10 +201,10 @@ async def setup_db(dbc: deps.GetDbCtx):
             "CREATE TABLE IF NOT EXISTS Checkpoint (CheckpointID SERIAL PRIMARY KEY, DeviceID VARCHAR(255) NOT NULL, Location VARCHAR(255) NOT NULL);",
             "CREATE TABLE IF NOT EXISTS Runner (RunnerID SERIAL PRIMARY KEY, name VARCHAR(255) NOT NULL UNIQUE);",
             "CREATE TABLE IF NOT EXISTS Race (RaceID SERIAL PRIMARY KEY, Name VARCHAR(255) NOT NULL, startTime TIMESTAMP NOT NULL);",
-            "CREATE TABLE IF NOT EXISTS RunnerInRace (RunnerID INT NOT NULL, RaceID INT NOT NULL, TagID VARCHAR(255) NOT NULL, PRIMARY KEY (RunnerID, RaceID), FOREIGN KEY (RunnerID) REFERENCES Runner (RunnerID), FOREIGN KEY (RaceID) REFERENCES Race (RaceID));",
+            "CREATE TABLE IF NOT EXISTS RunnerInRace (RunnerID INT NOT NULL, RaceID INT NOT NULL, TagID VARCHAR(255) NOT NULL, PRIMARY KEY (RunnerID, RaceID), FOREIGN KEY (RunnerID) REFERENCES Runner (RunnerID) ON DELETE CASCADE, FOREIGN KEY (RaceID) REFERENCES Race (RaceID) ON DELETE CASCADE);",
             "CREATE TABLE IF NOT EXISTS Organizer (OrganizerID SERIAL PRIMARY KEY, Name VARCHAR(255) NOT NULL);",
-            "CREATE TABLE IF NOT EXISTS CheckpointInRace (CheckpointID INT NOT NULL, RaceID INT NOT NULL, Position INT NOT NULL, TimeLimit INT, PRIMARY KEY (CheckpointID, RaceID), FOREIGN KEY (CheckpointID) REFERENCES Checkpoint (CheckpointID), FOREIGN KEY (RaceID) REFERENCES Race (RaceID));",
-            "CREATE TABLE IF NOT EXISTS CheckpointPassing (RunnerID INT NOT NULL, CheckpointID INT NOT NULL, PassingTime TIMESTAMP NOT NULL, PRIMARY KEY (RunnerID, CheckpointID), FOREIGN KEY (RunnerID) REFERENCES Runner (RunnerID), FOREIGN KEY (CheckpointID) REFERENCES Checkpoint (CheckpointID));",
+            "CREATE TABLE IF NOT EXISTS CheckpointInRace (CheckpointID INT NOT NULL, RaceID INT NOT NULL, Position INT NOT NULL, TimeLimit INT, PRIMARY KEY (CheckpointID, RaceID), FOREIGN KEY (CheckpointID) REFERENCES Checkpoint (CheckpointID) ON DELETE CASCADE, FOREIGN KEY (RaceID) REFERENCES Race (RaceID) ON DELETE CASCADE);",
+            "CREATE TABLE IF NOT EXISTS CheckpointPassing (RunnerID INT NOT NULL, CheckpointID INT NOT NULL, PassingTime TIMESTAMP NOT NULL, PRIMARY KEY (RunnerID, CheckpointID), FOREIGN KEY (RunnerID) REFERENCES Runner (RunnerID) ON DELETE CASCADE, FOREIGN KEY (CheckpointID) REFERENCES Checkpoint (CheckpointID) ON DELETE CASCADE);",
             "CREATE TABLE IF NOT EXISTS OrganizedBy (OrganizerID INT NOT NULL, RaceID INT NOT NULL, PRIMARY KEY (OrganizerID, RaceID), FOREIGN KEY (OrganizerID) REFERENCES Organizer (OrganizerID), FOREIGN KEY (RaceID) REFERENCES Race (RaceID));",
         ]
         for table_creation_query in tables:
@@ -464,60 +464,37 @@ async def tables(dbc: deps.GetDbCtx):
 @router.delete("/race/{race_id}")
 async def delete_race(race_id: int, dbc: deps.GetDbCtx):
     async with dbc as conn:
-        # First, delete any dependent records in RunnerInRace
-        await conn.execute(
-            sa.text("DELETE FROM RunnerInRace WHERE RaceID = :race_id"),
-            {"race_id": race_id},
-        )
-        # Now, delete the race
         result = await conn.execute(
-            sa.text("DELETE FROM Race WHERE RaceID = :race_id"), {"race_id": race_id}
+            sa.text("DELETE FROM Race WHERE RaceID = :race_id"),
+            {"race_id": race_id},
         )
         if result.rowcount == 0:
             raise HTTPException(status_code=404, detail="Race not found")
-    return {"message": "Race deleted"}
+        return {"message": "Race deleted successfully"}
 
 
 @router.delete("/runner/{runner_id}")
 async def delete_runner(runner_id: int, dbc: deps.GetDbCtx):
     async with dbc as conn:
-        # First, delete any dependent records in RunnerInRace
-        await conn.execute(
-            sa.text("DELETE FROM CheckpointPassing WHERE RunnerID = :runner_id"),
-            {"runner_id": runner_id},
-        )
-        await conn.execute(
-            sa.text("DELETE FROM RunnerInRace WHERE RunnerID = :runner_id"),
-            {"runner_id": runner_id},
-        )
-        # Now, delete the runner
         result = await conn.execute(
             sa.text("DELETE FROM Runner WHERE RunnerID = :runner_id"),
             {"runner_id": runner_id},
         )
         if result.rowcount == 0:
             raise HTTPException(status_code=404, detail="Runner not found")
-    return {"message": "Runner deleted"}
+        return {"message": "Runner deleted successfully"}
 
 
 @router.delete("/checkpoint/{checkpoint_id}")
 async def delete_checkpoint(checkpoint_id: int, dbc: deps.GetDbCtx):
     async with dbc as conn:
-        # First, delete any dependent records in CheckpointPassing
-        await conn.execute(
-            sa.text(
-                "DELETE FROM CheckpointPassing WHERE CheckpointID = :checkpoint_id"
-            ),
-            {"checkpoint_id": checkpoint_id},
-        )
-        # Now, delete the checkpoint
         result = await conn.execute(
             sa.text("DELETE FROM Checkpoint WHERE CheckpointID = :checkpoint_id"),
             {"checkpoint_id": checkpoint_id},
         )
         if result.rowcount == 0:
             raise HTTPException(status_code=404, detail="Checkpoint not found")
-    return {"message": "Checkpoint deleted"}
+        return {"message": "Checkpoint deleted successfully"}
 
 
 @router.get("/race/{race_id}/details")
