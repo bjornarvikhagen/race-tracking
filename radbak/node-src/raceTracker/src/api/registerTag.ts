@@ -8,7 +8,8 @@ interface RunnerInRace {
 
 const registerTag = async (runnerInRace: RunnerInRace) => {
   try {
-    const endpoint = `${BASEURL}/add_runner_to_race`; // Updated to match the server-side route
+    const endpoint = `${BASEURL}/add_runner_to_race`;
+
     const response = await fetch(endpoint, {
       method: "POST",
       headers: {

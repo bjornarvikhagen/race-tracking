@@ -1,6 +1,6 @@
 import { BASEURL } from "../Constants";
 
-const registerUser = async (name: string) => {
+const registerUser = async (username: string) => {
   try {
     const endpoint = `${BASEURL}/runner`;
     const response = await fetch(endpoint, {
@@ -8,7 +8,7 @@ const registerUser = async (name: string) => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ username: name }), // Updated to match the server-side expected payload
+      body: JSON.stringify({ username }),
     });
     if (!response.ok) {
       // Parsing response to get server-side error message

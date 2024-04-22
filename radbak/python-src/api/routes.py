@@ -2,10 +2,9 @@ from datetime import datetime, timezone
 from typing import List
 
 import sqlalchemy as sa
+from api import deps
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
-
-from api import deps
 
 router = APIRouter()
 
@@ -286,7 +285,7 @@ async def add_runner_to_race(runner_in_race: RunnerInRace, dbc: deps.GetDbCtx):
 
         # Check if the runner exists
         runner_exists = await conn.execute(
-            sa.text("SELECT 1 FROM Runner WHERE RunnerID = :RunnerID"),
+            sa.text("SELECT 1 FROM Runner WHERE runnerid = :RunnerID"),
             {"RunnerID": runner_id},
         )
         if runner_exists.scalar() is None:
@@ -560,3 +559,4 @@ async def get_race_details(race_id: int, dbc: deps.GetDbCtx):
             "checkpoints": checkpoints_list,
             "checkpoint_passings": passings_list,
         }
+
