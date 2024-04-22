@@ -25,6 +25,9 @@ struct passing_buffer passing_buffer;
 //Semaphore for ensuring no problems with the shared memory
 K_SEM_DEFINE(buffer_semaphore, 1, 1);
 
+K_SEM_DEFINE(network_semaphore, 0, 1);
+K_SEM_DEFINE(tag_reader_semaphore, 0, 1);
+
 uint32_t rfid_tag1;
 uint32_t rfid_tag2;
 
@@ -38,11 +41,9 @@ void button_pressed(const struct device *dev, struct gpio_callback *cb,
 
 void network_thread(struct passing_buffer *buffer, uint32_t *rfid_tag){
 
-    
+    k_sem_take(&network_semaphore, K_FOREVER);
 
     while(1){
-
-
 
         if (size(buffer)){
 
@@ -54,8 +55,6 @@ void network_thread(struct passing_buffer *buffer, uint32_t *rfid_tag){
 
             //TODO: send rfid tag to the MQTT broker
 
-            k_msleep(1000);//simulate poor connection
-
             printk("rfid tag: %X\n", *rfid_tag);
         }
 
@@ -65,6 +64,7 @@ void network_thread(struct passing_buffer *buffer, uint32_t *rfid_tag){
 }
 
 void tag_reader_thread(struct passing_buffer *buffer, uint32_t *rfid_tag){
+    k_sem_take(&tag_reader_semaphore, K_FOREVER);
 
 
     while(1){
@@ -128,6 +128,7 @@ int main(){
     }else{
         printk("Setup complete\n");
     }
-    k_msleep(1000000);
+    k_sem_give(&network_semaphore);
+    k_sem_give(&tag_reader_semaphore);
     return 0;
 }
