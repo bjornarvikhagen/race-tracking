@@ -8,21 +8,24 @@ interface RunnerInRace {
 
 const registerTag = async (runnerInRace: RunnerInRace) => {
   try {
-    const endpoint = `${BASEURL}/register_tag`;
+    const endpoint = `${BASEURL}/add_runner_to_race`; // Updated to match the server-side route
     const response = await fetch(endpoint, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(runnerInRace),
     });
     if (!response.ok) {
-      throw new Error(`Network response was not ok: ${response.statusText}`);
+      const errorData = await response.json();
+      throw new Error(
+        `Error ${response.status}: ${response.statusText} - ${errorData.detail}`
+      );
     }
     return response.json();
   } catch (error) {
-    console.error('Failed to register runner in race:', error);
-    throw error;
+    console.error("Failed to register runner in race:", error);
+    throw error; // Rethrowing the error for further handling
   }
 };
 

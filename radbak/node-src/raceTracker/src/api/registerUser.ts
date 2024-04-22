@@ -4,19 +4,23 @@ const registerUser = async (name: string) => {
   try {
     const endpoint = `${BASEURL}/runner`;
     const response = await fetch(endpoint, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ name }),
+      body: JSON.stringify({ username: name }), // Updated to match the server-side expected payload
     });
     if (!response.ok) {
-      throw new Error(`Network response was not ok: ${response.statusText}`);
+      // Parsing response to get server-side error message
+      const errorData = await response.json();
+      throw new Error(
+        `Network response was not ok: ${response.statusText} - ${errorData.detail}`
+      );
     }
     return response.json();
   } catch (error) {
-    console.error('Failed to send username:', error);
-    throw error;
+    console.error("Failed to register user:", error);
+    throw error; // Rethrowing the error for handling it further up in the call stack
   }
 };
 
