@@ -258,12 +258,13 @@ async def create_runner(runner: Runner, dbc: deps.GetDbCtx):
 @router.post("/race")
 async def create_race(race: Race, dbc: deps.GetDbCtx):
     async with dbc as conn:
-        await conn.execute(
+        result = await conn.execute(
             sa.text(
-                f"INSERT INTO Race (Name, startTime) VALUES ('{race.name}', '{race.start_time}')"
+                f"INSERT INTO Race (Name, startTime) VALUES ('{race.name}', '{race.start_time}') RETURNING RaceID"
             )
         )
-    return {"message": "Race created"}
+        race_id = result.scalar()  # Fetch the returned race ID
+    return {"message": "Race created", "race_id": race_id}
 
 
 @router.post("/checkpoint")
