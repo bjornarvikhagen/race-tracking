@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from typing import List
+from typing import List, Optional
 
 import sqlalchemy as sa
 from api import deps
@@ -308,7 +308,7 @@ async def add_runner_to_race(runner_in_race: RunnerInRace, dbc: deps.GetDbCtx):
 
 @router.post("/race/{race_id}/checkpoint/{checkpoint_id}/{position}")
 async def add_checkpoint_to_race(
-    race_id: int, checkpoint_id: int, position: int, time_limit: int, dbc: deps.GetDbCtx
+    race_id: int, checkpoint_id: int, position: int, dbc: deps.GetDbCtx, time_limit: Optional[int] = None
 ):
     async with dbc as conn:
         # Check if the race and checkpoint exist
@@ -325,7 +325,7 @@ async def add_checkpoint_to_race(
         if checkpoint_check.rowcount == 0:
             raise HTTPException(status_code=404, detail="Checkpoint not found")
 
-        # Add the checkpoint to the race with the specified position and time limit
+        # Add the checkpoint to the race with the specified position and optional time limit
         await conn.execute(
             sa.text(
                 "INSERT INTO CheckpointInRace (RaceID, CheckpointID, Position, TimeLimit) VALUES (:race_id, :checkpoint_id, :position, :time_limit)"
@@ -333,7 +333,6 @@ async def add_checkpoint_to_race(
             {"race_id": race_id, "checkpoint_id": checkpoint_id, "position": position, "time_limit": time_limit},
         )
     return {"message": "Checkpoint added to race", "status_code": 200}
-
 
 @router.post("/checkpoint_passing")
 async def post_checkpoint_passing(passing: CheckpointPassing, dbc: deps.GetDbCtx):
