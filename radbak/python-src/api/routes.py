@@ -307,7 +307,7 @@ async def add_runner_to_race(runner_in_race: RunnerInRace, dbc: deps.GetDbCtx):
 
 @router.post("/race/{race_id}/checkpoint/{checkpoint_id}/{position}")
 async def add_checkpoint_to_race(
-    race_id: int, checkpoint_id: int, position: int, dbc: deps.GetDbCtx
+    race_id: int, checkpoint_id: int, position: int, time_limit: int, dbc: deps.GetDbCtx
 ):
     async with dbc as conn:
         # Check if the race and checkpoint exist
@@ -324,12 +324,12 @@ async def add_checkpoint_to_race(
         if checkpoint_check.rowcount == 0:
             raise HTTPException(status_code=404, detail="Checkpoint not found")
 
-        # Add the checkpoint to the race with the specified position
+        # Add the checkpoint to the race with the specified position and time limit
         await conn.execute(
             sa.text(
-                "INSERT INTO CheckpointInRace (RaceID, CheckpointID, Position) VALUES (:race_id, :checkpoint_id, :position)"
+                "INSERT INTO CheckpointInRace (RaceID, CheckpointID, Position, TimeLimit) VALUES (:race_id, :checkpoint_id, :position, :time_limit)"
             ),
-            {"race_id": race_id, "checkpoint_id": checkpoint_id, "position": position},
+            {"race_id": race_id, "checkpoint_id": checkpoint_id, "position": position, "time_limit": time_limit},
         )
     return {"message": "Checkpoint added to race", "status_code": 200}
 
@@ -523,11 +523,11 @@ async def get_race_details(race_id: int, dbc: deps.GetDbCtx):
         )
         racers_list = racers.mappings().all()
 
-        # Fetch checkpoints in this race
+        # Fetch checkpoints in this race with time limits
         checkpoints = await conn.execute(
             sa.text(
                 """
-                SELECT c.CheckpointID, c.Location
+                SELECT c.CheckpointID, c.Location, cir.TimeLimit
                 FROM Checkpoint c
                 JOIN CheckpointInRace cir ON c.CheckpointID = cir.CheckpointID
                 WHERE cir.RaceID = :race_id
