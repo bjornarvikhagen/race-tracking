@@ -2,9 +2,10 @@ from datetime import datetime, timezone
 from typing import List, Optional
 
 import sqlalchemy as sa
-from api import deps
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
+
+from api import deps
 
 router = APIRouter()
 
@@ -36,7 +37,7 @@ class RaceOut(BaseModel):
     startTime: datetime = Field(..., alias="starttime")
 
     class Config:
-        allow_population_by_field_name = True
+        populate_by_name = True
 
 
 class CheckpointPassing(BaseModel):
@@ -202,7 +203,7 @@ async def setup_db(dbc: deps.GetDbCtx):
             "CREATE TABLE IF NOT EXISTS Race (RaceID SERIAL PRIMARY KEY, Name VARCHAR(255) NOT NULL, startTime TIMESTAMP NOT NULL);",
             "CREATE TABLE IF NOT EXISTS RunnerInRace (RunnerID INT NOT NULL, RaceID INT NOT NULL, TagID VARCHAR(255) NOT NULL, PRIMARY KEY (RunnerID, RaceID), FOREIGN KEY (RunnerID) REFERENCES Runner (RunnerID) ON DELETE CASCADE, FOREIGN KEY (RaceID) REFERENCES Race (RaceID) ON DELETE CASCADE);",
             "CREATE TABLE IF NOT EXISTS Organizer (OrganizerID SERIAL PRIMARY KEY, Name VARCHAR(255) NOT NULL);",
-            "CREATE TABLE IF NOT EXISTS CheckpointInRace (CheckpointID INT NOT NULL, RaceID INT NOT NULL, Position INT NOT NULL, TimeLimit INT, PRIMARY KEY (CheckpointID, RaceID), FOREIGN KEY (CheckpointID) REFERENCES Checkpoint (CheckpointID) ON DELETE CASCADE, FOREIGN KEY (RaceID) REFERENCES Race (RaceID) ON DELETE CASCADE);",
+            "CREATE TABLE IF NOT EXISTS CheckpointInRace (CheckpointID INT NOT NULL, RaceID INT NOT NULL, Position INT NOT NULL, TimeLimit TIMESTAMP, PRIMARY KEY (CheckpointID, RaceID), FOREIGN KEY (CheckpointID) REFERENCES Checkpoint (CheckpointID) ON DELETE CASCADE, FOREIGN KEY (RaceID) REFERENCES Race (RaceID) ON DELETE CASCADE);",
             "CREATE TABLE IF NOT EXISTS CheckpointPassing (RunnerID INT NOT NULL, CheckpointID INT NOT NULL, PassingTime TIMESTAMP NOT NULL, PRIMARY KEY (RunnerID, CheckpointID), FOREIGN KEY (RunnerID) REFERENCES Runner (RunnerID) ON DELETE CASCADE, FOREIGN KEY (CheckpointID) REFERENCES Checkpoint (CheckpointID) ON DELETE CASCADE);",
             "CREATE TABLE IF NOT EXISTS OrganizedBy (OrganizerID INT NOT NULL, RaceID INT NOT NULL, PRIMARY KEY (OrganizerID, RaceID), FOREIGN KEY (OrganizerID) REFERENCES Organizer (OrganizerID), FOREIGN KEY (RaceID) REFERENCES Race (RaceID));",
         ]
@@ -308,7 +309,11 @@ async def add_runner_to_race(runner_in_race: RunnerInRace, dbc: deps.GetDbCtx):
 
 @router.post("/race/{race_id}/checkpoint/{checkpoint_id}/{position}")
 async def add_checkpoint_to_race(
-    race_id: int, checkpoint_id: int, position: int, dbc: deps.GetDbCtx, time_limit: Optional[int] = None
+    race_id: int,
+    checkpoint_id: int,
+    position: int,
+    dbc: deps.GetDbCtx,
+    time_limit: Optional[str] = None,
 ):
     async with dbc as conn:
         # Check if the race and checkpoint exist
@@ -325,14 +330,31 @@ async def add_checkpoint_to_race(
         if checkpoint_check.rowcount == 0:
             raise HTTPException(status_code=404, detail="Checkpoint not found")
 
+        # Convert time_limit from string to datetime.datetime object if provided
+        parsed_time_limit = None
+        if time_limit:
+            try:
+                parsed_time_limit = datetime.strptime(time_limit, "%Y-%m-%d %H:%M:%S")
+            except ValueError:
+                raise HTTPException(
+                    status_code=400,
+                    detail="Invalid time_limit format. Use 'YYYY-MM-DD HH:MM:SS'.",
+                )
+
         # Add the checkpoint to the race with the specified position and optional time limit
         await conn.execute(
             sa.text(
-                "INSERT INTO CheckpointInRace (RaceID, CheckpointID, Position, TimeLimit) VALUES (:race_id, :checkpoint_id, :position, :time_limit)"
+                "INSERT INTO CheckpointInRace (RaceID, CheckpointID, Position, TimeLimit) VALUES (:race_id, :checkpoint_id, :position, :parsed_time_limit)"
             ),
-            {"race_id": race_id, "checkpoint_id": checkpoint_id, "position": position, "time_limit": time_limit},
+            {
+                "race_id": race_id,
+                "checkpoint_id": checkpoint_id,
+                "position": position,
+                "parsed_time_limit": parsed_time_limit,  # Corrected key here
+            },
         )
     return {"message": "Checkpoint added to race", "status_code": 200}
+
 
 @router.post("/checkpoint_passing")
 async def post_checkpoint_passing(passing: CheckpointPassing, dbc: deps.GetDbCtx):
@@ -559,4 +581,3 @@ async def get_race_details(race_id: int, dbc: deps.GetDbCtx):
             "checkpoints": checkpoints_list,
             "checkpoint_passings": passings_list,
         }
-
