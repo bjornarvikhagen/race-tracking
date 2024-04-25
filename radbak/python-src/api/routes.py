@@ -328,28 +328,29 @@ async def add_runner_to_race(runner_in_race: RunnerInRace, dbc: deps.GetDbCtx):
         return {"message": "Runner added to the race"}
 
 
-@router.post("/race/{race_id}/checkpoint/{checkpoint_id}/{position}")
+@router.post("/race/{race_id}/checkpoint/{device_id}/{position}")
 async def add_checkpoint_to_race(
     race_id: int,
-    checkpoint_id: int,
+    device_id: int,
     position: int,
     dbc: deps.GetDbCtx,
     time_limit: Optional[str] = None,
 ):
     async with dbc as conn:
-        # Check if the race and checkpoint exist
+        # Check if the race exists
         race_check = await conn.execute(
             sa.text("SELECT * FROM Race WHERE RaceID = :race_id"), {"race_id": race_id}
         )
         if race_check.rowcount == 0:
             raise HTTPException(status_code=404, detail="Race not found")
 
-        checkpoint_check = await conn.execute(
-            sa.text("SELECT * FROM Checkpoint WHERE CheckpointID = :checkpoint_id"),
-            {"checkpoint_id": checkpoint_id},
+        # Always create a new checkpoint for each position
+        result = await conn.execute(
+            sa.text(
+                f"INSERT INTO Checkpoint (DeviceID, Location) VALUES ({device_id}, 'Checkpoint') RETURNING CheckpointID"
+            )
         )
-        if checkpoint_check.rowcount == 0:
-            raise HTTPException(status_code=404, detail="Checkpoint not found")
+        checkpoint_id = result.scalar()
 
         # Convert time_limit from string to datetime.datetime object if provided
         parsed_time_limit = None
@@ -371,7 +372,7 @@ async def add_checkpoint_to_race(
                 "race_id": race_id,
                 "checkpoint_id": checkpoint_id,
                 "position": position,
-                "parsed_time_limit": parsed_time_limit,  # Corrected key here
+                "parsed_time_limit": parsed_time_limit,
             },
         )
     return {"message": "Checkpoint added to race", "status_code": 200}
