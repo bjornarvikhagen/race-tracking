@@ -18,7 +18,7 @@ const formatTime = (time: string | Date | undefined) => {
     hour: "numeric",
     minute: "2-digit",
     second: "2-digit",
-    hourCycle: 'h23', // Use 24-hour clock
+    hourCycle: "h23", // Use 24-hour clock
   };
 
   return new Intl.DateTimeFormat("en-US", options).format(date);
@@ -33,19 +33,15 @@ const formatTimeLimit = (time: string | Date | undefined | null) => {
   const options: Intl.DateTimeFormatOptions = {
     hour: "numeric",
     minute: "2-digit",
-    hourCycle: 'h23', // Use 24-hour clock
+    hourCycle: "h23", // Use 24-hour clock
   };
 
   return new Intl.DateTimeFormat("en-US", options).format(date);
 };
 
-
-
-
 const DataTable: React.FC<DataTableProps> = ({ runners, checkpoints }) => {
   const runnerFellOutMap = getRunnerFellOutMap(runners, checkpoints);
   const navigate = useNavigate(); // Initialize useNavigate
-
 
   function getRunnerFellOutMap(
     runners: DataTableProps["runners"],
@@ -73,7 +69,6 @@ const DataTable: React.FC<DataTableProps> = ({ runners, checkpoints }) => {
       });
     });
 
-    console.log(runnerFellOutMap);
     return runnerFellOutMap;
   }
 
@@ -90,8 +85,6 @@ const DataTable: React.FC<DataTableProps> = ({ runners, checkpoints }) => {
     });
     return lastCheckpoint;
   };
-
-
 
   return (
     <>
@@ -111,13 +104,17 @@ const DataTable: React.FC<DataTableProps> = ({ runners, checkpoints }) => {
             {runners.map((runner, index) => (
               <tr key={`runner-${index}`}>
                 <td>{runner.name}</td>
-                <td style={{ color: runnerFellOutMap[runner.id] ? 'red' : 'green' }}>
+                <td
+                  className="inRace"
+                  style={{
+                    color: runnerFellOutMap[runner.id] ? "red" : "green",
+                  }}
+                >
                   {runnerFellOutMap[runner.id] ? "Out" : "Active"}
                 </td>
               </tr>
             ))}
           </tbody>
-
         </table>
 
         {/* Scrollable Table for Checkpoints */}
@@ -127,8 +124,10 @@ const DataTable: React.FC<DataTableProps> = ({ runners, checkpoints }) => {
               <tr>
                 {checkpoints.map((checkpoint, index) => (
                   <th key={index}>
-                    CP {index + 1} {checkpoint.timeLimit && // Conditionally render the deadline text
-                      <> deadline: {formatTimeLimit(checkpoint.timeLimit)}</>}
+                    CP {index + 1}{" "}
+                    {checkpoint.timeLimit && ( // Conditionally render the deadline text
+                      <> deadline: {formatTimeLimit(checkpoint.timeLimit)}</>
+                    )}
                   </th>
                 ))}
               </tr>
@@ -139,12 +138,19 @@ const DataTable: React.FC<DataTableProps> = ({ runners, checkpoints }) => {
                   {checkpoints.map((checkpoint, cpIndex) => {
                     const runnerTime = runner.times[checkpoint.position];
                     // Check if the checkpoint has a time limit
-                    const hasTimeLimit = checkpoint.timeLimit !== null && checkpoint.timeLimit !== undefined;
-                    const isTimeBefore = runnerTime && (runnerTime <= (checkpoint.timeLimit as Date));
+                    const hasTimeLimit =
+                      checkpoint.timeLimit !== null &&
+                      checkpoint.timeLimit !== undefined;
+                    const isTimeBefore =
+                      runnerTime &&
+                      runnerTime <= (checkpoint.timeLimit as Date);
 
                     // Assign 'time-before' or 'time-after' class only if there's a time limit for the checkpoint
-                    const timeClass = !hasTimeLimit ? '' :
-                      (isTimeBefore ? 'time-before' : 'time-after');  /// Ugly, but avoids let operators in component
+                    const timeClass = !hasTimeLimit
+                      ? ""
+                      : isTimeBefore
+                      ? "time-before"
+                      : "time-after"; /// Ugly, but avoids let operators in component
 
                     return (
                       <td key={cpIndex} className={timeClass}>
