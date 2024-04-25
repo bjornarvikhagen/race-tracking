@@ -271,12 +271,13 @@ async def create_race(race: Race, dbc: deps.GetDbCtx):
 @router.post("/checkpoint")
 async def post_checkpoint(checkpoint: Checkpoint, dbc: deps.GetDbCtx):
     async with dbc as conn:
-        await conn.execute(
+        result = await conn.execute(
             sa.text(
-                f"INSERT INTO checkpoint VALUES ({checkpoint.CheckpointID}, {checkpoint.DeviceID}, '{checkpoint.Location}')"
+                f"INSERT INTO Checkpoint (DeviceID, Location) VALUES ({checkpoint.DeviceID}, '{checkpoint.Location}') RETURNING CheckpointID"
             )
         )
-    return {"message": "Checkpoint added"}
+        checkpoint_id = result.scalar()  # Fetch the returned checkpoint ID
+    return {"message": "Checkpoint added", "checkpoint_id": checkpoint_id}
 
 
 @router.post("/add_runner_to_race")
