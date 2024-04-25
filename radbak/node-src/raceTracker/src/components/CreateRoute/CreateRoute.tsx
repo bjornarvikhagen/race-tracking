@@ -58,7 +58,7 @@ const CreateRoute = ({ onCreateRace }: CreateRouteProps) => {
     let failed = false;
     const updatedDeviceData = deviceData.map(device => {
       if (device.ID === "" || !/^\d*$/.test(device.ID)) {
-        console.error("Each device must have a numeric ID.");
+        alert("Each device must have a numeric ID.");
         failed = true;
       }
       if (device.timeLimit === "") {
@@ -66,7 +66,7 @@ const CreateRoute = ({ onCreateRace }: CreateRouteProps) => {
       } else if (validateTimeLimitFormat(device.timeLimit)) {
         device.timeLimit += ":00";
       } else {
-        console.error("Time limit must be in yyyy-mm-dd hh:mm format.");
+        alert("Time limit must be in yyyy-mm-dd hh:mm format.");
         failed = true;
       }
       return device;
