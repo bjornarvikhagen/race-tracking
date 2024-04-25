@@ -1,0 +1,485 @@
+*** Booting Zephyr OS build v3.2.99-ncs2 ***
++CEREG: 2,"0901","01F6800B",7
++CSCON: 1
++CEREG: 5,"0901","01F6800B",7,,,"11100000","11100000"
++CEREG: 0
+[00:00:03.501,831] [0m<inf> PathPatrol: Initializing NFC[0m
+[00:00:03.548,187] [0m<inf> PathPatrol: LED is ready and configured.[0m
+[00:00:03.548,217] [0m<inf> PathPatrol: Initializing modem library
+[0m
+[00:00:03.548,217] [0m<inf> PathPatrol: Disconnecting from open LTE connection.[0m
++CSCON: 0
++CEREG: 2,"0901","01F6800B",7
++CSCON: 1
+[00:00:05.028,381] [0m<inf> PathPatrol: Checking for certificates.[0m
+[00:00:05.059,448] [0m<inf> PathPatrol: Exists[0m
+[00:00:05.077,301] [0m<inf> PathPatrol: Certificate match[0m
+[00:00:05.077,331] [0m<inf> PathPatrol: Connecting to LTE network
+[0m
+[00:00:05.890,380] [0m<inf> PathPatrol: RRC mode: Connected
+[0m
++CEREG: 5,"0901","01F6800B",7,,,"11100000","11100000"
+[00:00:06.469,116] [0m<inf> PathPatrol: Network registration status: Connected - roaming
+[0m
+[00:00:06.469,268] [0m<inf> PathPatrol: Connected to LTE network
+[0m
+[00:00:06.469,268] [0m<inf> PathPatrol: Led toggled.[0m
+[00:00:06.644,287] [0m<inf> PathPatrol: IPv4 Address found 18.193.202.20[0m
+[00:00:06.644,348] [0m<inf> PathPatrol: client->user_name->utf8: asdf[0m
+[00:00:06.644,348] [0m<inf> PathPatrol: client->user_name->size: 4[0m
+[00:00:06.644,378] [0m<inf> PathPatrol: client->password->utf8: mqtt1234[0m
+[00:00:06.644,409] [0m<inf> PathPatrol: client->password->size: 8[0m
+[00:00:06.644,439] [0m<inf> PathPatrol: client->client_id.utf8: testclient12345[0m
+[00:00:06.644,470] [0m<inf> PathPatrol: client->client_id.size: 15[0m
+[00:00:06.644,470] [0m<inf> PathPatrol: TLS enabled[0m
+[00:00:06.644,836] [0m<inf> PathPatrol: Client initialized.[0m
+[00:00:06.644,866] [0m<inf> PathPatrol: SETUP COMPLETE[0m
+[00:00:06.644,897] [0m<inf> PathPatrol: tag read thread started[0m
+[00:00:06.644,958] [0m<inf> PathPatrol: netwwork thread started![0m
+23fc6895 added to buffer
+[00:00:08.078,155] [0m<inf> PathPatrol: starting poll[0m
+23fc6895 added to buffer
+[00:00:08.212,280] [0m<inf> PathPatrol: poll finished[0m
+[00:00:08.212,402] [0m<inf> PathPatrol: Subscribing to: devacademy/iulfyesrf/iulfyesrf len 30[0m
+[00:00:08.343,170] [0m<inf> PathPatrol: RFID tag: 23FC6895[0m
+[00:00:08.343,750] [0m<inf> PathPatrol: Publishing: 23FC6895[0m
+[00:00:08.343,780] [0m<inf> PathPatrol: to topic: devacademy/iulfyesrf/iulfyesrf len: 30[0m
+[00:00:08.344,238] [0m<inf> PathPatrol: Tag sent to broker.[0m
+[00:00:08.344,268] [0m<inf> PathPatrol: LED off message.[0m
+5318400e added to buffer
+5318400e added to buffer
+[00:00:10.344,360] [0m<inf> PathPatrol: LED on message.[0m
+[00:00:10.344,390] [0m<inf> PathPatrol: starting poll[0m
+[00:00:10.344,451] [0m<inf> PathPatrol: poll finished[0m
+[00:00:10.344,543] [0m<inf> PathPatrol: SUBACK packet id: 43966[0m
+[00:00:10.409,576] [0m<inf> PathPatrol: RFID tag: 23FC6895[0m
+[00:00:10.410,156] [0m<inf> PathPatrol: Publishing: 23FC6895[0m
+[00:00:10.410,186] [0m<inf> PathPatrol: to topic: devacademy/iulfyesrf/iulfyesrf len: 30[0m
+[00:00:10.419,342] [0m<inf> PathPatrol: Tag sent to broker.[0m
+[00:00:10.419,342] [0m<inf> PathPatrol: LED off message.[0m
+23fc6895 added to buffer
+23fc6895 added to buffer
+[00:00:12.419,464] [0m<inf> PathPatrol: LED on message.[0m
+[00:00:12.419,494] [0m<inf> PathPatrol: starting poll[0m
+[00:00:12.419,555] [0m<inf> PathPatrol: poll finished[0m
+[00:00:12.419,647] [0m<inf> PathPatrol: PUBACK packet id: 65032[0m
+[00:00:12.419,677] [0m<inf> PathPatrol: RFID tag: 5318400E[0m
+[00:00:12.420,257] [0m<inf> PathPatrol: Publishing: 5318400E[0m
+[00:00:12.420,288] [0m<inf> PathPatrol: to topic: devacademy/iulfyesrf/iulfyesrf len: 30[0m
+[00:00:12.428,558] [0m<inf> PathPatrol: Tag sent to broker.[0m
+[00:00:12.428,588] [0m<inf> PathPatrol: LED off message.[0m
+5318400e added to buffer
+5318400e added to buffer
+[00:00:14.428,649] [0m<inf> PathPatrol: LED on message.[0m
+[00:00:14.428,680] [0m<inf> PathPatrol: starting poll[0m
+[00:00:14.428,741] [0m<inf> PathPatrol: poll finished[0m
+[00:00:14.428,833] [0m<inf> PathPatrol: MQTT PUBLISH result=0 len=8[0m
+[00:00:14.429,504] [0m<inf> PathPatrol: Received: 23FC6895[0m
+[00:00:14.429,534] [0m<inf> PathPatrol: RFID tag: 5318400E[0m
+[00:00:14.430,114] [0m<inf> PathPatrol: Publishing: 5318400E[0m
+[00:00:14.430,145] [0m<inf> PathPatrol: to topic: devacademy/iulfyesrf/iulfyesrf len: 30[0m
+[00:00:14.430,603] [0m<inf> PathPatrol: Tag sent to broker.[0m
+[00:00:14.430,603] [0m<inf> PathPatrol: LED off message.[0m
+[00:00:16.430,725] [0m<inf> PathPatrol: LED on message.[0m
+[00:00:16.430,755] [0m<inf> PathPatrol: starting poll[0m
+[00:00:16.430,816] [0m<inf> PathPatrol: poll finished[0m
+[00:00:16.430,908] [0m<inf> PathPatrol: PUBACK packet id: 9172[0m
+[00:00:16.430,938] [0m<inf> PathPatrol: RFID tag: 23FC6895[0m
+[00:00:16.431,518] [0m<inf> PathPatrol: Publishing: 23FC6895[0m
+[00:00:16.431,549] [0m<inf> PathPatrol: to topic: devacademy/iulfyesrf/iulfyesrf len: 30[0m
+[00:00:16.439,819] [0m<inf> PathPatrol: Tag sent to broker.[0m
+[00:00:16.439,849] [0m<inf> PathPatrol: LED off message.[0m
+[00:00:18.439,941] [0m<inf> PathPatrol: LED on message.[0m
+[00:00:18.439,971] [0m<inf> PathPatrol: starting poll[0m
+[00:00:18.440,032] [0m<inf> PathPatrol: poll finished[0m
+[00:00:18.440,124] [0m<inf> PathPatrol: MQTT PUBLISH result=0 len=8[0m
+[00:00:18.449,035] [0m<inf> PathPatrol: Received: 23FC6895[0m
+[00:00:18.449,157] [0m<inf> PathPatrol: RFID tag: 23FC6895[0m
+[00:00:18.449,798] [0m<inf> PathPatrol: Publishing: 23FC6895[0m
+[00:00:18.449,829] [0m<inf> PathPatrol: to topic: devacademy/iulfyesrf/iulfyesrf len: 30[0m
+[00:00:18.450,317] [0m<inf> PathPatrol: Tag sent to broker.[0m
+[00:00:18.450,317] [0m<inf> PathPatrol: LED off message.[0m
+23fc6895 added to buffer
+23fc6895 added to buffer
+[00:00:20.450,439] [0m<inf> PathPatrol: LED on message.[0m
+[00:00:20.450,469] [0m<inf> PathPatrol: starting poll[0m
+[00:00:20.450,531] [0m<inf> PathPatrol: poll finished[0m
+[00:00:20.450,622] [0m<inf> PathPatrol: PUBACK packet id: 62908[0m
+[00:00:20.450,653] [0m<inf> PathPatrol: RFID tag: 5318400E[0m
+[00:00:20.451,232] [0m<inf> PathPatrol: Publishing: 5318400E[0m
+[00:00:20.451,263] [0m<inf> PathPatrol: to topic: devacademy/iulfyesrf/iulfyesrf len: 30[0m
+[00:00:20.459,533] [0m<inf> PathPatrol: Tag sent to broker.[0m
+[00:00:20.459,564] [0m<inf> PathPatrol: LED off message.[0m
+[00:00:22.459,655] [0m<inf> PathPatrol: LED on message.[0m
+[00:00:22.459,686] [0m<inf> PathPatrol: starting poll[0m
+[00:00:22.459,747] [0m<inf> PathPatrol: poll finished[0m
+[00:00:22.459,838] [0m<inf> PathPatrol: MQTT PUBLISH result=0 len=8[0m
+[00:00:22.460,754] [0m<inf> PathPatrol: Received: 5318400E[0m
+[00:00:22.460,754] [0m<inf> PathPatrol: RFID tag: 5318400E[0m
+[00:00:22.461,364] [0m<inf> PathPatrol: Publishing: 5318400E[0m
+[00:00:22.461,395] [0m<inf> PathPatrol: to topic: devacademy/iulfyesrf/iulfyesrf len: 30[0m
+[00:00:22.461,822] [0m<inf> PathPatrol: Tag sent to broker.[0m
+[00:00:22.461,853] [0m<inf> PathPatrol: LED off message.[0m
+[00:00:24.461,944] [0m<inf> PathPatrol: LED on message.[0m
+[00:00:24.461,975] [0m<inf> PathPatrol: starting poll[0m
+[00:00:24.462,036] [0m<inf> PathPatrol: poll finished[0m
+[00:00:24.462,127] [0m<inf> PathPatrol: PUBACK packet id: 1098[0m
+[00:00:24.462,158] [0m<inf> PathPatrol: RFID tag: 23FC6895[0m
+[00:00:24.462,738] [0m<inf> PathPatrol: Publishing: 23FC6895[0m
+[00:00:24.462,768] [0m<inf> PathPatrol: to topic: devacademy/iulfyesrf/iulfyesrf len: 30[0m
+[00:00:24.471,069] [0m<inf> PathPatrol: Tag sent to broker.[0m
+[00:00:24.471,099] [0m<inf> PathPatrol: LED off message.[0m
+[00:00:26.471,191] [0m<inf> PathPatrol: LED on message.[0m
+[00:00:26.471,221] [0m<inf> PathPatrol: starting poll[0m
+[00:00:26.471,282] [0m<inf> PathPatrol: poll finished[0m
+[00:00:26.471,374] [0m<inf> PathPatrol: MQTT PUBLISH result=0 len=8[0m
+[00:00:26.480,255] [0m<inf> PathPatrol: Received: 5318400E[0m
+[00:00:26.480,285] [0m<inf> PathPatrol: RFID tag: 23FC6895[0m
+[00:00:26.480,865] [0m<inf> PathPatrol: Publishing: 23FC6895[0m
+[00:00:26.480,895] [0m<inf> PathPatrol: to topic: devacademy/iulfyesrf/iulfyesrf len: 30[0m
+[00:00:26.481,384] [0m<inf> PathPatrol: Tag sent to broker.[0m
+[00:00:26.481,414] [0m<inf> PathPatrol: LED off message.[0m
+[00:00:28.481,506] [0m<inf> PathPatrol: LED on message.[0m
+[1;31m--- 11 messages dropped ---
+[0m[00:00:28.486,053] [0m<inf> PathPatrol: poll finished[0m
+[00:00:28.486,145] [0m<inf> PathPatrol: MQTT PUBLISH result=0 len=8[0m
+[00:00:28.486,633] [0m<inf> PathPatrol: Received: 23FC6895[0m
+[00:00:28.486,663] [0m<inf> PathPatrol: starting poll[0m
+[00:00:28.486,724] [0m<inf> PathPatrol: poll finished[0m
+[00:00:28.486,816] [0m<inf> PathPatrol: PUBACK packet id: 19736[0m
+[00:00:28.486,816] [0m<inf> PathPatrol: starting poll[0m
+[00:00:28.486,877] [0m<inf> PathPatrol: poll finished[0m
+[00:00:28.486,968] [0m<inf> PathPatrol: MQTT PUBLISH result=0 len=8[0m
+[00:00:28.487,457] [0m<inf> PathPatrol: Received: 5318400E[0m
+[00:00:28.487,457] [0m<inf> PathPatrol: starting poll[0m
+[00:00:28.487,518] [0m<inf> PathPatrol: poll finished[0m
+[00:00:28.487,640] [0m<inf> PathPatrol: PUBACK packet id: 41142[0m
+[00:00:28.487,640] [0m<inf> PathPatrol: starting poll[0m
+[00:00:28.487,701] [0m<inf> PathPatrol: poll finished[0m
+[00:00:28.487,792] [0m<inf> PathPatrol: MQTT PUBLISH result=0 len=8[0m
+[00:00:28.488,250] [0m<inf> PathPatrol: Received: 5318400E[0m
+[00:00:28.488,281] [0m<inf> PathPatrol: starting poll[0m
+[00:00:28.488,342] [0m<inf> PathPatrol: poll finished[0m
+[00:00:28.488,433] [0m<inf> PathPatrol: PUBACK packet id: 5790[0m
+[00:00:28.488,464] [0m<inf> PathPatrol: starting poll[0m
+[00:00:28.488,525] [0m<inf> PathPatrol: poll finished[0m
+[00:00:28.488,616] [0m<inf> PathPatrol: MQTT PUBLISH result=0 len=8[0m
+[00:00:28.489,105] [0m<inf> PathPatrol: Received: 23FC6895[0m
+[00:00:28.489,135] [0m<inf> PathPatrol: starting poll[0m
+[00:00:28.489,257] [0m<inf> PathPatrol: poll finished[0m
+[00:00:28.489,379] [0m<inf> PathPatrol: PUBACK packet id: 7546[0m
+[00:00:28.489,379] [0m<inf> PathPatrol: starting poll[0m
+[00:00:28.489,440] [0m<inf> PathPatrol: poll finished[0m
+[00:00:28.489,593] [0m<inf> PathPatrol: MQTT PUBLISH result=0 len=8[0m
+[00:00:28.490,081] [0m<inf> PathPatrol: Received: 23FC6895[0m
+[00:00:28.490,112] [0m<inf> PathPatrol: starting poll[0m
++CSCON: 0
+[00:00:32.371,307] [0m<inf> PathPatrol: RRC mode: Idle
+[0m
+5318400e added to buffer
+5318400e added to buffer
++CSCON: 1
+[00:01:23.490,234] [0m<inf> PathPatrol: poll finished[0m
+[00:01:23.490,264] [0m<inf> PathPatrol: RFID tag: 5318400E[0m
+[00:01:23.490,844] [0m<inf> PathPatrol: Publishing: 5318400E[0m
+[00:01:23.490,875] [0m<inf> PathPatrol: to topic: devacademy/iulfyesrf/iulfyesrf len: 30[0m
+[00:01:23.499,908] [0m<inf> PathPatrol: Tag sent to broker.[0m
+[00:01:23.499,938] [0m<inf> PathPatrol: LED off message.[0m
+[00:01:23.593,658] [0m<inf> PathPatrol: RRC mode: Connected
+[0m
+[00:01:25.500,030] [0m<inf> PathPatrol: LED on message.[0m
+[00:01:25.500,061] [0m<inf> PathPatrol: starting poll[0m
+[00:01:25.500,122] [0m<inf> PathPatrol: poll finished[0m
+[00:01:25.500,213] [0m<inf> PathPatrol: PUBACK packet id: 16275[0m
+[00:01:25.500,244] [0m<inf> PathPatrol: RFID tag: 5318400E[0m
+[00:01:25.500,823] [0m<inf> PathPatrol: Publishing: 5318400E[0m
+[00:01:25.500,854] [0m<inf> PathPatrol: to topic: devacademy/iulfyesrf/iulfyesrf len: 30[0m
+[00:01:25.509,124] [0m<inf> PathPatrol: Tag sent to broker.[0m
+[00:01:25.509,155] [0m<inf> PathPatrol: LED off message.[0m
+[00:01:27.509,246] [0m<inf> PathPatrol: LED on message.[0m
+[00:01:27.509,277] [0m<inf> PathPatrol: starting poll[0m
+[00:01:27.509,338] [0m<inf> PathPatrol: poll finished[0m
+[00:01:27.509,429] [0m<inf> PathPatrol: MQTT PUBLISH result=0 len=8[0m
+[00:01:27.518,310] [0m<inf> PathPatrol: Received: 5318400E[0m
+[00:01:27.518,341] [0m<inf> PathPatrol: starting poll[0m
+[00:01:27.518,402] [0m<inf> PathPatrol: poll finished[0m
+[00:01:27.518,493] [0m<inf> PathPatrol: PUBACK packet id: 49632[0m
+[00:01:27.518,524] [0m<inf> PathPatrol: starting poll[0m
+[00:01:27.518,585] [0m<inf> PathPatrol: poll finished[0m
+[00:01:27.518,676] [0m<inf> PathPatrol: MQTT PUBLISH result=0 len=8[0m
+[00:01:27.519,165] [0m<inf> PathPatrol: Received: 5318400E[0m
+[00:01:27.519,195] [0m<inf> PathPatrol: starting poll[0m
++CSCON: 0
+[00:01:31.482,452] [0m<inf> PathPatrol: RRC mode: Idle
+[0m
+[00:02:22.519,317] [0m<inf> PathPatrol: poll finished[0m
+[00:02:22.519,348] [0m<inf> PathPatrol: starting poll[0m
+[00:02:22.519,409] [0m<inf> PathPatrol: poll finished[0m
+[00:02:22.519,409] [0m<inf> PathPatrol: starting poll[0m
+[00:02:22.519,470] [0m<inf> PathPatrol: poll finished[0m
+[00:02:22.519,500] [0m<inf> PathPatrol: starting poll[0m
+[00:02:22.519,561] [0m<inf> PathPatrol: poll finished[0m
+[00:02:22.519,592] [0m<inf> PathPatrol: starting poll[0m
+[00:02:22.519,622] [0m<inf> PathPatrol: poll finished[0m
+[00:02:22.519,653] [0m<inf> PathPatrol: starting poll[0m
+[00:02:22.519,714] [0m<inf> PathPatrol: poll finished[0m
+[00:02:22.519,744] [0m<inf> PathPatrol: starting poll[0m
+[00:02:22.519,805] [0m<inf> PathPatrol: poll finished[0m
+[00:02:22.519,836] [0m<inf> PathPatrol: starting poll[0m
+[00:02:22.519,897] [0m<inf> PathPatrol: poll finished[0m
+[00:02:22.519,897] [0m<inf> PathPatrol: starting poll[0m
+[00:02:22.519,958] [0m<inf> PathPatrol: poll finished[0m
+[00:02:22.519,989] [0m<inf> PathPatrol: starting poll[0m
+[00:02:22.520,050] [0m<inf> PathPatrol: poll finished[0m
+[00:02:22.520,050] [0m<inf> PathPatrol: starting poll[0m
+5318400e added to buffer
++CSCON: 1
+[00:02:46.427,154] [0m<inf> PathPatrol: RRC mode: Connected
+[0m
+[00:02:46.586,914] [0m<inf> PathPatrol: poll finished[0m
+[00:02:46.588,043] [0m<inf> PathPatrol: MQTT client disconnected: -128[0m
+[00:02:46.588,073] [1;31m<err> PathPatrol: Error in mqtt_live: -128[0m
+[00:02:46.588,073] [0m<inf> PathPatrol: Disconnecting MQTT client[0m
+[00:02:46.588,104] [1;31m<err> PathPatrol: Could not disconnect MQTT client: -128[0m
++CSCON: 0
+[00:02:52.030,792] [0m<inf> PathPatrol: RRC mode: Idle
+[0m
+ *** Booting Zephyr OS build v3.2.99-ncs2 ***
++CEREG: 2,"0901","01F6800B",7
++CSCON: 1
++CEREG: 5,"0901","01F6800B",7,,,"11100000","11100000"
++CEREG: 0
+[00:00:03.784,423] [0m<inf> PathPatrol: Initializing NFC[0m
+[00:00:03.830,810] [0m<inf> PathPatrol: LED is ready and configured.[0m
+[00:00:03.830,841] [0m<inf> PathPatrol: Initializing modem library
+[0m
+[00:00:03.830,841] [0m<inf> PathPatrol: Disconnecting from open LTE connection.[0m
++CSCON: 0
++CEREG: 2,"0901","01F6800B",7
++CSCON: 1
+[00:00:05.340,240] [0m<inf> PathPatrol: Checking for certificates.[0m
+[00:00:05.371,307] [0m<inf> PathPatrol: Exists[0m
+[00:00:05.389,160] [0m<inf> PathPatrol: Certificate match[0m
+[00:00:05.389,190] [0m<inf> PathPatrol: Connecting to LTE network
+[0m
+[00:00:06.231,994] [0m<inf> PathPatrol: RRC mode: Connected
+[0m
++CEREG: 5,"0901","01F6800B",7,,,"11100000","11100000"
+[00:00:06.819,732] [0m<inf> PathPatrol: Network registration status: Connected - roaming
+[0m
+[00:00:06.819,885] [0m<inf> PathPatrol: Connected to LTE network
+[0m
+[00:00:06.819,885] [0m<inf> PathPatrol: Led toggled.[0m
+[00:00:06.998,046] [0m<inf> PathPatrol: IPv4 Address found 18.193.202.20[0m
+[00:00:06.998,107] [0m<inf> PathPatrol: client->user_name->utf8: asdf[0m
+[00:00:06.998,107] [0m<inf> PathPatrol: client->user_name->size: 4[0m
+[00:00:06.998,138] [0m<inf> PathPatrol: client->password->utf8: mqtt1234[0m
+[00:00:06.998,168] [0m<inf> PathPatrol: client->password->size: 8[0m
+[00:00:06.998,199] [0m<inf> PathPatrol: client->client_id.utf8: testclient12345[0m
+[00:00:06.998,229] [0m<inf> PathPatrol: client->client_id.size: 15[0m
+[00:00:06.998,229] [0m<inf> PathPatrol: TLS enabled[0m
+[00:00:06.998,596] [0m<inf> PathPatrol: Client initialized.[0m
+[00:00:06.998,626] [0m<inf> PathPatrol: SETUP COMPLETE[0m
+[00:00:06.998,657] [0m<inf> PathPatrol: tag read thread started[0m
+[00:00:06.998,718] [0m<inf> PathPatrol: netwwork thread started![0m
+[00:00:08.418,640] [0m<inf> PathPatrol: starting poll[0m
+[00:00:08.585,906] [0m<inf> PathPatrol: poll finished[0m
+[00:00:08.586,029] [0m<inf> PathPatrol: Subscribing to: devacademy/iulfyesrf/iulfyesrf len 30[0m
+[00:00:08.586,639] [0m<inf> PathPatrol: starting poll[0m
+[00:00:08.745,910] [0m<inf> PathPatrol: poll finished[0m
+[00:00:08.746,002] [0m<inf> PathPatrol: SUBACK packet id: 43966[0m
+[00:00:08.746,032] [0m<inf> PathPatrol: starting poll[0m
+5318400e added to buffer
+5318400e added to buffer
++CSCON: 0
+[00:00:12.308,685] [0m<inf> PathPatrol: RRC mode: Idle
+[0m
+*** Booting Zephyr OS build v3.2.99-ncs2 ***
++CEREG: 2,"0901","01F6800B",7
++CSCON: 1
++CEREG: 5,"0901","01F6800B",7,,,"11100000","11100000"
++CEREG: 0
+[00:00:04.512,512] [0m<inf> PathPatrol: Initializing NFC[0m
+[00:00:04.558,959] [0m<inf> PathPatrol: LED is ready and configured.[0m
+[00:00:04.558,959] [0m<inf> PathPatrol: Initializing modem library
+[0m
+[00:00:04.558,990] [0m<inf> PathPatrol: Disconnecting from open LTE connection.[0m
++CSCON: 0
++CEREG: 2,"0901","01F6800B",7
++CSCON: 1
+[00:00:06.002,624] [0m<inf> PathPatrol: Checking for certificates.[0m
+[00:00:06.033,691] [0m<inf> PathPatrol: Exists[0m
+[00:00:06.051,544] [0m<inf> PathPatrol: Certificate match[0m
+[00:00:06.051,574] [0m<inf> PathPatrol: Connecting to LTE network
+[0m
+[00:00:06.860,107] [0m<inf> PathPatrol: RRC mode: Connected
+[0m
++CEREG: 5,"0901","01F6800B",7,,,"11100000","11100000"
+[00:00:07.380,035] [0m<inf> PathPatrol: Network registration status: Connected - roaming
+[0m
+[00:00:07.380,157] [0m<inf> PathPatrol: Connected to LTE network
+[0m
+[00:00:07.380,187] [0m<inf> PathPatrol: Led toggled.[0m
+[00:00:07.537,139] [0m<inf> PathPatrol: IPv4 Address found 54.93.74.243[0m
+[00:00:07.537,170] [0m<inf> PathPatrol: client->user_name->utf8: asdf[0m
+[00:00:07.537,200] [0m<inf> PathPatrol: client->user_name->size: 4[0m
+[00:00:07.537,231] [0m<inf> PathPatrol: client->password->utf8: mqtt1234[0m
+[00:00:07.537,261] [0m<inf> PathPatrol: client->password->size: 8[0m
+[00:00:07.537,292] [0m<inf> PathPatrol: client->client_id.utf8: testclient12345[0m
+[00:00:07.537,292] [0m<inf> PathPatrol: client->client_id.size: 15[0m
+[00:00:07.537,322] [0m<inf> PathPatrol: TLS enabled[0m
+[00:00:07.537,933] [0m<inf> PathPatrol: Client initialized.[0m
+[00:00:07.537,963] [0m<inf> PathPatrol: SETUP COMPLETE[0m
+[00:00:07.537,994] [0m<inf> PathPatrol: tag read thread started[0m
+[00:00:07.538,055] [0m<inf> PathPatrol: netwwork thread started![0m
+23fc6895 added to buffer
+[00:00:09.073,913] [0m<inf> PathPatrol: starting poll[0m
+[00:00:09.232,025] [0m<inf> PathPatrol: poll finished[0m
+[00:00:09.232,147] [0m<inf> PathPatrol: Subscribing to: devacademy/iulfyesrf/iulfyesrf len 30[0m
+[00:00:09.232,788] [0m<inf> PathPatrol: RFID tag: 23FC6895[0m
+[00:00:09.233,367] [0m<inf> PathPatrol: Publishing: 23FC6895[0m
+[00:00:09.233,398] [0m<inf> PathPatrol: to topic: devacademy/iulfyesrf/iulfyesrf len: 30[0m
+[00:00:09.233,825] [0m<inf> PathPatrol: Tag sent to broker.[0m
+[00:00:09.233,856] [0m<inf> PathPatrol: LED off message.[0m
+[00:00:11.233,947] [0m<inf> PathPatrol: LED on message.[0m
+[00:00:11.233,978] [0m<inf> PathPatrol: starting poll[0m
+[00:00:11.234,039] [0m<inf> PathPatrol: poll finished[0m
+[00:00:11.234,130] [0m<inf> PathPatrol: SUBACK packet id: 43966[0m
+[00:00:11.234,161] [0m<inf> PathPatrol: starting poll[0m
+[00:00:11.234,222] [0m<inf> PathPatrol: poll finished[0m
+[00:00:11.234,313] [0m<inf> PathPatrol: PUBACK packet id: 62064[0m
+[00:00:11.234,344] [0m<inf> PathPatrol: starting poll[0m
+[00:00:11.234,405] [0m<inf> PathPatrol: poll finished[0m
+[00:00:11.234,497] [0m<inf> PathPatrol: MQTT PUBLISH result=0 len=8[0m
+[00:00:11.243,041] [0m<inf> PathPatrol: Received: 23FC6895[0m
+[00:00:11.243,072] [0m<inf> PathPatrol: starting poll[0m
+5318400e added to buffer
++CSCON: 0
+[00:00:15.188,903] [0m<inf> PathPatrol: RRC mode: Idle
+[0m
+23fc6895 added to buffer
+5318400e added to buffer
++CSCON: 1
+[00:00:39.172,485] [0m<inf> PathPatrol: RRC mode: Connected
+[0m
+[00:00:39.353,271] [0m<inf> PathPatrol: poll finished[0m
+[00:00:39.354,400] [0m<inf> PathPatrol: MQTT client disconnected: -128[0m
+[00:00:39.354,431] [1;31m<err> PathPatrol: Error in mqtt_input: -128[0m
+[00:00:39.354,431] [0m<inf> PathPatrol: Disconnecting MQTT client[0m
+[00:00:39.354,461] [1;31m<err> PathPatrol: Could not disconnect MQTT client: -128[0m
++CSCON: 0
+[00:00:44.710,174] [0m<inf> PathPatrol: RRC mode: Idle
+[0m
+ *** Booting Zephyr OS build v3.2.99-ncs2 ***
++CEREG: 2,"0901","01F6800B",7
++CSCON: 1
++CEREG: 5,"0901","01F6800B",7,,,"11100000","11100000"
++CEREG: 0
+[00:00:03.365,417] [0m<inf> PathPatrol: Initializing NFC[0m
+[00:00:03.411,804] [0m<inf> PathPatrol: LED is ready and configured.[0m
+[00:00:03.411,804] [0m<inf> PathPatrol: Initializing modem library
+[0m
+[00:00:03.411,834] [0m<inf> PathPatrol: Disconnecting from open LTE connection.[0m
++CSCON: 0
++CEREG: 2,"0901","01F6800B",7
++CSCON: 1
+[00:00:04.864,562] [0m<inf> PathPatrol: Checking for certificates.[0m
+[00:00:04.895,629] [0m<inf> PathPatrol: Exists[0m
+[00:00:04.913,482] [0m<inf> PathPatrol: Certificate match[0m
+[00:00:04.913,513] [0m<inf> PathPatrol: Connecting to LTE network
+[0m
+[00:00:05.743,804] [0m<inf> PathPatrol: RRC mode: Connected
+[0m
++CEREG: 5,"0901","01F6800B",7,,,"11100000","11100000"
+[00:00:06.332,794] [0m<inf> PathPatrol: Network registration status: Connected - roaming
+[0m
+[00:00:06.332,916] [0m<inf> PathPatrol: Connected to LTE network
+[0m
+[00:00:06.332,946] [0m<inf> PathPatrol: Led toggled.[0m
+[00:00:06.513,885] [0m<inf> PathPatrol: IPv4 Address found 54.93.74.243[0m
+[00:00:06.513,946] [0m<inf> PathPatrol: client->user_name->utf8: asdf[0m
+[00:00:06.513,977] [0m<inf> PathPatrol: client->user_name->size: 4[0m
+[00:00:06.514,007] [0m<inf> PathPatrol: client->password->utf8: mqtt1234[0m
+[00:00:06.514,007] [0m<inf> PathPatrol: client->password->size: 8[0m
+[00:00:06.514,068] [0m<inf> PathPatrol: client->client_id.utf8: testclient12345[0m
+[00:00:06.514,068] [0m<inf> PathPatrol: client->client_id.size: 15[0m
+[00:00:06.514,099] [0m<inf> PathPatrol: TLS enabled[0m
+[00:00:06.514,495] [0m<inf> PathPatrol: Client initialized.[0m
+[00:00:06.514,526] [0m<inf> PathPatrol: SETUP COMPLETE[0m
+[00:00:06.514,556] [0m<inf> PathPatrol: tag read thread started[0m
+[00:00:06.514,617] [0m<inf> PathPatrol: netwwork thread started![0m
+[00:00:08.264,801] [0m<inf> PathPatrol: starting poll[0m
+[00:00:08.409,118] [0m<inf> PathPatrol: poll finished[0m
+[00:00:08.409,240] [0m<inf> PathPatrol: Subscribing to: devacademy/iulfyesrf/iulfyesrf len 30[0m
+[00:00:08.409,820] [0m<inf> PathPatrol: starting poll[0m
+[00:00:08.599,121] [0m<inf> PathPatrol: poll finished[0m
+[00:00:08.599,212] [0m<inf> PathPatrol: SUBACK packet id: 43966[0m
+[00:00:08.599,243] [0m<inf> PathPatrol: starting poll[0m
++CSCON: 0
+[00:00:12.702,728] [0m<inf> PathPatrol: RRC mode: Idle
+[0m
+5318400e added to buffer
+5318400e added to buffer
+23fc6895 added to buffer
++CSCON: 1
+[00:01:03.409,423] [0m<inf> PathPatrol: poll finished[0m
+[00:01:03.409,454] [0m<inf> PathPatrol: RFID tag: 5318400E[0m
+[00:01:03.410,034] [0m<inf> PathPatrol: Publishing: 5318400E[0m
+[00:01:03.410,064] [0m<inf> PathPatrol: to topic: devacademy/iulfyesrf/iulfyesrf len: 30[0m
+[00:01:03.419,097] [0m<inf> PathPatrol: Tag sent to broker.[0m
+[00:01:03.419,097] [0m<inf> PathPatrol: LED off message.[0m
+[00:01:03.507,415] [0m<inf> PathPatrol: RRC mode: Connected
+[0m
+[00:01:05.419,219] [0m<inf> PathPatrol: LED on message.[0m
+[00:01:05.419,250] [0m<inf> PathPatrol: starting poll[0m
+[00:01:05.419,311] [0m<inf> PathPatrol: poll finished[0m
+[00:01:05.419,403] [0m<inf> PathPatrol: PUBACK packet id: 303[0m
+[00:01:05.419,433] [0m<inf> PathPatrol: RFID tag: 5318400E[0m
+[00:01:05.420,013] [0m<inf> PathPatrol: Publishing: 5318400E[0m
+[00:01:05.420,043] [0m<inf> PathPatrol: to topic: devacademy/iulfyesrf/iulfyesrf len: 30[0m
+[00:01:05.428,314] [0m<inf> PathPatrol: Tag sent to broker.[0m
+[00:01:05.428,344] [0m<inf> PathPatrol: LED off message.[0m
+[00:01:07.428,436] [0m<inf> PathPatrol: LED on message.[0m
+[00:01:07.428,466] [0m<inf> PathPatrol: starting poll[0m
+[00:01:07.428,527] [0m<inf> PathPatrol: poll finished[0m
+[00:01:07.428,619] [0m<inf> PathPatrol: MQTT PUBLISH result=0 len=8[0m
+[00:01:07.429,290] [0m<inf> PathPatrol: Received: 5318400E[0m
+[00:01:07.429,321] [0m<inf> PathPatrol: RFID tag: 23FC6895[0m
+[00:01:07.429,901] [0m<inf> PathPatrol: Publishing: 23FC6895[0m
+[00:01:07.429,931] [0m<inf> PathPatrol: to topic: devacademy/iulfyesrf/iulfyesrf len: 30[0m
+[00:01:07.430,419] [0m<inf> PathPatrol: Tag sent to broker.[0m
+[00:01:07.430,450] [0m<inf> PathPatrol: LED off message.[0m
+[00:01:09.430,541] [0m<inf> PathPatrol: LED on message.[0m
+[00:01:09.430,572] [0m<inf> PathPatrol: starting poll[0m
+[00:01:09.430,633] [0m<inf> PathPatrol: poll finished[0m
+[00:01:09.430,725] [0m<inf> PathPatrol: PUBACK packet id: 63935[0m
+[00:01:09.430,755] [0m<inf> PathPatrol: starting poll[0m
+[00:01:09.430,816] [0m<inf> PathPatrol: poll finished[0m
+[00:01:09.430,908] [0m<inf> PathPatrol: MQTT PUBLISH result=0 len=8[0m
+[00:01:09.439,636] [0m<inf> PathPatrol: Received: 5318400E[0m
+[00:01:09.439,636] [0m<inf> PathPatrol: starting poll[0m
+[00:01:09.439,697] [0m<inf> PathPatrol: poll finished[0m
+[00:01:09.439,788] [0m<inf> PathPatrol: PUBACK packet id: 29567[0m
+[00:01:09.439,819] [0m<inf> PathPatrol: starting poll[0m
+[00:01:09.439,880] [0m<inf> PathPatrol: poll finished[0m
+[00:01:09.439,971] [0m<inf> PathPatrol: MQTT PUBLISH result=0 len=8[0m
+[00:01:09.440,460] [0m<inf> PathPatrol: Received: 23FC6895[0m
+[00:01:09.440,490] [0m<inf> PathPatrol: starting poll[0m
++CSCON: 0
+[00:01:13.194,244] [0m<inf> PathPatrol: RRC mode: Idle
+[0m
+23fc6895 added to buffer
+23fc6895 added to buffer
+5318400e added to buffer
+23fc6895 added to buffer
++CSCON: 1
+[00:01:56.848,663] [0m<inf> PathPatrol: RRC mode: Connected
+[0m
+[00:01:57.007,446] [0m<inf> PathPatrol: poll finished[0m
+[00:01:57.008,575] [0m<inf> PathPatrol: MQTT client disconnected: -128[0m
+[00:01:57.008,575] [1;31m<err> PathPatrol: Error in mqtt_input: -128[0m
+[00:01:57.008,605] [0m<inf> PathPatrol: Disconnecting MQTT client[0m
+[00:01:57.008,636] [1;31m<err> PathPatrol: Could not disconnect MQTT client: -128[0m
++CSCON: 0
+[00:02:02.307,342] [0m<inf> PathPatrol: RRC mode: Idle
+[0m

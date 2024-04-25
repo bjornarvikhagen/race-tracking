@@ -1,0 +1,47 @@
+*** Booting Zephyr OS build v3.2.99-ncs2 ***
++CEREG: 2,"0901","01F6800B",7
++CSCON: 1
++CEREG: 5,"0901","01F6800B",7,,,"11100000","11100000"
++CEREG: 0
+[00:00:03.682,739] [0m<inf> PathPatrol: Initializing NFC[0m
+[00:00:03.728,790] [0m<inf> PathPatrol: LED is ready and configured.[0m
+[00:00:03.728,820] [0m<inf> PathPatrol: Initializing modem library
+[0m
+[00:00:03.728,820] [0m<inf> PathPatrol: Disconnecting from open LTE connection.[0m
++CSCON: 0
++CEREG: 2,"0901","01F6800B",7
++CSCON: 1
+[00:00:05.181,274] [0m<inf> PathPatrol: Checking for certificates.[0m
+[00:00:05.212,341] [0m<inf> PathPatrol: Exists[0m
+[00:00:05.230,194] [0m<inf> PathPatrol: Certificate match[0m
+[00:00:05.230,224] [0m<inf> PathPatrol: Connecting to LTE network
+[0m
+[00:00:06.052,124] [0m<inf> PathPatrol: RRC mode: Connected
+[0m
++CEREG: 5,"0901","01F6800B",7,,,"11100000","11100000"
+[00:00:06.722,778] [0m<inf> PathPatrol: Network registration status: Connected - roaming
+[0m
+[00:00:06.722,930] [0m<inf> PathPatrol: Connected to LTE network
+[0m
+[00:00:06.722,961] [0m<inf> PathPatrol: Led toggled.[0m
+[00:00:06.888,366] [0m<inf> PathPatrol: IPv4 Address found 54.93.74.243[0m
+[00:00:06.888,427] [0m<inf> PathPatrol: client->user_name->utf8: asdf[0m
+[00:00:06.888,458] [0m<inf> PathPatrol: client->user_name->size: 4[0m
+[00:00:06.888,488] [0m<inf> PathPatrol: client->password->utf8: mqtt1234[0m
+[00:00:06.888,488] [0m<inf> PathPatrol: client->password->size: 8[0m
+[00:00:06.888,519] [0m<inf> PathPatrol: client->client_id.utf8: testclient12345[0m
+[00:00:06.888,549] [0m<inf> PathPatrol: client->client_id.size: 15[0m
+[00:00:06.888,549] [0m<inf> PathPatrol: TLS enabled[0m
+[00:00:06.888,916] [0m<inf> PathPatrol: Client initialized.[0m
++CSCON: 0
+[00:00:13.244,049] [0m<inf> PathPatrol: RRC mode: Idle
+[0m
+23fc6895 added to buffer
+[00:00:28.293,640] [0m<inf> PathPatrol: RFID tag: 23FC6895[0m
+[00:00:28.294,219] [0m<inf> PathPatrol: Publishing: 23FC6895[0m
+[00:00:28.294,250] [0m<inf> PathPatrol: to topic: devacademy/iulfyesrf/iulfyesrf len: 30[0m
+[00:00:28.294,311] [1;31m<err> PathPatrol: Failed to send message, -128[0m
+[00:00:28.294,311] [1;31m<err> PathPatrol: fail_count: 1[0m
+[00:01:08.407,043] [1;31m<err> PathPatrol: Error in mqtt_live: -128[0m
+[00:01:08.407,043] [0m<inf> PathPatrol: Disconnecting MQTT client[0m
+[00:01:08.407,073] [1;31m<err> PathPatrol: Could not disconnect MQTT client: -128[0m

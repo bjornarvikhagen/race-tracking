@@ -1,0 +1,157 @@
+*** Booting Zephyr OS build v3.2.99-ncs2 ***
++CEREG: 2,"0901","01F6800B",7
++CSCON: 1
++CEREG: 5,"0901","01F6800B",7,,,"11100000","11100000"
++CEREG: 0
+[00:00:03.822,387] [0m<inf> PathPatrol: Initializing NFC[0m
+[00:00:03.868,774] [0m<inf> PathPatrol: LED is ready and configured.[0m
+[00:00:03.868,774] [0m<inf> PathPatrol: Initializing modem library
+[0m
+[00:00:03.868,804] [0m<inf> PathPatrol: Disconnecting from open LTE connection.[0m
++CSCON: 0
++CEREG: 2,"0901","01F6800B",7
++CSCON: 1
+[00:00:05.321,563] [0m<inf> PathPatrol: Checking for certificates.[0m
+[00:00:05.352,630] [0m<inf> PathPatrol: Exists[0m
+[00:00:05.370,483] [0m<inf> PathPatrol: Certificate match[0m
+[00:00:05.370,483] [0m<inf> PathPatrol: Connecting to LTE network
+[0m
+[00:00:06.210,937] [0m<inf> PathPatrol: RRC mode: Connected
+[0m
++CEREG: 5,"0901","01F6800B",7,,,"11100000","11100000"
+[00:00:06.789,733] [0m<inf> PathPatrol: Network registration status: Connected - roaming
+[0m
+[00:00:06.789,886] [0m<inf> PathPatrol: Connected to LTE network
+[0m
+[00:00:06.789,886] [0m<inf> PathPatrol: Led toggled.[0m
+[00:00:06.947,967] [0m<inf> PathPatrol: IPv4 Address found 18.193.202.20[0m
+[00:00:06.948,028] [0m<inf> PathPatrol: MQTT Client Username: asdf[0m
+[00:00:06.948,059] [0m<inf> PathPatrol: MQTT Client Password: mqtt1234[0m
+[00:00:06.948,089] [0m<inf> PathPatrol: MQTT Client ID: testclient12345[0m
+[00:00:06.948,089] [0m<inf> PathPatrol: TLS enabled[0m
+[00:00:06.948,486] [0m<inf> PathPatrol: imei init complete[0m
+[00:00:06.948,486] [0m<inf> PathPatrol: Client initialized.[0m
++CSCON: 0
++CSCON: 1
+[00:00:12.183,685] [0m<inf> PathPatrol: RRC mode: Idle
+[0m
+[00:00:12.350,219] [0m<inf> PathPatrol: RRC mode: Connected
+[0m
+[00:00:13.840,881] [0m<inf> PathPatrol: Keepalive timer: 60000[0m
+[00:00:13.982,177] [0m<inf> PathPatrol: Keepalive timer: 59858[0m
++CSCON: 0
+[00:00:18.110,900] [0m<inf> PathPatrol: RRC mode: Idle
+[0m
+[00:00:29.507,354] [0m<inf> PathPatrol: b3f66310 added to buffer, 1 new size[0m
++CSCON: 1
+[00:00:32.822,082] [0m<inf> PathPatrol: RRC mode: Connected
+[0m
+[00:00:32.977,966] [0m<inf> PathPatrol: MQTT client disconnected: -128[0m
+[00:00:32.977,996] [1;31m<err> PathPatrol: Error in mqtt_input: -128[0m
+[00:00:32.977,996] [0m<inf> PathPatrol: Disconnecting MQTT client[0m
+[00:00:32.978,027] [1;31m<err> PathPatrol: Could not disconnect MQTT client: -128[0m
+[00:00:32.978,057] [0m<inf> PathPatrol: Reconnecting in 10 seconds...[0m
++CSCON: 0
+[00:00:42.975,006] [0m<inf> PathPatrol: time since passing: 13467[0m
+[1;31m--- 9999 messages dropped ---
+[0m[00:00:42.975,585] [0m<inf> PathPatrol: Publishing: B3F66310:13467[0m
+[00:00:42.975,616] [0m<inf> PathPatrol: to topic: postcheckpoint len: 14[0m
+[00:00:42.975,677] [1;31m<err> PathPatrol: Failed to send message, -128[0m
+[00:00:42.975,677] [1;31m<err> PathPatrol: fail_count: 7802[0m
+[00:00:42.975,708] [0m<inf> PathPatrol: RFID tag: B3F66310[0m
+[00:00:42.975,769] [0m<inf> PathPatrol: time since passing: 13468[0m
+[00:00:42.976,348] [0m<inf> PathPatrol: Publishing: B3F66310:13468[0m
+[00:00:42.976,409] [0m<inf> PathPatrol: to topic: postcheckpoint len: 14[0m
+[00:00:42.976,440] [1;31m<err> PathPatrol: Failed to send message, -128[0m
+[00:00:42.976,440] [1;31m<err> PathPatrol: fail_count: 7803[0m
+[00:00:42.976,470] [0m<inf> PathPatrol: RFID tag: B3F66310[0m
+[00:00:42.976,562] [0m<inf> PathPatrol: time since passing: 13469[0m
+[00:00:42.977,142] [0m<inf> PathPatrol: Publishing: B3F66310:13469[0m
+[00:00:42.977,172] [0m<inf> PathPatrol: to topic: postcheckpoint len: 14[0m
+[00:00:42.9+CSCON: 1
+77,203] [1;31m<err> PathPatrol: Failed to send message, -128[0m
+[00:00:42.977,233] [1;31m<err> PathPatrol: fail_count: 7804[0m
+[00:00:42.977,233] [0m<inf> PathPatrol: RFID tag: B3F66310[0m
+[00:00:42.977,325] [0m<inf> PathPatrol: time since passing: 13470[0m
+[00:00:42.977,905] [0m<inf> PathPatrol: Publishing: B3F66310:13470[0m
+[00:00:42.977,935] [0m<inf> PathPatrol: to topic: postcheckpoint len: 14[0m
+[00:00:42.977,996] [1;31m<err> PathPatrol: Failed to send message, -128[0m
+[00:00:42.977,996] [1;31m<err> PathPatrol: fail_count: 7805[0m
+[00:00:42.978,027] [0m<inf> PathPatrol: RFID tag: B3F66310[0m
+[00:00:42.978,179] [0m<inf> PathPatrol: time since passing: 13471[0m
+[00:00:42.978,790] [0m<inf> PathPatrol: Publishing: B3F66310:13471[0m
+[00:00:42.978,820] [0m<inf> PathPatrol: to topic: postcheckpoint len: 14[0m
+[00:00:43.081,512] [0m<inf> PathPatrol: RRC mode: Connected
+[0m
+[00:00:44.777,648] [0m<inf> PathPatrol: time since passing: 15270[0m
+[1;31m--- 1187 messages dropped ---
+[0m[00:00:44.778,259] [0m<inf> PathPatrol: to topic: postcheckpoint len: 14[0m
+[00:00:44.778,289] [1;31m<err> PathPatrol: Failed to send message, -128[0m
+[00:00:44.778,320] [1;31m<err> PathPatrol: fail_count: 8004[0m
+[00:00:44.778,320] [0m<inf> PathPatrol: RFID tag: B3F66310[0m
+[00:00:44.778,411] [0m<inf> PathPatrol: time since passing: 15271[0m
+[00:00:44.778,991] [0m<inf> PathPatrol: Publishing: B3F66310:15271[0m
+[00:00:44.779,022] [0m<inf> PathPatrol: to topic: postcheckpoint len: 14[0m
+[00:00:44.779,052] [1;31m<err> PathPatrol: Failed to send message, -128[0m
+[00:00:44.779,083] [1;31m<err> PathPatrol: fail_count: 8005[0m
+[00:00:44.779,083] [0m<inf> PathPatrol: RFID tag: B3F66310[0m
+[00:00:44.779,174] [0m<inf> PathPatrol: time since passing: 15272[0m
+[00:00:44.779,754] [0m<inf> PathPatrol: Publishing: B3F66310:15272[0m
+[00:00:44.779,785] [0m<inf> PathPatrol: to topic: postcheckpoint len: 14[0m
+[00:00:44.779,846] [1;31m<err> PathPatrol: Failed to send message, -128[0m
+[00:00:44.779,846] [1;31m<err> PathPatrol: fail_count: 8006[0m
+[00:00:44.779,876] [0m<inf> PathPatrol: RFID tag: B3F66310[0m
+[00:00:44.779,968] [0m<inf> PathPatrol: time since passing: 15272[0m
+[00:00:44.780,548] [0m<inf> PathPatrol: Publishing: B3F66310:15272[0m
+[00:00:44.780,578] [0m<inf> PathPatrol: to topic: postcheckpoint len: 14[0m
+[00:00:44.780,609] [1;31m<err> PathPatrol: Failed to send message, -128[0m
+[00:00:44.780,639] [1;31m<err> PathPatrol: fail_count: 8007[0m
+[00:00:44.780,639] [0m<inf> PathPatrol: RFID tag: B3F66310[0m
+[00:00:44.780,731] [0m<inf> PathPatrol: time since passing: 15273[0m
+[00:00:44.781,463] [0m<inf> PathPatrol: Keepalive timer: 59844[0m
+[00:00:44.781,555] [0m<inf> PathPatrol: Publishing: B3F66310:15273[0m
+[00:00:44.781,585] [0m<inf> PathPatrol: to topic: postcheckpoint len: 14[0m
+[00:00:44.782,257] [0m<inf> PathPatrol: Tag sent to broker.[0m
+[00:00:44.933,563] [0m<inf> PathPatrol: PUBACK packet id: 21322[0m
+[00:00:44.933,593] [0m<inf> PathPatrol: Keepalive timer: 59849[0m
++CSCON: 0
+[00:00:48.920,196] [0m<inf> PathPatrol: RRC mode: Idle
+[0m
++CSCON: 1
+[00:00:57.143,127] [0m<inf> PathPatrol: RRC mode: Connected
+[0m
+[00:00:57.285,980] [0m<inf> PathPatrol: MQTT client disconnected: -128[0m
+[00:00:57.286,010] [1;31m<err> PathPatrol: Error in mqtt_input: -128[0m
+[00:00:57.286,010] [0m<inf> PathPatrol: Disconnecting MQTT client[0m
+[00:00:57.286,041] [1;31m<err> PathPatrol: Could not disconnect MQTT client: -128[0m
+[00:00:57.286,071] [0m<inf> PathPatrol: Reconnecting in 10 seconds...[0m
++CSCON: 0
+[00:01:02.680,786] [0m<inf> PathPatrol: RRC mode: Idle
+[0m
++CSCON: 1
+[00:01:07.392,547] [0m<inf> PathPatrol: RRC mode: Connected
+[0m
+[00:01:08.947,174] [0m<inf> PathPatrol: Keepalive timer: 60000[0m
+[00:01:09.093,536] [0m<inf> PathPatrol: Keepalive timer: 59854[0m
++CSCON: 0
+[00:01:12.985,229] [0m<inf> PathPatrol: RRC mode: Idle
+[0m
++CSCON: 1
+[00:01:21.463,134] [0m<inf> PathPatrol: RRC mode: Connected
+[0m
+[00:01:21.621,032] [0m<inf> PathPatrol: MQTT client disconnected: -128[0m
+[00:01:21.621,032] [1;31m<err> PathPatrol: Error in mqtt_input: -128[0m
+[00:01:21.621,063] [0m<inf> PathPatrol: Disconnecting MQTT client[0m
+[00:01:21.621,093] [1;31m<err> PathPatrol: Could not disconnect MQTT client: -128[0m
+[00:01:21.621,093] [0m<inf> PathPatrol: Reconnecting in 10 seconds...[0m
++CSCON: 0
+[00:01:26.843,597] [0m<inf> PathPatrol: RRC mode: Idle
+[0m
++CSCON: 1
+[00:01:31.723,571] [0m<inf> PathPatrol: RRC mode: Connected
+[0m
+[00:01:33.268,188] [0m<inf> PathPatrol: Keepalive timer: 60000[0m
+[00:01:33.415,557] [0m<inf> PathPatrol: Keepalive timer: 59853[0m
++CSCON: 0
+[00:01:37.474,243] [0m<inf> PathPatrol: RRC mode: Idle
+[0m

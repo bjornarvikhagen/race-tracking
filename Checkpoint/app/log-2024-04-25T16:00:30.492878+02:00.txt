@@ -1,0 +1,83 @@
+*** Booting Zephyr OS build v3.2.99-ncs2 ***
++CEREG: 2,"0901","01F6800B",7
++CSCON: 1
++CEREG: 5,"0901","01F6800B",7,,,"11100000","11100000"
++CEREG: 0
+[00:00:03.498,474] [0m<inf> PathPatrol: Initializing NFC[0m
+[00:00:03.544,799] [0m<inf> PathPatrol: LED is ready and configured.[0m
+[00:00:03.544,799] [0m<inf> PathPatrol: Initializing modem library
+[0m
+[00:00:03.544,830] [0m<inf> PathPatrol: Disconnecting from open LTE connection.[0m
++CSCON: 0
++CEREG: 2,"0901","01F6800B",7
++CSCON: 1
+[00:00:04.994,171] [0m<inf> PathPatrol: Checking for certificates.[0m
+[00:00:05.025,238] [0m<inf> PathPatrol: Exists[0m
+[00:00:05.043,090] [0m<inf> PathPatrol: Certificate match[0m
+[00:00:05.043,121] [0m<inf> PathPatrol: Connecting to LTE network
+[0m
+[00:00:05.869,049] [0m<inf> PathPatrol: RRC mode: Connected
+[0m
++CEREG: 5,"0901","01F6800B",7,,,"11100000","11100000"
+[00:00:06.386,932] [0m<inf> PathPatrol: Network registration status: Connected - roaming
+[0m
+[00:00:06.387,084] [0m<inf> PathPatrol: Connected to LTE network
+[0m
+[00:00:06.387,084] [0m<inf> PathPatrol: Led toggled.[0m
+[00:00:06.572,937] [0m<inf> PathPatrol: IPv4 Address found 18.193.202.20[0m
+[00:00:06.572,998] [0m<inf> PathPatrol: client->user_name->utf8: asdf[0m
+[00:00:06.572,998] [0m<inf> PathPatrol: client->user_name->size: 4[0m
+[00:00:06.573,028] [0m<inf> PathPatrol: client->password->utf8: mqtt1234[0m
+[00:00:06.573,059] [0m<inf> PathPatrol: client->password->size: 8[0m
+[00:00:06.573,089] [0m<inf> PathPatrol: client->client_id.utf8: testclient12345[0m
+[00:00:06.573,120] [0m<inf> PathPatrol: client->client_id.size: 15[0m
+[00:00:06.573,120] [0m<inf> PathPatrol: TLS enabled[0m
+[00:00:06.573,577] [0m<inf> PathPatrol: Client initialized.[0m
+[00:00:06.573,608] [0m<inf> PathPatrol: SETUP COMPLETE[0m
+[00:00:06.573,669] [0m<inf> PathPatrol: netwwork thread started![0m
++CSCON: 0
+[00:00:11.861,145] [0m<inf> PathPatrol: RRC mode: Idle
+[0m
++CSCON: 1
+[00:00:12.977,355] [0m<inf> PathPatrol: RRC mode: Connected
+[0m
+23fc6895 added to buffer
+[00:00:14.385,955] [0m<inf> PathPatrol: starting poll[0m
+[00:00:14.566,192] [0m<inf> PathPatrol: poll finished[0m
+[00:00:14.566,314] [0m<inf> PathPatrol: Subscribing to: devacademy/iulfyesrf/iulfyesrf len 30[0m
+[00:00:14.567,077] [0m<inf> PathPatrol: stuff finished[0m
+[00:00:14.567,108] [0m<inf> PathPatrol: RFID tag: 23FC6895[0m
+[00:00:14.567,687] [0m<inf> PathPatrol: Publishing: 23FC6895[0m
+[00:00:14.567,718] [0m<inf> PathPatrol: to topic: devacademy/iulfyesrf/iulfyesrf len: 30[0m
+[00:00:14.568,176] [0m<inf> PathPatrol: Tag sent to broker.[0m
+[00:00:14.568,206] [0m<inf> PathPatrol: LED off message.[0m
+[00:00:16.568,298] [0m<inf> PathPatrol: LED on message.[0m
+[00:00:16.568,328] [0m<inf> PathPatrol: starting poll[0m
+[00:00:16.568,389] [0m<inf> PathPatrol: poll finished[0m
+[00:00:16.568,481] [0m<inf> PathPatrol: SUBACK packet id: 43966[0m
+[00:00:16.568,511] [0m<inf> PathPatrol: stuff finished[0m
+[00:00:16.568,511] [0m<inf> PathPatrol: starting poll[0m
+[00:00:16.568,572] [0m<inf> PathPatrol: poll finished[0m
+[00:00:16.568,664] [0m<inf> PathPatrol: PUBACK packet id: 28247[0m
+[00:00:16.568,695] [0m<inf> PathPatrol: stuff finished[0m
+[00:00:16.568,725] [0m<inf> PathPatrol: starting poll[0m
+[00:00:16.568,786] [0m<inf> PathPatrol: poll finished[0m
+[00:00:16.568,878] [0m<inf> PathPatrol: MQTT PUBLISH result=0 len=8[0m
+[00:00:16.577,392] [0m<inf> PathPatrol: Received: 23FC6895[0m
+[00:00:16.577,423] [0m<inf> PathPatrol: stuff finished[0m
+[00:00:16.577,453] [0m<inf> PathPatrol: starting poll[0m
++CSCON: 0
+[00:00:20.260,101] [0m<inf> PathPatrol: RRC mode: Idle
+[0m
++CSCON: 1
+[00:00:27.057,952] [0m<inf> PathPatrol: RRC mode: Connected
+[0m
+[00:00:27.203,674] [0m<inf> PathPatrol: poll finished[0m
+[00:00:27.204,833] [0m<inf> PathPatrol: MQTT client disconnected: -128[0m
+[00:00:27.204,833] [1;31m<err> PathPatrol: Error in mqtt_input: -128[0m
+[00:00:27.204,864] [0m<inf> PathPatrol: Disconnecting MQTT client[0m
+[00:00:27.204,895] [1;31m<err> PathPatrol: Could not disconnect MQTT client: -128[0m
++CSCON: 0
+23fc6895 added to buffer
+[00:00:32.516,632] [0m<inf> PathPatrol: RRC mode: Idle
+[0m

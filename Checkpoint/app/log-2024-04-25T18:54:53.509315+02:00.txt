@@ -1,0 +1,61 @@
+*** Booting Zephyr OS build v3.2.99-ncs2 ***
++CEREG: 2,"0901","01F6800B",7
++CSCON: 1
++CEREG: 5,"0901","01F6800B",7,,,"11100000","11100000"
++CEREG: 0
+[00:00:03.310,089] [0m<inf> PathPatrol: Initializing NFC[0m
+[00:00:03.356,475] [0m<inf> PathPatrol: LED is ready and configured.[0m
+[00:00:03.356,506] [0m<inf> PathPatrol: Initializing modem library
+[0m
+[00:00:03.356,506] [0m<inf> PathPatrol: Disconnecting from open LTE connection.[0m
++CSCON: 0
++CEREG: 2,"0901","01F6800B",7
++CSCON: 1
+[00:00:04.818,939] [0m<inf> PathPatrol: Checking for certificates.[0m
+[00:00:04.850,006] [0m<inf> PathPatrol: Exists[0m
+[00:00:04.867,858] [0m<inf> PathPatrol: Certificate match[0m
+[00:00:04.867,858] [0m<inf> PathPatrol: Connecting to LTE network
+[0m
+[00:00:05.678,436] [0m<inf> PathPatrol: RRC mode: Connected
+[0m
++CEREG: 5,"0901","01F6800B",7,,,"11100000","11100000"
+[00:00:06.198,516] [0m<inf> PathPatrol: Network registration status: Connected - roaming
+[0m
+[00:00:06.198,669] [0m<inf> PathPatrol: Connected to LTE network
+[0m
+[00:00:06.198,669] [0m<inf> PathPatrol: Led toggled.[0m
+[00:00:06.376,708] [0m<inf> PathPatrol: IPv4 Address found 18.193.202.20[0m
+[00:00:06.376,770] [0m<inf> PathPatrol: MQTT Client Username: asdf[0m
+[00:00:06.376,800] [0m<inf> PathPatrol: MQTT Client Password: mqtt1234[0m
+[00:00:06.376,831] [0m<inf> PathPatrol: MQTT Client ID: testclient12345[0m
+[00:00:06.376,861] [0m<inf> PathPatrol: TLS enabled[0m
+[00:00:06.377,258] [0m<inf> PathPatrol: imei init complete: 350457799521065[0m
+[00:00:06.377,258] [0m<inf> PathPatrol: Client initialized.[0m
+[00:00:07.795,288] [0m<inf> PathPatrol: Keepalive timer: 60000[0m
+[00:00:07.964,782] [0m<inf> PathPatrol: Keepalive timer: 59831[0m
++CSCON: 0
+[00:00:11.599,334] [0m<inf> PathPatrol: RRC mode: Idle
+[0m
+[00:00:22.965,209] [0m<inf> PathPatrol: b3f66310 added to buffer, 1 new size[0m
++CSCON: 1
+[00:00:26.377,563] [0m<inf> PathPatrol: IMEI: 000102030405060708090A[0m
+[00:00:26.377,563] [0m<inf> PathPatrol: RFID tag: B3F66310[0m
+[00:00:26.377,655] [0m<inf> PathPatrol: time since passing: 3412[0m
+[00:00:26.378,234] [0m<inf> PathPatrol: Publishing: B3F66310:3412[0m
+[00:00:26.378,265] [0m<inf> PathPatrol: to topic: postcheckpoint len: 14[0m
+[00:00:26.378,906] [0m<inf> PathPatrol: Tag sent to broker.[0m
+[00:00:26.469,543] [0m<inf> PathPatrol: RRC mode: Connected
+[0m
+[00:00:26.752,624] [0m<inf> PathPatrol: PUBACK packet id: 23188[0m
+[00:00:26.752,655] [0m<inf> PathPatrol: Keepalive timer: 59626[0m
++CSCON: 0
+[00:00:32.072,235] [0m<inf> PathPatrol: RRC mode: Idle
+[0m
++CSCON: 1
+[00:01:26.387,786] [0m<inf> PathPatrol: Keepalive timer: 60000[0m
+[00:01:26.483,062] [0m<inf> PathPatrol: RRC mode: Connected
+[0m
+[00:01:26.665,832] [0m<inf> PathPatrol: Keepalive timer: 59722[0m
++CSCON: 0
+[00:01:31.930,755] [0m<inf> PathPatrol: RRC mode: Idle
+[0m
