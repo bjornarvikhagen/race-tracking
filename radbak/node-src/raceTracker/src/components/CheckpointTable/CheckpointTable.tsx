@@ -29,7 +29,7 @@ function DeviceTable({ onDataUpdate, deviceData }: DeviceTableProps) {
     if (bottomRowRef.current) {
       bottomRowRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
     }
-  }, [data.length]);
+  }, [data]);
 
   // Function to handle starting editing mode
   const handleEditID = (index: number) => {
