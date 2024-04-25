@@ -14,7 +14,7 @@ export interface Runner {
 export interface Checkpoint {
   id: number;
   position: number;
-  timeLimit: Date | null;
+  timeLimit: string | null;
 }
 
 const RaceOverview = () => {

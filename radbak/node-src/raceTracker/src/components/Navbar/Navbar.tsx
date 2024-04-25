@@ -19,7 +19,7 @@ const Navbar = () => {
         Current Races
       </div>
       <div className="nav-item" onClick={() => navigateTo("/register-tag")}>
-        Register Race
+        Register Race Participant
       </div>
       <div className="nav-item" onClick={() => navigateTo("/register-user")}>
         Register User
@@ -27,7 +27,7 @@ const Navbar = () => {
 
       {isAdmin && (
         <div className="nav-item" onClick={() => navigateTo("/admin")}>
-          Admin
+          Create Race
         </div>
       )}
 

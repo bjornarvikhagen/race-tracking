@@ -1,75 +1,91 @@
 .App {
-    max-height: 30ch;
-    overflow:scroll;
-  }
-  
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    border: 1px solid #ddd;
-  }
+  max-height: 30ch;
+  overflow: scroll;
+}
 
-  thead {
-    position: sticky;
-    top: 0;
-    background-color: #f2f2f2;
-    z-index: 1;
-  }
-  
-  thead th {
-    background-color: #f2f2f2;
-    border-bottom: 1px solid #ddd;
-    border-right: 1px solid #ddd;
-    padding: 10px;
-    text-align: center;
-  }
-  
-  thead th:last-child {
-    border-right: none;
-  }
+.device-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #ddd;
+}
 
-  tbody td {
-    border-bottom: 1px solid #ddd;
-    padding: 10px;
-  }
-  
-  tbody td:first-child {
-    width: 10%;
-    border-right: 1px solid #ddd;
-  }
-  
-  tbody td:nth-child(2) {
-    width: 40%;
-    border-right: 1px solid #ddd;
-  }
+.device-table thead {
+  position: sticky;
+  top: 0;
+  background-color: #f2f2f2;
+  z-index: 1;
+}
 
-  tbody td:nth-child(3) {
-    width: 40%;
-    border-right: 1px solid #ddd;
-  }
-  
-  tbody td:last-child {
-    width: 10%;
-    text-align: center;
-  }
-  
-  .editable-cell {
-    position: relative;
-    cursor: pointer;
-  }
-  
-  .empty-cell {
-    color: #aaa;
-  }
-  
-  input[type="text"] {
-    width: calc(100% - 20px);
-    padding: 5px;
-  }
-  
-  img {
-    width: 20px;
-    height: 20px;
-  }
-  
-  
+.device-table thead th {
+  background-color: #f2f2f2;
+  border-bottom: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+}
+
+.device-table thead th:last-child {
+  border-right: none;
+}
+
+.device-table tbody td {
+  border-bottom: 1px solid #ddd;
+  padding: 10px;
+  vertical-align: middle;
+  /* Ensures content is centered vertically */
+}
+
+.device-table tbody td:first-child {
+  width: 10%;
+  border-right: 1px solid #ddd;
+}
+
+.device-table tbody td:nth-child(2),
+.device-table tbody td:nth-child(3) {
+  width: 40%;
+  border-right: 1px solid #ddd;
+}
+
+.device-table tbody td:last-child {
+  width: 10%;
+  text-align: center;
+}
+
+.device-table .editable-cell {
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.device-table .editable-cell textarea {
+  width: 100%;
+  /* Ensures textarea fits the width of the cell */
+  height: calc(100% - 20px);
+  /* Adjusts to the height minus vertical paddings */
+  padding: 0;
+  /* Eliminates internal padding */
+  border: none;
+  /* Removes borders */
+  resize: none;
+  /* Disables resizing */
+  box-sizing: border-box;
+  /* Includes padding and border in width and height */
+  background: transparent;
+  /* Ensures the background matches the cell */
+  outline: none;
+  /* Removes the focus outline for aesthetics */
+  vertical-align: middle;
+  /* Aligns the text vertically */
+  overflow: hidden;
+  /* Prevents content overflow */
+}
+
+.device-table .empty-cell {
+  color: #aaa;
+}
+
+.device-table img {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}

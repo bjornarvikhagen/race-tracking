@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import "./CheckpointTable.css";
 import TrashCanSVG from "../../assets/trashcan.svg";
 
@@ -19,10 +19,20 @@ type DeviceData = {
 
 function DeviceTable({ onDataUpdate, deviceData }: DeviceTableProps) {
   const [data, setData] = useState<DeviceData[]>(deviceData);
+  const bottomRowRef = useRef<HTMLTableRowElement>(null);
+
+
 
   useEffect(() => {
     setData(deviceData);
   }, [deviceData]);
+
+  useEffect(() => {
+    if (bottomRowRef.current) {
+      bottomRowRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }
+  }, [data]); // Dependency array includes data to trigger on data change
+
 
   // Function to handle starting editing mode
   const handleEditID = (index: number) => {
@@ -37,6 +47,8 @@ function DeviceTable({ onDataUpdate, deviceData }: DeviceTableProps) {
     newData[index].isEditingTimeLimit = true;
     newData[index].tempTimeLimit = newData[index].timeLimit; // Store the original timeLimit
     setData(newData);
+    console.log(newData);
+
   };
 
   // Function to handle finishing editing mode
@@ -117,7 +129,7 @@ function DeviceTable({ onDataUpdate, deviceData }: DeviceTableProps) {
 
   return (
     <div className="App">
-      <table>
+      <table className="device-table">
         <thead>
           <tr>
             <th>Position</th>
@@ -130,6 +142,7 @@ function DeviceTable({ onDataUpdate, deviceData }: DeviceTableProps) {
           {data.map((item, index) => (
             <tr
               key={index}
+              ref={index === data.length - 1 ? bottomRowRef : null}
               onDragOver={(e) => e.preventDefault()}
               onDrop={(e) => handleDrop(e, index)}
             >
@@ -173,7 +186,7 @@ function DeviceTable({ onDataUpdate, deviceData }: DeviceTableProps) {
               >
                 {item.isEditingTimeLimit ? (
                   <textarea
-                    placeholder="Enter TimeLimit"
+                    placeholder="yyyy-mm-dd hh:mm"
                     value={item.timeLimit}
                     onChange={(e) =>
                       setData(

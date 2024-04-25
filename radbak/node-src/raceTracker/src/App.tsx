@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import RaceOverview from "./pages/RaceOverview";
 import Login from "./pages/Login";
 import Navbar from "./components/Navbar/Navbar";
-import AdminPage from "./pages/AdminPage";
+import AdminPage from "./pages/CreateRace/CreateRace";
 import RegisterUser from "./pages/RegisterUser";
 import RegisterTag from "./pages/RegisterTag"
 

@@ -1,10 +1,23 @@
 import DeviceTable from "../CheckpointTable/CheckpointTable";
-import { ChangeEvent, useEffect, useState } from "react";
+import { useState } from "react";
 import "./CreateRoute.css";
-import FinaliseCheckpoints from "./FinaliseCheckpoints";
 
-const CreateRoute = () => {
-  const [deviceData, setDeviceData] = useState([
+type DeviceData = {
+  position: number;
+  ID: string;
+  isEditingID: boolean;
+  tempID: string;
+  timeLimit: string;
+  isEditingTimeLimit: boolean;
+  tempTimeLimit: string;
+};
+
+interface CreateRouteProps {
+  onCreateRace: (deviceData: DeviceData[]) => void;
+}
+
+const CreateRoute = ({ onCreateRace }: CreateRouteProps) => {
+  const [deviceData, setDeviceData] = useState<DeviceData[]>([
     {
       position: 1,
       ID: "",
@@ -15,31 +28,9 @@ const CreateRoute = () => {
       tempTimeLimit: "",
     },
   ]);
-  const [laps, setLaps] = useState<number | "">();
-  const [isAutoTime, setIsAutoTime] = useState(false);
-  const [autoTime, setAutoTime] = useState("");
-  const [applySuccess, setApplySuccess] = useState(false);
-
-  useEffect(() => {
-    setApplySuccess(false);
-  }, [deviceData, laps, isAutoTime, autoTime]);
 
   const handleDeviceDataUpdate = (newData: any) => {
-    console.log(newData);
     setDeviceData(newData);
-  };
-
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const inputValue = e.target.value;
-    // Only allow input if it's a number
-    if (/^\d*$/.test(inputValue) || inputValue === "") {
-      setLaps(inputValue === "" ? "" : parseInt(inputValue, 10));
-      console.log(inputValue);
-    }
-  };
-
-  const handleAutoTimeChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setAutoTime(e.target.value);
   };
 
   const addRow = () => {
@@ -58,63 +49,35 @@ const CreateRoute = () => {
     setDeviceData(newData);
   };
 
+  const validateTimeLimitFormat = (timeLimit: string) => {
+    const regexWithoutSeconds = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/;
+    return regexWithoutSeconds.test(timeLimit);
+  };
+
   const apply = () => {
     let failed = false;
-    deviceData.forEach((device) => {
-      // check if ID is empty or not a number
+    const updatedDeviceData = deviceData.map(device => {
       if (device.ID === "" || !/^\d*$/.test(device.ID)) {
+        console.error("Each device must have a numeric ID.");
         failed = true;
-        return;
       }
-      // check if any timelimit is not a time in hh:mm format
-      if (
-        device.timeLimit !== "" &&
-        !/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/.test(device.timeLimit)
-      ) {
+      if (device.timeLimit === "") {
+        // Allow empty time limit
+      } else if (validateTimeLimitFormat(device.timeLimit)) {
+        device.timeLimit += ":00";
+        console.log(device.timeLimit);
+      } else {
+        console.error("Time limit must be in yyyy-mm-dd hh:mm format.");
+        console.log(device.timeLimit);
         failed = true;
-        return;
       }
-
-      // check if first time limit is empty
-      if (isAutoTime && device.position === 1 && device.timeLimit === "") {
-        failed = true;
-        return;
-      }
-
-      // check if timeLimit is within valid bounds
-      if (isAutoTime && device.timeLimit !== "") {
-        const [hours, minutes] = device.timeLimit.split(":");
-        if (parseInt(hours, 10) > 23 || parseInt(minutes, 10) > 59) {
-          failed = true;
-          return;
-        }
-      }
+      return device;
     });
 
-    if (failed) return;
-
-    // check if laps has been specified and is less than 25
-    if (laps !== "" && laps! > 24) {
-      return;
+    if (!failed) {
+      onCreateRace(updatedDeviceData);
     }
 
-    // check if auto time is checked, then auto time should be filled in hh:mm format
-    if (isAutoTime && !/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/.test(autoTime)) {
-      return;
-    }
-
-    // check if auto time is within valid bounds
-    if (isAutoTime) {
-      const [hours, minutes] = autoTime.split(":");
-      if (parseInt(hours, 10) > 23 || parseInt(minutes, 10) > 59) {
-        return;
-      }
-    }
-
-    if (!isAutoTime) {
-    }
-
-    setApplySuccess(true);
   };
 
   return (
@@ -128,51 +91,12 @@ const CreateRoute = () => {
           <button onClick={addRow}>Add Row</button>
         </div>
 
-        <div className="create-route-container">
-          <div className="create-route-member">
-            <input
-              type="text"
-              placeholder="Specify laps (none for 24)"
-              value={laps}
-              onChange={handleInputChange}
-              className="create-route-input"
-            />
-          </div>
-
-          <div className="create-route-member">
-            <label htmlFor="manualTime">Automatic time addition: </label>
-            <input
-              type="checkbox"
-              checked={isAutoTime}
-              onChange={() => setIsAutoTime(!isAutoTime)}
-            />
-          </div>
-
-          {isAutoTime ? (
-            <div className="create-route-member">
-              <input
-                type="text"
-                placeholder="Time in hh:mm"
-                onChange={handleAutoTimeChange}
-                className="create-route-input"
-              />
-            </div>
-          ) : null}
-
+        <div className="create-route-action">
           <button onClick={apply} className="create-route-button">
-            Apply
+            Apply Checkpoints
           </button>
         </div>
       </div>
-
-      {applySuccess ? (
-        <FinaliseCheckpoints
-          deviceData={deviceData}
-          laps={laps}
-          isAutoTime={isAutoTime}
-          autoTime={autoTime}
-        />
-      ) : null}
     </>
   );
 };
