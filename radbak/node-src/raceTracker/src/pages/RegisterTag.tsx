@@ -32,12 +32,14 @@ export default function RegisterTag() {
       TagID: tagId,
     };
 
+
+
     try {
       const result = await registerTag(data);
       console.log('Submission successful:', result);
-      alert('User registered successfully!');
+      alert('User registered successfully to race');
     } catch (error) {
-      alert('Failed to submit username.');
+      alert('Failed to register participant.');
       console.error(error);
     }
   };

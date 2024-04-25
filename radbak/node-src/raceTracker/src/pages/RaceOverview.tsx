@@ -16,7 +16,7 @@ export interface Runner {
 export interface Checkpoint {
   id: number;
   position: number;
-  timeLimit: Date | null;
+  timeLimit: string | null;
 }
 
 const RaceOverview = () => {
@@ -61,9 +61,9 @@ const RaceOverview = () => {
   if (isError) return <p>Error fetching</p>;
 
   // Check if runners and checkpoints arrays are empty or not
-  if (runners.length === 0 || checkpoints.length === 0) {
+  if (runners.length === 0) {
     // If arrays are empty, render loading message or any other indication
-    return <p>Loading data...</p>;
+    return <p>No runners in this race yet.</p>;
   }
 
   return (

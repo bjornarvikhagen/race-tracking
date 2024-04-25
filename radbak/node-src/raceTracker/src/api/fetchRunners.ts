@@ -6,7 +6,6 @@ const fetchRunners = async () => {
     const runnersURL = `${BASEURL}/runners`;
     const response = await fetch(runnersURL);
     const data = await response.json();
-    console.log(data);
     return data;
   } catch (error) {
     console.error(error);

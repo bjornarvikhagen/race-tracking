@@ -1,0 +1,38 @@
+.raceName {
+  display: flex;
+  justify-content: space-between;
+  margin: 20px;
+}
+
+.raceName .name,
+.raceName .time {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.raceName input[type="text"] {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-size: 16px;
+}
+
+.raceName input[type="datetime-local"] {
+  font-size: 16px;
+}
+
+.createRouteButton {
+  display: inline-block;
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.createRouteButton:hover {
+  background-color: #0056b3;
+}

@@ -8,6 +8,8 @@ const Navbar = () => {
     navigate(path);
   };
 
+  const isAdmin = localStorage.getItem("admin") === "true";
+
   return (
     <div className="navbar">
       <div className="nav-item" onClick={() => navigateTo("/")}>
@@ -17,10 +19,20 @@ const Navbar = () => {
         Current Races
       </div>
       <div className="nav-item" onClick={() => navigateTo("/register-tag")}>
-        Register Chip
+        Register Race Participant
       </div>
       <div className="nav-item" onClick={() => navigateTo("/register-user")}>
         Register User
+      </div>
+
+      {isAdmin && (
+        <div className="nav-item" onClick={() => navigateTo("/admin")}>
+          Create Race
+        </div>
+      )}
+
+      <div className="login" onClick={() => navigateTo("/login")}>
+        Login
       </div>
     </div>
   );
