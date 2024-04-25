@@ -46,8 +46,6 @@ const DataTable: React.FC<DataTableProps> = ({ runners, checkpoints }) => {
   const runnerFellOutMap = getRunnerFellOutMap(runners, checkpoints);
   const navigate = useNavigate(); // Initialize useNavigate
 
-  console.log(runners, checkpoints);
-
 
   function getRunnerFellOutMap(
     runners: DataTableProps["runners"],
@@ -75,7 +73,6 @@ const DataTable: React.FC<DataTableProps> = ({ runners, checkpoints }) => {
       });
     });
 
-    console.log(runnerFellOutMap);
     return runnerFellOutMap;
   }
 

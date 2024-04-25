@@ -65,10 +65,8 @@ const CreateRoute = ({ onCreateRace }: CreateRouteProps) => {
         // Allow empty time limit
       } else if (validateTimeLimitFormat(device.timeLimit)) {
         device.timeLimit += ":00";
-        console.log(device.timeLimit);
       } else {
         console.error("Time limit must be in yyyy-mm-dd hh:mm format.");
-        console.log(device.timeLimit);
         failed = true;
       }
       return device;

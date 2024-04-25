@@ -47,8 +47,6 @@ function DeviceTable({ onDataUpdate, deviceData }: DeviceTableProps) {
     newData[index].isEditingTimeLimit = true;
     newData[index].tempTimeLimit = newData[index].timeLimit; // Store the original timeLimit
     setData(newData);
-    console.log(newData);
-
   };
 
   // Function to handle finishing editing mode
