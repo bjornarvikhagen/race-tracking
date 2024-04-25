@@ -11,6 +11,9 @@ services:
       - node-app
 
   node-app:
+    build:
+      context: .
+      dockerfile: ./.devcontainer/node-container/Dockerfile
     image: mcr.microsoft.com/devcontainers/typescript-node:1-20-bookworm
     volumes:
       - ../:/workspace:cached
