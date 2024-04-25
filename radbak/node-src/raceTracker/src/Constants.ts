@@ -5,9 +5,11 @@ interface Window {
   Cypress?: any;
 } // Boilerplate to make typescript happy
 
+export const LOCALHOST_BASE = "localhost:80"; // WINDOWS: Current local host URL and Port
+// export const LOCALHOST_BASE = "http://localhost:64683";  // MAC: Current local host URL and Port
+
 // This is a hacky solution, but it works for now.
 // Set baseURL based on whether it is accessed through docker-services (cypress container) or browser
 export const BASEURL = (window as Window).Cypress
   ? "http://python-api"
-  : "http://localhost:80"; // WINDOWS: Current local host URL and Port
-// : "http://localhost:64683"; // MAC: Current local host URL and Port
+  : "http://" + LOCALHOST_BASE;

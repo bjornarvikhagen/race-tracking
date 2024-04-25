@@ -4,7 +4,7 @@ import { json, useParams } from "react-router-dom";
 import fetchLeaderboard from "../api/fetchLeaderboard";
 import { useQuery } from "@tanstack/react-query";
 import useWebSocket from "react-use-websocket";
-import { BASEURL } from "../Constants";
+import { LOCALHOST_BASE } from "../Constants";
 
 export interface Runner {
   id: number;
@@ -21,7 +21,7 @@ export interface Checkpoint {
 
 const RaceOverview = () => {
   // Websocket connection code
-  const WS_URL = "ws://" + "localhost" + "/ws"; // TODO: Make this more robust. And does it work on MAC? // And localhost // Or 127.0.0.1
+  const WS_URL = "ws://" + LOCALHOST_BASE + "/ws"; // TODO: Make this more robust. And does it work on MAC? // And localhost // Or 127.0.0.1
   useWebSocket(WS_URL, {
     share: true,
     shouldReconnect: () => true,
