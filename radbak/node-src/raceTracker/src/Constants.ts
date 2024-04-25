@@ -5,7 +5,7 @@ interface Window {
   Cypress?: any;
 } // Boilerplate to make typescript happy
 
-export const LOCALHOST_BASE = "localhost:80"; // WINDOWS: Current local host URL and Port
+export const LOCALHOST_BASE = "localhost:49607"; // WINDOWS: Current local host URL and Port
 // export const LOCALHOST_BASE = "http://localhost:64683";  // MAC: Current local host URL and Port
 
 // This is a hacky solution, but it works for now.
