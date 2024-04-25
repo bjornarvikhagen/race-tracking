@@ -24,8 +24,10 @@ K_SEM_DEFINE(tag_reader_semaphore, 0, 1);
 
 uint32_t rfid_tag1;
 uint32_t rfid_tag2;
+uint64_t passing_time1;
+uint64_t passing_time2;
 
-void tag_reader_thread(struct passing_buffer *buffer, uint32_t *rfid_tag) {
+void tag_reader_thread(struct passing_buffer *buffer, uint32_t *rfid_tag, uint64_t *time) {
     k_sem_take(&tag_reader_semaphore, K_FOREVER); // wait for main
 
     while(1) {
@@ -33,7 +35,8 @@ void tag_reader_thread(struct passing_buffer *buffer, uint32_t *rfid_tag) {
 
         k_sem_take(&buffer_semaphore, K_FOREVER);
         if (ret == 0) {
-            enqueue(buffer, rfid_tag);
+            *time = (k_cycle_get_32()*1000)/sys_clock_hw_cycles_per_sec();
+            enqueue(buffer, rfid_tag, time);
             LOG_INF("%x added to buffer, %d new size", *rfid_tag, buffer->size);
         }
         k_sem_give(&buffer_semaphore);
@@ -64,7 +67,7 @@ int main(void){
 //define and start the two threads at their corresponding entrypoints
 K_THREAD_DEFINE(thread0_id, 1024, mqtt_keepalive_thread, &passing_buffer, &rfid_tag1, NULL,
 		4, 0, 1000);
-K_THREAD_DEFINE(thread1_id, 1024, tag_reader_thread, &passing_buffer, &rfid_tag2, NULL,
+K_THREAD_DEFINE(thread1_id, 1024, tag_reader_thread, &passing_buffer, &rfid_tag2, &passing_time1,
 		6, 0, 1000);
-K_THREAD_DEFINE(thread2_id, 2048, publish_thread, &passing_buffer, &rfid_tag2, NULL,
+K_THREAD_DEFINE(thread2_id, 2048, publish_thread, &passing_buffer, &rfid_tag2, &passing_time2,
 		5, 0, 10000);

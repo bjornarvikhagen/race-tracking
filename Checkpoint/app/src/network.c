@@ -251,19 +251,41 @@ void prepare_publish_data(uint32_t rfid_tag) {
 	snprintf(data_to_publish, IMEI_LEN + RFID_STR_LEN + 2, "%s:%X", imei_str, rfid_tag);
 }
 
-int publish_thread(struct passing_buffer *buffer, uint32_t *rfid_tag) {
+int publish_thread(struct passing_buffer *buffer, uint32_t *rfid_tag, uint64_t *time) {
     k_sem_take(&publish_semaphore, K_FOREVER); // wait for main
 	int fail_count = 0;
 	int err = 0;
 	while (1) {
 		if (is_mqtt_connected == 1 && buffer->size > 0) {
 			k_sem_take(&buffer_semaphore, K_FOREVER);
-			dequeue(buffer, rfid_tag);
+			dequeue(buffer, rfid_tag, time);
 			k_sem_give(&buffer_semaphore);
 			fail_count = 0;
 			while (fail_count >= 0) {
+
 				prepare_publish_data(*rfid_tag);
-				err = data_publish(&client, MQTT_QOS_1_AT_LEAST_ONCE, data_to_publish, sizeof(data_to_publish)/* sizeof(rfid_tag_str)-1 */);
+
+
+				LOG_INF("RFID tag: %X", *rfid_tag);
+				uint8_t rfid_tag_str[RFID_STR_LEN + 1] = {0};
+
+
+				sprintf(rfid_tag_str, "%X", *rfid_tag);
+
+				uint64_t current_time = (k_cycle_get_32()*1000)/sys_clock_hw_cycles_per_sec();
+				uint64_t time_since_passing = current_time - *time;
+				uint8_t time_since_pass_buf[12] = {0};
+				sprintf(time_since_pass_buf, "%d", time_since_passing);
+				LOG_INF("time since passing: %s", time_since_pass_buf);
+
+				char payload[80] = {0};
+				strcpy(payload, data_to_publish);
+				strcat(payload, ":");
+				strcat(payload, time_since_pass_buf);
+
+				
+
+				err = data_publish(&client, MQTT_QOS_1_AT_LEAST_ONCE, payload, strlen(payload)/* sizeof(rfid_tag_str)-1 */);
 				if (err) {
 					fail_count++;
 					LOG_ERR("Failed to send message, %d", err);
