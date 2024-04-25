@@ -26,7 +26,6 @@ class RunnerInRace(BaseModel):
 
 
 class Checkpoint(BaseModel):
-    CheckpointID: int
     DeviceID: int
     Location: str
 
