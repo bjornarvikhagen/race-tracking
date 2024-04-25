@@ -3,6 +3,7 @@
 # Import necessary libraries
 import json
 import random
+from datetime import datetime, timedelta
 
 import paho.mqtt.client as mqtt
 import paho.mqtt.enums as mqtt_enums
@@ -44,14 +45,15 @@ def on_message(client, userdata, message):
 
     # Format the message data
     split_data = data.split(":")
+
     checkpoint_id = split_data[0]
     rfid = split_data[1]
-    timestamp = ":".join(split_data[2:])
+    timestamp = datetime.now() - timedelta(milliseconds=int(split_data[2]))
 
     api_payload = {
         "TagID": rfid,
         "CheckpointID": checkpoint_id,
-        "PassingTime": timestamp,
+        "PassingTime": str(timestamp),
     }
     print("Sending pyload: ", str(api_payload))
 
