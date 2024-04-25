@@ -11,6 +11,7 @@
 #include <modem/modem_key_mgmt.h>
 
 #include "mqtt_connection.h"
+#include "network.h"
 #include "certificate2.h"
 
 #if NCS_VERSION_NUMBER < 0x20600
@@ -35,8 +36,8 @@ static struct mqtt_utf8 password = {
     .size = 0
 };
 
-//static uint64_t imei;
-static uint8_t imei_str[IMEI_LEN] = {0};
+static uint64_t imei_uint;
+uint8_t imei_str[IMEI_LEN] = {0};
 
 // MQTT broker details
 static struct sockaddr_storage broker;
@@ -174,6 +175,7 @@ void mqtt_evt_handler(struct mqtt_client *const c, const struct mqtt_evt *evt) {
         
         case MQTT_EVT_DISCONNECT:
             LOG_INF("MQTT client disconnected: %d", evt->result);
+		    is_mqtt_connected = 0;
             break;
         
         case MQTT_EVT_PUBLISH:
@@ -318,6 +320,26 @@ exit:
     return client_id;
 }
 
+/** @brief Function to get client id
+*/
+int imei_str_init(void) {
+    char imei_buf[CGSN_RESPONSE_LENGTH + 1];
+    int err;
+
+    err = nrf_modem_at_cmd(imei_buf, sizeof(imei_buf), "AT+CGSN");
+    if (err) {
+        LOG_ERR("Failed to obtain IMEI, error: %d", err);
+        return -1;
+    }
+
+    imei_buf[IMEI_LEN] = '\0';
+
+    snprintf(imei_str, IMEI_LEN + 1, "%s", imei_buf);
+
+    LOG_INF("imei = %s", (char *)(imei_str));
+    return 0;
+}
+
 /** @brief Function for setting the IMEI number of the device.
  *  @returns Non-zero on error, 0 on success.
 */
@@ -331,14 +353,15 @@ int imei_init(void) {
         LOG_ERR("Failed to obtain IMEI, error: %d", err);
         return err;
     }
-    memcpy(imei_str, imei_buf, IMEI_LEN);
-    /* 
     char err_char = 0;
-    imei = strtoll(imei_buf, &err_char, 10);
-    LOG_INF("IMEI err_char: %c", err_char);
-    LOG_INF("IMEI: %llu" , imei);
-    */
+    imei_uint = strtoll(imei_buf, &err_char, 10);
+    //LOG_INF("IMEI err_char: %c", err_char);
+    LOG_INF("IMEI: %llu" , imei_uint);
     return 0;
+}
+
+uint64_t* get_imei(void) {
+    return &imei_uint;
 }
 
 /** @brief Initialize MQTT client structure 

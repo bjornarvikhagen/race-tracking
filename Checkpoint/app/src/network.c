@@ -19,13 +19,15 @@ static struct mqtt_client client;
 // file descriptor
 static struct pollfd fds;
 
-static uint8_t data_to_publish[20] = {0};
+int is_mqtt_connected = 0;
+
+//static uint8_t data_to_publish[12] = {0};
+static uint8_t data_to_publish[IMEI_LEN + RFID_STR_LEN + 2] = {0};
 
 #define LED0_NODE DT_ALIAS(led0)
 static const struct gpio_dt_spec led = GPIO_DT_SPEC_GET(LED0_NODE, gpios);
 
 static K_SEM_DEFINE(lte_connected, 0, 1);
-static K_SEM_DEFINE(publishing_rfid, 1, 1);
 K_SEM_DEFINE(cert_provisioning, 0, 1);
 
 /* Define the event handler for LTE link control. */
@@ -148,6 +150,12 @@ int network_init(void)
 		LOG_ERR("Failed to initialize IMEI of the device: %d", err);
 		return err;
 	}
+
+	err = imei_str_init();
+	if (err) {
+		LOG_ERR("Failed to initialize IMEI string of the device: %d", err);
+		return err;
+	}
 	LOG_INF("Client initialized.");
 	return 0;
 }
@@ -164,8 +172,10 @@ do_connect:
 	err = mqtt_connect(&client);
 	if(err) {
 		LOG_ERR("Error in mqtt_connect: %d", err);
+		is_mqtt_connected = 0;
 		goto do_connect;
 	}
+	is_mqtt_connected = 1;
 
 	err = fds_init(&client, &fds);
 	if (err) {
@@ -188,7 +198,7 @@ do_connect:
 			break;
 		}
 		
-		if ((fds.revents & POLLIN) == POLLIN) {
+		if ((fds.revents & POLLIN) == POLLIN && is_mqtt_connected == 1) {
 			err = mqtt_input(&client);
 			if (err != 0) {
 				LOG_ERR("Error in mqtt_input: %d", err);
@@ -219,22 +229,41 @@ do_connect:
 	return 0;
 }
 
+void prepare_publish_data(uint32_t rfid_tag) {
+	/* 
+	LOG_INF("RFID tag: %X", rfid_tag);
+	LOG_INF("IMEI: %llu", imei_num);
+	uint64_t temp_imei_num = imei_num;
+	uint32_t temp_rfid_tag = rfid_tag;
+	data_to_publish[0] = (temp_imei_num >> 56) & 0xFF;
+	data_to_publish[1] = (temp_imei_num >> 48) & 0xFF;
+	data_to_publish[2] = (temp_imei_num >> 40) & 0xFF;
+	data_to_publish[3] = (temp_imei_num >> 32) & 0xFF;
+	data_to_publish[4] = (temp_imei_num >> 24) & 0xFF;
+	data_to_publish[5] = (temp_imei_num >> 16) & 0xFF;
+	data_to_publish[6] = (temp_imei_num >> 8) & 0xFF;
+	data_to_publish[7] = temp_imei_num & 0xFF;
+	data_to_publish[8] = (temp_rfid_tag >> 24) & 0xFF;
+	data_to_publish[9] = (temp_rfid_tag >> 16) & 0xFF;
+	data_to_publish[10] = (temp_rfid_tag >> 8) & 0xFF;
+	data_to_publish[11] = temp_rfid_tag & 0xFF;
+	*/
+	snprintf(data_to_publish, IMEI_LEN + RFID_STR_LEN + 2, "%s:%X", (char *)imei_str, rfid_tag);
+}
+
 int publish_thread(struct passing_buffer *buffer, uint32_t *rfid_tag) {
     k_sem_take(&publish_semaphore, K_FOREVER); // wait for main
 	int fail_count = 0;
 	int err = 0;
 	while (1) {
-		if (buffer->size > 0) {
-			k_sem_take(&publishing_rfid, K_FOREVER);
+		if (is_mqtt_connected == 1 && buffer->size > 0) {
 			k_sem_take(&buffer_semaphore, K_FOREVER);
 			dequeue(buffer, rfid_tag);
 			k_sem_give(&buffer_semaphore);
 			fail_count = 0;
 			while (fail_count >= 0) {
-				LOG_INF("RFID tag: %X", *rfid_tag);
-				uint8_t rfid_tag_str[RFID_STR_LEN + 1] = {0};
-				sprintf(rfid_tag_str, "%X", *rfid_tag);
-				err = data_publish(&client, MQTT_QOS_1_AT_LEAST_ONCE, rfid_tag_str, RFID_STR_LEN/* sizeof(rfid_tag_str)-1 */);
+				prepare_publish_data(*rfid_tag);
+				err = data_publish(&client, MQTT_QOS_1_AT_LEAST_ONCE, data_to_publish, sizeof(data_to_publish)/* sizeof(rfid_tag_str)-1 */);
 				if (err) {
 					fail_count++;
 					LOG_ERR("Failed to send message, %d", err);
@@ -243,7 +272,6 @@ int publish_thread(struct passing_buffer *buffer, uint32_t *rfid_tag) {
 				else if (err == 0) {
 					fail_count = -1;
 					LOG_INF("Tag sent to broker.");
-					k_sem_give(&publishing_rfid);
 				}
 			}
 		} else {

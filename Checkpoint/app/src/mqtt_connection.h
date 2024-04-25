@@ -20,8 +20,11 @@ int data_publish(struct mqtt_client *c, enum mqtt_qos qos, uint8_t *data, size_t
 int certificate_provision(void);
 
 int imei_init(void);
+int imei_str_init(void);
+extern uint8_t imei_str[IMEI_LEN];
+uint64_t* get_imei(void);
 
-//static uint64_t imei;
+//static uint8_t imei_str[IMEI_LEN];
 
 extern struct k_sem cert_provisioning;
 

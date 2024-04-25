@@ -67,4 +67,4 @@ K_THREAD_DEFINE(thread0_id, 1024, mqtt_keepalive_thread, &passing_buffer, &rfid_
 K_THREAD_DEFINE(thread1_id, 1024, tag_reader_thread, &passing_buffer, &rfid_tag2, NULL,
 		6, 0, 1000);
 K_THREAD_DEFINE(thread2_id, 2048, publish_thread, &passing_buffer, &rfid_tag2, NULL,
-		5, 0, 1000);
+		5, 0, 10000);

@@ -15,4 +15,6 @@ extern struct k_sem buffer_semaphore;
 extern struct k_sem tag_reader_semaphore;
 extern struct passing_buffer passing_buffer;
 
+extern int is_mqtt_connected;
+
 #endif /* _NETWORK_H_ */
