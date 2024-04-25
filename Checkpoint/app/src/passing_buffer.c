@@ -1,9 +1,6 @@
 #include <zephyr/sys/util.h>
 #include "passing_buffer.h"
 
-
-
-
 int enqueue(struct passing_buffer *q, uint32_t* rfid){
     if (q->size < BUFFER_SIZE){
         q->buffer[q->back] = *rfid;

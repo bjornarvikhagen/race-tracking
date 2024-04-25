@@ -3,11 +3,12 @@
 #include <zephyr/devicetree.h>
 #include <zephyr/drivers/i2c.h>
 #include <zephyr/sys/util.h>
-#include <zephyr/sys/printk.h>
+#include <zephyr/logging/log.h>
 #include "nfc.h"
 
 #define PN532_I2C_ADDRESS 0x24
 
+LOG_MODULE_DECLARE(PathPatrol);
 
 //I2C stuff
 #define I2C1_NODE DT_NODELABEL(i2c1)
@@ -138,15 +139,6 @@ int pn532_nfc_setup(){
     int ret;
 
     uint8_t res_buf[30];
-    
-    /*ret = pn532_send_receive_message(i2c1_dev, PN532_I2C_ADDRESS, RFfieldOn, 11, res_buf, 30, false);
-    if(ret){
-        printk("send/receive error: %d\n", ret);
-    }*/
-    //printk("recieved: ");
-    //print_bytes(res_buf, 30);
-    //printk("\n");
-
 
     ret = pn532_send_receive_message(i2c1_dev, PN532_I2C_ADDRESS, SamConfig, 12, res_buf, 30, false);
     if(ret){

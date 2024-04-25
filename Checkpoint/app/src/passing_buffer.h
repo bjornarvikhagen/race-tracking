@@ -1,7 +1,8 @@
-#ifndef PASSING_BUFFER_H
-#define PASSING_BUFFER_H
+#ifndef _PASSING_BUFFER_H_
+#define _PASSING_BUFFER_H_
 
 #define BUFFER_SIZE 128
+#define RFID_STR_LEN 8
 
 
 struct passing_buffer{
