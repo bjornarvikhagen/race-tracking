@@ -21,7 +21,7 @@ int certificate_provision(void);
 
 int imei_init(void);
 int imei_str_init(void);
-extern uint8_t imei_str[IMEI_LEN];
+extern char imei_str[IMEI_LEN + 1];
 uint64_t* get_imei(void);
 
 //static uint8_t imei_str[IMEI_LEN];

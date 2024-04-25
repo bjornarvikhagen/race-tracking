@@ -248,7 +248,7 @@ void prepare_publish_data(uint32_t rfid_tag) {
 	data_to_publish[10] = (temp_rfid_tag >> 8) & 0xFF;
 	data_to_publish[11] = temp_rfid_tag & 0xFF;
 	*/
-	snprintf(data_to_publish, IMEI_LEN + RFID_STR_LEN + 2, "%s:%X", (char *)imei_str, rfid_tag);
+	snprintf(data_to_publish, IMEI_LEN + RFID_STR_LEN + 2, "%s:%X", imei_str, rfid_tag);
 }
 
 int publish_thread(struct passing_buffer *buffer, uint32_t *rfid_tag) {

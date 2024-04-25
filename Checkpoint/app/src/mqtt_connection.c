@@ -37,7 +37,7 @@ static struct mqtt_utf8 password = {
 };
 
 static uint64_t imei_uint;
-uint8_t imei_str[IMEI_LEN] = {0};
+char imei_str[IMEI_LEN + 1] = {0};
 
 // MQTT broker details
 static struct sockaddr_storage broker;
@@ -336,7 +336,9 @@ int imei_str_init(void) {
 
     snprintf(imei_str, IMEI_LEN + 1, "%s", imei_buf);
 
-    LOG_INF("imei = %s", (char *)(imei_str));
+    imei_buf[IMEI_LEN + 1] = '\0';
+
+    LOG_INF("imei = %s", imei_str);
     return 0;
 }
 
