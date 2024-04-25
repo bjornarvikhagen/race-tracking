@@ -6,6 +6,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
 from api import deps
+from api.socket.router import pg_notify
 
 router = APIRouter()
 
@@ -406,6 +407,7 @@ async def post_checkpoint_passing(passing: CheckpointPassing, dbc: deps.GetDbCtx
                 ),
                 parameters,
             )
+            await pg_notify(conn, "all", "New checkpoint passing added")  # Notify the websocket that a new passing was added to update the live feed.
             return {"message": "Checkpoint passing added"}
         else:
             raise HTTPException(
