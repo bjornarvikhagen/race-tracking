@@ -79,16 +79,16 @@ interface CheckpointInRace {
 
 const addCheckpointToRace = async ({ race_id, checkpoint_id, position, time_limit }: CheckpointInRace) => {
   try {
-    const endpoint = `${BASEURL}/race/${race_id}/checkpoint/${checkpoint_id}/${position}`;
+    // Add a query parameter for time_limit only if it's provided
+    let queryParams = time_limit ? `?time_limit=${encodeURIComponent(time_limit)}` : '';
+    const endpoint = `${BASEURL}/race/${race_id}/checkpoint/${checkpoint_id}/${position}${queryParams}`;
     console.log("Sending to endpoint:", endpoint);
-    console.log("Data being sent:", { time_limit });
 
     const response = await fetch(endpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ time_limit: time_limit }) // Ensure this key matches the backend expectation
+      }
     });
 
     console.log("Response status:", response.status);
