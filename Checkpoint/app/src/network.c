@@ -25,6 +25,7 @@ static uint8_t data_to_publish[20] = {0};
 static const struct gpio_dt_spec led = GPIO_DT_SPEC_GET(LED0_NODE, gpios);
 
 static K_SEM_DEFINE(lte_connected, 0, 1);
+static K_SEM_DEFINE(publishing_rfid, 1, 1);
 K_SEM_DEFINE(cert_provisioning, 0, 1);
 
 /* Define the event handler for LTE link control. */
@@ -151,13 +152,10 @@ int network_init(void)
 	return 0;
 }
 
-int network_thread(struct passing_buffer *buffer, uint32_t *rfid_tag) {
-do_connect:
-    k_sem_take(&network_semaphore, K_FOREVER); // wait for main
-
+int mqtt_keepalive_thread(struct passing_buffer *buffer, uint32_t *rfid_tag) {
+    k_sem_take(&keepalive_semaphore, K_FOREVER); // wait for main
 	uint32_t connect_attempt = 0;
-	int fail_count = 0;
-
+do_connect:
 	int err = 0;
 	if (connect_attempt++ > 0) {
 		LOG_INF("Reconnecting in %d seconds...", CONFIG_MQTT_RECONNECT_DELAY_S);
@@ -176,7 +174,9 @@ do_connect:
 	}
 
 	while (1) {
-		err = poll(&fds, 1, mqtt_keepalive_time_left(&client) - 5000);
+		int keepalive_time = mqtt_keepalive_time_left(&client);
+		LOG_INF("Keepalive timer: %d", keepalive_time);
+		err = poll(&fds, 1, mqtt_keepalive_time_left(&client));
 		if (err < 0) {
 			LOG_ERR("Error in poll for mqtt_keepalive_time_left: %d", errno);
 			break;
@@ -187,7 +187,6 @@ do_connect:
 			LOG_ERR("Error in mqtt_live: %d", err);
 			break;
 		}
-
 		
 		if ((fds.revents & POLLIN) == POLLIN) {
 			err = mqtt_input(&client);
@@ -206,43 +205,6 @@ do_connect:
 			LOG_ERR("POLLNVAL");
 			break;
 		}
-
-		if (fail_count >= 0 && size(buffer)) {
-            	k_sem_take(&buffer_semaphore, K_FOREVER);
-            	dequeue(buffer, rfid_tag);
-            	k_sem_give(&buffer_semaphore);
-            	LOG_INF("RFID tag: %X", *rfid_tag);
-				/* 
-				uint8_t bytestream[4] = {0};
-				bytestream[0] = (*rfid_tag >> 24) & 0xFF;
-    			bytestream[1] = (*rfid_tag >> 16) & 0xFF;
-    			bytestream[2] = (*rfid_tag >> 8) & 0xFF;
-    			bytestream[3] = *rfid_tag & 0xFF;
-				*/
-				uint8_t rfid_tag_str[RFID_STR_LEN + 1] = {0};
-				sprintf(rfid_tag_str, "%X", *rfid_tag);
-				int err = data_publish(&client, MQTT_QOS_1_AT_LEAST_ONCE, rfid_tag_str, RFID_STR_LEN/* sizeof(rfid_tag_str)-1 */);
-				if (err) {
-					fail_count++;
-					LOG_ERR("Failed to send message, %d", err);
-					LOG_ERR("fail_count: %d", fail_count);
-				} 
-				else if (err == 0) {
-					fail_count = -1;
-					LOG_INF("Tag sent to broker.");
-					err = gpio_pin_toggle_dt(&led);
-					if (err) {
-						LOG_ERR("Failed to toggle LED pin, error: %d", err);
-					}
-					LOG_INF("LED off message.");
-					k_msleep(2000);
-					err = gpio_pin_toggle_dt(&led);
-					if (err) {
-						LOG_ERR("Failed to toggle LED pin, error: %d", err);
-					}
-					LOG_INF("LED on message.");
-				}
-		}
 	}
 
 	LOG_INF("Disconnecting MQTT client");
@@ -255,4 +217,37 @@ do_connect:
 
 	/* never reached */
 	return 0;
+}
+
+int publish_thread(struct passing_buffer *buffer, uint32_t *rfid_tag) {
+    k_sem_take(&publish_semaphore, K_FOREVER); // wait for main
+	int fail_count = 0;
+	int err = 0;
+	while (1) {
+		if (buffer->size > 0) {
+			k_sem_take(&publishing_rfid, K_FOREVER);
+			k_sem_take(&buffer_semaphore, K_FOREVER);
+			dequeue(buffer, rfid_tag);
+			k_sem_give(&buffer_semaphore);
+			fail_count = 0;
+			while (fail_count >= 0) {
+				LOG_INF("RFID tag: %X", *rfid_tag);
+				uint8_t rfid_tag_str[RFID_STR_LEN + 1] = {0};
+				sprintf(rfid_tag_str, "%X", *rfid_tag);
+				err = data_publish(&client, MQTT_QOS_1_AT_LEAST_ONCE, rfid_tag_str, RFID_STR_LEN/* sizeof(rfid_tag_str)-1 */);
+				if (err) {
+					fail_count++;
+					LOG_ERR("Failed to send message, %d", err);
+					LOG_ERR("fail_count: %d", fail_count);
+				} 
+				else if (err == 0) {
+					fail_count = -1;
+					LOG_INF("Tag sent to broker.");
+					k_sem_give(&publishing_rfid);
+				}
+			}
+		} else {
+			k_msleep(10000);
+		}
+	}
 }

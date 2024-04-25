@@ -5,11 +5,14 @@
 
 static const struct gpio_dt_spec led;
 
-int network_thread(struct passing_buffer *buffer, uint32_t *rfid_tag);
+int mqtt_keepalive_thread(struct passing_buffer *buffer, uint32_t *rfid_tag);
+int publish_thread(struct passing_buffer *buffer, uint32_t *rfid_tag);
 int network_init(void);
 
-extern struct k_sem network_semaphore;
+extern struct k_sem publish_semaphore;
+extern struct k_sem keepalive_semaphore;
 extern struct k_sem buffer_semaphore;
+extern struct k_sem tag_reader_semaphore;
 extern struct passing_buffer passing_buffer;
 
 #endif /* _NETWORK_H_ */

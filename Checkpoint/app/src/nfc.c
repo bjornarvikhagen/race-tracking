@@ -142,8 +142,8 @@ int pn532_nfc_setup(){
 
     ret = pn532_send_receive_message(i2c1_dev, PN532_I2C_ADDRESS, SamConfig, 12, res_buf, 30, false);
     if(ret){
-        printk("Send/Receive error: %d\n", ret);
-        return -1;
+        LOG_ERR("Send/Receive error: %d\n", ret);
+        return ret;
     }
 }
 

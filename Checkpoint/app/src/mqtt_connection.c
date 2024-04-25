@@ -169,7 +169,7 @@ void mqtt_evt_handler(struct mqtt_client *const c, const struct mqtt_evt *evt) {
                 LOG_ERR("MQTT connect failed: %d", evt->result);
                 break;
             }
-            subscribe(c);
+            //subscribe(c);
             break;
         
         case MQTT_EVT_DISCONNECT:
@@ -337,8 +337,8 @@ int imei_init(void) {
     imei = strtoll(imei_buf, &err_char, 10);
     LOG_INF("IMEI err_char: %c", err_char);
     LOG_INF("IMEI: %llu" , imei);
-    return 0;
     */
+    return 0;
 }
 
 /** @brief Initialize MQTT client structure 
@@ -366,26 +366,21 @@ int client_init(struct mqtt_client *client) {
         username.utf8 = CONFIG_MQTT_USERNAME;
         username.size = strlen(CONFIG_MQTT_USERNAME);
         client->user_name = &username;
-        LOG_INF("client->user_name->utf8: %s", client->user_name->utf8);
-        LOG_INF("client->user_name->size: %d", client->user_name->size);
     } else {
         client->user_name = NULL;
-        LOG_INF("client->user_name: NULL");
     }
 
     if (strcmp(CONFIG_MQTT_PASSWORD, "NULL") != 0) {
         password.utf8 = CONFIG_MQTT_PASSWORD;
         password.size = strlen(CONFIG_MQTT_PASSWORD);
         client->password = &password;
-        LOG_INF("client->password->utf8: %s", client->password->utf8);
-        LOG_INF("client->password->size: %d", client->password->size);
     } else{
         client->password = NULL;
-        LOG_INF("client->password: NULL");
     }
     
-    LOG_INF("client->client_id.utf8: %s", client->client_id.utf8);
-    LOG_INF("client->client_id.size: %d", client->client_id.size);
+    LOG_INF("MQTT Client Username: %s", CONFIG_MQTT_USERNAME);
+    LOG_INF("MQTT Client Password: %s", CONFIG_MQTT_PASSWORD);
+    LOG_INF("MQTT Client ID: %s", client_id_get());
 
     /* MQTT buffers configuration */
     client->rx_buf = rx_buffer;

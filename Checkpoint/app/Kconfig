@@ -59,6 +59,10 @@ config MQTT_PASSWORD
     string "Set password for mqtt authentication"
     default NULL
 
+config MQTT_KEEPALIVE_TIME
+    int "Keepalive time for MQTT connection"
+    default 60
+
 endmenu
 
 source "Kconfig.zephyr"
