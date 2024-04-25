@@ -21,18 +21,15 @@ function DeviceTable({ onDataUpdate, deviceData }: DeviceTableProps) {
   const [data, setData] = useState<DeviceData[]>(deviceData);
   const bottomRowRef = useRef<HTMLTableRowElement>(null);
 
-
-
   useEffect(() => {
     setData(deviceData);
   }, [deviceData]);
 
   useEffect(() => {
     if (bottomRowRef.current) {
-      bottomRowRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      bottomRowRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
     }
   }, [data]); // Dependency array includes data to trigger on data change
-
 
   // Function to handle starting editing mode
   const handleEditID = (index: number) => {
@@ -105,6 +102,11 @@ function DeviceTable({ onDataUpdate, deviceData }: DeviceTableProps) {
     newData[dropIndex].ID = draggedID;
     newData[draggedIndex].timeLimit = data[dropIndex].timeLimit;
     newData[dropIndex].timeLimit = draggedTimeLimit;
+
+    // Update positions based on the current order in newData
+    newData.forEach((item, index) => {
+      item.position = index + 1; // Reset positions based on array index
+    });
 
     setData(newData);
     onDataUpdate(newData);
