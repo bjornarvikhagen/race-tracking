@@ -36,7 +36,11 @@ const CreateRace = () => {
   const handleCreateRace = async () => {
     console.log("Attempting to create race and add checkpoints");
     if (!raceName) {
-      console.error("Race name is required.");
+      alert("Race name is required.");
+      return;
+    }
+    if (!startDateTime) {
+      alert("start time required.");
       return;
     }
 
