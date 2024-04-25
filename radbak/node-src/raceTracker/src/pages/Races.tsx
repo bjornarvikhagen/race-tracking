@@ -12,8 +12,15 @@ export default function Races() {
     queryFn: () => fetchRaces(),
   });
 
-  if (isLoading) return <p>Loading...</p>;
-  if (isError) return <p>Error fetching</p>;
-
-  return <>{races && <RacesList races={races} />}</>;
+  return (
+    <div id="racelist-page">
+      {isLoading ? (
+        <p>Loading...</p>
+      ) : isError ? (
+        <p>Error fetching</p>
+      ) : (
+        <>{races && <RacesList races={races} />}</>
+      )}
+    </div>
+  );
 }

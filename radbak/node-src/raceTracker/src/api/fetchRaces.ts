@@ -1,6 +1,5 @@
 import { BASEURL } from "../Constants";
 
-
 const fetchRaces = async () => {
   try {
     const racesURL = `${BASEURL}/races`;
@@ -14,4 +13,3 @@ const fetchRaces = async () => {
 };
 
 export default fetchRaces;
-
