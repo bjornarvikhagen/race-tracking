@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from typing import List
+from typing import List, Optional
 
 import sqlalchemy as sa
 from fastapi import APIRouter, HTTPException
@@ -16,18 +16,16 @@ class Race(BaseModel):
 
 
 class Runner(BaseModel):
-    name: str
-    email: str = Field(..., primary_key=True)
+    username: str
 
 
 class RunnerInRace(BaseModel):
-    email: str
+    RunnerID: int
     RaceID: int
     TagID: str
 
 
 class Checkpoint(BaseModel):
-    CheckpointID: int
     DeviceID: int
     Location: str
 
@@ -38,7 +36,7 @@ class RaceOut(BaseModel):
     startTime: datetime = Field(..., alias="starttime")
 
     class Config:
-        allow_population_by_field_name = True
+        populate_by_name = True
 
 
 class CheckpointPassing(BaseModel):
@@ -67,12 +65,12 @@ async def test_routes(dbc: deps.GetDbCtx):
         # Run setup_db
         creation_queries = [
             "CREATE TABLE IF NOT EXISTS Checkpoint (CheckpointID SERIAL PRIMARY KEY, DeviceID INT NOT NULL, Location VARCHAR(255) NOT NULL);",
-            "CREATE TABLE IF NOT EXISTS Runner (email VARCHAR(255) PRIMARY KEY, name VARCHAR(255) NOT NULL);",
+            "CREATE TABLE IF NOT EXISTS Runner (RunnerID SERIAL PRIMARY KEY, name VARCHAR(255) NOT NULL UNIQUE);",
             "CREATE TABLE IF NOT EXISTS Race (RaceID SERIAL PRIMARY KEY, Name VARCHAR(255) NOT NULL, startTime TIMESTAMP NOT NULL);",
-            "CREATE TABLE IF NOT EXISTS RunnerInRace (email VARCHAR(255) NOT NULL, RaceID INT NOT NULL, TagID VARCHAR(255) NOT NULL, PRIMARY KEY (email, RaceID), FOREIGN KEY (email) REFERENCES Runner (email) ON DELETE CASCADE, FOREIGN KEY (RaceID) REFERENCES Race (RaceID));",
+            "CREATE TABLE IF NOT EXISTS RunnerInRace (RunnerID INT NOT NULL, RaceID INT NOT NULL, TagID VARCHAR(255) NOT NULL, PRIMARY KEY (RunnerID, RaceID), FOREIGN KEY (RunnerID) REFERENCES Runner (RunnerID) ON DELETE CASCADE, FOREIGN KEY (RaceID) REFERENCES Race (RaceID) ON DELETE CASCADE);",
             "CREATE TABLE IF NOT EXISTS Organizer (OrganizerID SERIAL PRIMARY KEY, Name VARCHAR(255) NOT NULL);",
-            "CREATE TABLE IF NOT EXISTS CheckpointInRace (CheckpointID INT NOT NULL, RaceID INT NOT NULL, Position INT NOT NULL, TimeLimit INT, PRIMARY KEY (CheckpointID, RaceID), FOREIGN KEY (CheckpointID) REFERENCES Checkpoint (CheckpointID), FOREIGN KEY (RaceID) REFERENCES Race (RaceID));",
-            "CREATE TABLE IF NOT EXISTS CheckpointPassing (email VARCHAR(255) NOT NULL, CheckpointID INT NOT NULL, PassingTime TIMESTAMP NOT NULL, PRIMARY KEY (email, CheckpointID), FOREIGN KEY (email) REFERENCES Runner (email) ON DELETE CASCADE, FOREIGN KEY (CheckpointID) REFERENCES Checkpoint (CheckpointID));",
+            "CREATE TABLE IF NOT EXISTS CheckpointInRace (CheckpointID INT NOT NULL, RaceID INT NOT NULL, Position INT NOT NULL, TimeLimit TIMESTAMP, PRIMARY KEY (CheckpointID, RaceID), FOREIGN KEY (CheckpointID) REFERENCES Checkpoint (CheckpointID) ON DELETE CASCADE, FOREIGN KEY (RaceID) REFERENCES Race (RaceID) ON DELETE CASCADE);",
+            "CREATE TABLE IF NOT EXISTS CheckpointPassing (RunnerID INT NOT NULL, CheckpointID INT NOT NULL, PassingTime TIMESTAMP NOT NULL, PRIMARY KEY (RunnerID, CheckpointID), FOREIGN KEY (RunnerID) REFERENCES Runner (RunnerID) ON DELETE CASCADE, FOREIGN KEY (CheckpointID) REFERENCES Checkpoint (CheckpointID) ON DELETE CASCADE);",
             "CREATE TABLE IF NOT EXISTS OrganizedBy (OrganizerID INT NOT NULL, RaceID INT NOT NULL, PRIMARY KEY (OrganizerID, RaceID), FOREIGN KEY (OrganizerID) REFERENCES Organizer (OrganizerID), FOREIGN KEY (RaceID) REFERENCES Race (RaceID));",
         ]
         for query in creation_queries:
@@ -80,7 +78,7 @@ async def test_routes(dbc: deps.GetDbCtx):
         # Test POST /race
         race_data = {
             "name": "Krukes Ultra Trail Challenge",
-            "start_time": "2024-04-12T12:40:40",
+            "start_time": "2024-04-25T12:40:40",
         }
         await conn.execute(
             sa.text(
@@ -89,11 +87,9 @@ async def test_routes(dbc: deps.GetDbCtx):
         )
 
         # Test POST /runner
-        runner_data = {"name": "Sample Runner", "email": "sample@example.com"}
+        runner_data = {"username": "bjørnar"}
         await conn.execute(
-            sa.text(
-                f"INSERT INTO Runner (name, email) VALUES ('{runner_data['name']}', '{runner_data['email']}')"
-            )
+            sa.text(f"INSERT INTO Runner (name) VALUES ('{runner_data['username']}')")
         )
 
         # Test POST /checkpoint
@@ -107,22 +103,33 @@ async def test_routes(dbc: deps.GetDbCtx):
                 f"INSERT INTO checkpoint VALUES ({checkpoint_data['CheckpointID']}, {checkpoint_data['DeviceID']}, '{checkpoint_data['Location']}')"
             )
         )
+        # Test POST /checkpoint
+        checkpoint2_data = {
+            "CheckpointID": 2,
+            "DeviceID": 2,
+            "Location": "Finishline",
+        }
+        await conn.execute(
+            sa.text(
+                f"INSERT INTO checkpoint VALUES ({checkpoint2_data['CheckpointID']}, {checkpoint2_data['DeviceID']}, '{checkpoint2_data['Location']}')"
+            )
+        )
 
         # Test POST /register_tag
-        runner_email = await conn.execute(
-            sa.text("SELECT email FROM Runner ORDER BY email DESC LIMIT 1")
+        runner_id = await conn.execute(
+            sa.text("SELECT RunnerID FROM Runner ORDER BY RunnerID DESC LIMIT 1")
         )
         race_id = await conn.execute(
             sa.text("SELECT RaceID FROM Race ORDER BY RaceID DESC LIMIT 1")
         )
         tag_data = {
-            "email": runner_email.scalar(),
+            "RunnerID": runner_id.scalar(),
             "RaceID": race_id.scalar(),
             "TagID": "Visakort",
         }
         await conn.execute(
             sa.text(
-                "INSERT INTO RunnerInRace (email, RaceID, TagID) VALUES (:email, :RaceID, :TagID)"
+                "INSERT INTO RunnerInRace (RunnerID, RaceID, TagID) VALUES (:RunnerID, :RaceID, :TagID)"
             ),
             tag_data,
         )
@@ -134,20 +141,30 @@ async def test_routes(dbc: deps.GetDbCtx):
         }
         await conn.execute(
             sa.text(
-                "INSERT INTO CheckpointPassing (email, CheckpointID, PassingTime) VALUES (:email, :CheckpointID, :PassingTime)"
+                "INSERT INTO CheckpointPassing (RunnerID, CheckpointID, PassingTime) VALUES (:RunnerID, :CheckpointID, :PassingTime)"
             ),
             {
-                "email": tag_data["email"],
+                "RunnerID": tag_data["RunnerID"],
                 "CheckpointID": passing_data["CheckpointID"],
                 "PassingTime": passing_data["PassingTime"],
             },
+        )
+        await conn.execute(
+            sa.text(
+                "INSERT INTO CheckpointInRace (RaceID, CheckpointID, Position, TimeLimit) VALUES (1, 1, 1, '2024-04-25 12:40:40')"
+            )
+        )
+        await conn.execute(
+            sa.text(
+                "INSERT INTO CheckpointInRace (RaceID, CheckpointID, Position, TimeLimit) VALUES (1, 2, 2, '2024-04-25 12:50:40')"
+            )
         )
 
         # Retrieve the name of the runner who passed the checkpoint
         checkpoint_passings_query = """
         SELECT r.name AS runner_name, cp.CheckpointID, cp.PassingTime
         FROM CheckpointPassing cp
-        JOIN Runner r ON cp.email = r.email
+        JOIN Runner r ON cp.RunnerID = r.RunnerID
         WHERE cp.CheckpointID = :CheckpointID
         """
         checkpoint_passings_result = await conn.execute(
@@ -202,12 +219,12 @@ async def setup_db(dbc: deps.GetDbCtx):
     async with dbc as conn:
         tables = [
             "CREATE TABLE IF NOT EXISTS Checkpoint (CheckpointID SERIAL PRIMARY KEY, DeviceID VARCHAR(255) NOT NULL, Location VARCHAR(255) NOT NULL);",
-            "CREATE TABLE IF NOT EXISTS Runner (email VARCHAR(255) PRIMARY KEY, name VARCHAR(255) NOT NULL);",
+            "CREATE TABLE IF NOT EXISTS Runner (RunnerID SERIAL PRIMARY KEY, name VARCHAR(255) NOT NULL UNIQUE);",
             "CREATE TABLE IF NOT EXISTS Race (RaceID SERIAL PRIMARY KEY, Name VARCHAR(255) NOT NULL, startTime TIMESTAMP NOT NULL);",
-            "CREATE TABLE IF NOT EXISTS RunnerInRace (email VARCHAR(255) NOT NULL, RaceID INT NOT NULL, TagID VARCHAR(255) NOT NULL, PRIMARY KEY (email, RaceID), FOREIGN KEY (email) REFERENCES Runner (email), FOREIGN KEY (RaceID) REFERENCES Race (RaceID));",
+            "CREATE TABLE IF NOT EXISTS RunnerInRace (RunnerID INT NOT NULL, RaceID INT NOT NULL, TagID VARCHAR(255) NOT NULL, PRIMARY KEY (RunnerID, RaceID), FOREIGN KEY (RunnerID) REFERENCES Runner (RunnerID) ON DELETE CASCADE, FOREIGN KEY (RaceID) REFERENCES Race (RaceID) ON DELETE CASCADE);",
             "CREATE TABLE IF NOT EXISTS Organizer (OrganizerID SERIAL PRIMARY KEY, Name VARCHAR(255) NOT NULL);",
-            "CREATE TABLE IF NOT EXISTS CheckpointInRace (CheckpointID INT NOT NULL, RaceID INT NOT NULL, Position INT NOT NULL, TimeLimit INT, PRIMARY KEY (CheckpointID, RaceID), FOREIGN KEY (CheckpointID) REFERENCES Checkpoint (CheckpointID), FOREIGN KEY (RaceID) REFERENCES Race (RaceID));",
-            "CREATE TABLE IF NOT EXISTS CheckpointPassing (email VARCHAR(255) NOT NULL, CheckpointID INT NOT NULL, PassingTime TIMESTAMP NOT NULL, PRIMARY KEY (email, CheckpointID), FOREIGN KEY (email) REFERENCES Runner (email), FOREIGN KEY (CheckpointID) REFERENCES Checkpoint (CheckpointID));",
+            "CREATE TABLE IF NOT EXISTS CheckpointInRace (CheckpointID INT NOT NULL, RaceID INT NOT NULL, Position INT NOT NULL, TimeLimit TIMESTAMP, PRIMARY KEY (CheckpointID, RaceID), FOREIGN KEY (CheckpointID) REFERENCES Checkpoint (CheckpointID) ON DELETE CASCADE, FOREIGN KEY (RaceID) REFERENCES Race (RaceID) ON DELETE CASCADE);",
+            "CREATE TABLE IF NOT EXISTS CheckpointPassing (RunnerID INT NOT NULL, CheckpointID INT NOT NULL, PassingTime TIMESTAMP NOT NULL, PRIMARY KEY (RunnerID, CheckpointID), FOREIGN KEY (RunnerID) REFERENCES Runner (RunnerID) ON DELETE CASCADE, FOREIGN KEY (CheckpointID) REFERENCES Checkpoint (CheckpointID) ON DELETE CASCADE);",
             "CREATE TABLE IF NOT EXISTS OrganizedBy (OrganizerID INT NOT NULL, RaceID INT NOT NULL, PRIMARY KEY (OrganizerID, RaceID), FOREIGN KEY (OrganizerID) REFERENCES Organizer (OrganizerID), FOREIGN KEY (RaceID) REFERENCES Race (RaceID));",
         ]
         for table_creation_query in tables:
@@ -227,9 +244,7 @@ async def seed_db(dbc: deps.GetDbCtx):
 
         # Insert sample runners
         await conn.execute(
-            sa.text(
-                "INSERT INTO Runner (name, email) VALUES ('Bjørnar', 'bjornar@example.com'), ('Sondre', 'sondre@example.com')"
-            )
+            sa.text("INSERT INTO Runner (name) VALUES ('Bjørnar'), ('Sondre')")
         )
 
         # Insert a sample checkpoint
@@ -242,7 +257,7 @@ async def seed_db(dbc: deps.GetDbCtx):
         # Insert sample runners in races
         await conn.execute(
             sa.text(
-                "INSERT INTO RunnerInRace (email, RaceID, TagID) VALUES ('bjornar@example.com', 1, 'tag1'), ('sondre@example.com', 1, 'tag2')"
+                "INSERT INTO RunnerInRace (RunnerID, RaceID, TagID) VALUES (1, 1, 'tag1'), (2, 1, 'tag2')"
             )
         )
 
@@ -252,51 +267,74 @@ async def seed_db(dbc: deps.GetDbCtx):
 @router.post("/runner")
 async def create_runner(runner: Runner, dbc: deps.GetDbCtx):
     async with dbc as conn:
-        await conn.execute(
-            sa.text(
-                f"INSERT INTO Runner (name, email) VALUES ('{runner.name}', '{runner.email}')"
+        try:
+            await conn.execute(
+                sa.text(f"INSERT INTO Runner (name) VALUES ('{runner.username}')")
             )
-        )
-    return {"message": "Runner added"}
+            return {"message": "Runner added"}
+        except sa.exc.IntegrityError:
+            raise HTTPException(status_code=400, detail="Username taken")
 
 
 @router.post("/race")
 async def create_race(race: Race, dbc: deps.GetDbCtx):
     async with dbc as conn:
-        await conn.execute(
+        result = await conn.execute(
             sa.text(
-                f"INSERT INTO Race (Name, startTime) VALUES ('{race.name}', '{race.start_time}')"
+                f"INSERT INTO Race (Name, startTime) VALUES ('{race.name}', '{race.start_time}') RETURNING RaceID"
             )
         )
-    return {"message": "Race created"}
+        race_id = result.scalar()  # Fetch the returned race ID
+    return {"message": "Race created", "race_id": race_id}
 
 
 @router.post("/checkpoint")
 async def post_checkpoint(checkpoint: Checkpoint, dbc: deps.GetDbCtx):
     async with dbc as conn:
-        await conn.execute(
+        result = await conn.execute(
             sa.text(
-                f"INSERT INTO checkpoint VALUES ({checkpoint.CheckpointID}, {checkpoint.DeviceID}, '{checkpoint.Location}')"
+                f"INSERT INTO Checkpoint (DeviceID, Location) VALUES ({checkpoint.DeviceID}, '{checkpoint.Location}') RETURNING CheckpointID"
             )
         )
-    return {"message": "Checkpoint added"}
+        checkpoint_id = result.scalar()  # Fetch the returned checkpoint ID
+    return {"message": "Checkpoint added", "checkpoint_id": checkpoint_id}
 
 
 @router.post("/add_runner_to_race")
 async def add_runner_to_race(runner_in_race: RunnerInRace, dbc: deps.GetDbCtx):
     async with dbc as conn:
+        # Directly use the RunnerID provided in the request
+        runner_id = runner_in_race.RunnerID
+
+        # Check if the runner exists
+        runner_exists = await conn.execute(
+            sa.text("SELECT 1 FROM Runner WHERE runnerid = :RunnerID"),
+            {"RunnerID": runner_id},
+        )
+        if runner_exists.scalar() is None:
+            raise HTTPException(status_code=404, detail="Runner not found")
+
+        # Insert the runner into the race
         await conn.execute(
             sa.text(
-                "INSERT INTO RunnerInRace (email, RaceID, TagID) VALUES (:email, :RaceID, :TagID)"
+                "INSERT INTO RunnerInRace (RunnerID, RaceID, TagID) VALUES (:RunnerID, :RaceID, :TagID)"
             ),
-            runner_in_race.dict(),
+            {
+                "RunnerID": runner_id,
+                "RaceID": runner_in_race.RaceID,
+                "TagID": runner_in_race.TagID,
+            },
         )
-    return {"message": "Tag registered for runner in race"}
+        return {"message": "Runner added to the race"}
 
 
 @router.post("/race/{race_id}/checkpoint/{checkpoint_id}/{position}")
 async def add_checkpoint_to_race(
-    race_id: int, checkpoint_id: int, position: int, dbc: deps.GetDbCtx
+    race_id: int,
+    checkpoint_id: int,
+    position: int,
+    dbc: deps.GetDbCtx,
+    time_limit: Optional[str] = None,
 ):
     async with dbc as conn:
         # Check if the race and checkpoint exist
@@ -313,12 +351,28 @@ async def add_checkpoint_to_race(
         if checkpoint_check.rowcount == 0:
             raise HTTPException(status_code=404, detail="Checkpoint not found")
 
-        # Add the checkpoint to the race with the specified position
+        # Convert time_limit from string to datetime.datetime object if provided
+        parsed_time_limit = None
+        if time_limit:
+            try:
+                parsed_time_limit = datetime.strptime(time_limit, "%Y-%m-%d %H:%M:%S")
+            except ValueError:
+                raise HTTPException(
+                    status_code=400,
+                    detail="Invalid time_limit format. Use 'YYYY-MM-DD HH:MM:SS'.",
+                )
+
+        # Add the checkpoint to the race with the specified position and optional time limit
         await conn.execute(
             sa.text(
-                "INSERT INTO CheckpointInRace (RaceID, CheckpointID, Position) VALUES (:race_id, :checkpoint_id, :position)"
+                "INSERT INTO CheckpointInRace (RaceID, CheckpointID, Position, TimeLimit) VALUES (:race_id, :checkpoint_id, :position, :parsed_time_limit)"
             ),
-            {"race_id": race_id, "checkpoint_id": checkpoint_id, "position": position},
+            {
+                "race_id": race_id,
+                "checkpoint_id": checkpoint_id,
+                "position": position,
+                "parsed_time_limit": parsed_time_limit,  # Corrected key here
+            },
         )
     return {"message": "Checkpoint added to race", "status_code": 200}
 
@@ -333,22 +387,22 @@ async def post_checkpoint_passing(passing: CheckpointPassing, dbc: deps.GetDbCtx
     )
 
     async with dbc as conn:
-        # Retrieve the email based on the TagID
+        # Retrieve the RunnerID based on the TagID
         result = await conn.execute(
-            sa.text("SELECT email FROM RunnerInRace WHERE TagID = :TagID"),
+            sa.text("SELECT RunnerID FROM RunnerInRace WHERE TagID = :TagID"),
             {"TagID": passing.TagID},
         )
-        email = result.scalar()
+        runner_id = result.scalar()
 
-        if email:
+        if runner_id:
             parameters = {
-                "email": email,
+                "RunnerID": runner_id,
                 "CheckpointID": passing.CheckpointID,
                 "PassingTime": passing_time_naive,
             }
             await conn.execute(
                 sa.text(
-                    "INSERT INTO CheckpointPassing (email, CheckpointID, PassingTime) VALUES (:email, :CheckpointID, :PassingTime)"
+                    "INSERT INTO CheckpointPassing (RunnerID, CheckpointID, PassingTime) VALUES (:RunnerID, :CheckpointID, :PassingTime)"
                 ),
                 parameters,
             )
@@ -409,7 +463,7 @@ async def get_runners_in_race(race_id: int, dbc: deps.GetDbCtx):
         result = await conn.execute(
             sa.text(
                 f"""
-                SELECT email, name, TagID
+                SELECT runnerid, name, TagID
                 FROM runnerinrace NATURAL JOIN runner WHERE raceid = {race_id}
             """
             )
@@ -427,7 +481,7 @@ async def get_checkpoint_passings(runner_id: int, dbc: deps.GetDbCtx):
                 f"""
                     SELECT checkpointid, passingtime
                     FROM checkpointpassing
-                   WHERE email = {runner_id}
+                   WHERE runnerid = {runner_id}
                """
             )
         )
@@ -454,66 +508,42 @@ async def tables(dbc: deps.GetDbCtx):
 @router.delete("/race/{race_id}")
 async def delete_race(race_id: int, dbc: deps.GetDbCtx):
     async with dbc as conn:
-        # First, delete any dependent records in RunnerInRace
-        await conn.execute(
-            sa.text("DELETE FROM RunnerInRace WHERE RaceID = :race_id"),
-            {"race_id": race_id},
-        )
-        # Now, delete the race
         result = await conn.execute(
-            sa.text("DELETE FROM Race WHERE RaceID = :race_id"), {"race_id": race_id}
+            sa.text("DELETE FROM Race WHERE RaceID = :race_id"),
+            {"race_id": race_id},
         )
         if result.rowcount == 0:
             raise HTTPException(status_code=404, detail="Race not found")
-    return {"message": "Race deleted"}
+        return {"message": "Race deleted successfully"}
 
 
 @router.delete("/runner/{runner_id}")
 async def delete_runner(runner_id: int, dbc: deps.GetDbCtx):
     async with dbc as conn:
-        # First, delete any dependent records in RunnerInRace
-        await conn.execute(
-            sa.text("DELETE FROM CheckpointPassing WHERE email = :runner_id"),
-            {"runner_id": runner_id},
-        )
-        await conn.execute(
-            sa.text("DELETE FROM RunnerInRace WHERE email = :runner_id"),
-            {"runner_id": runner_id},
-        )
-        # Now, delete the runner
         result = await conn.execute(
-            sa.text("DELETE FROM Runner WHERE email = :runner_id"),
+            sa.text("DELETE FROM Runner WHERE RunnerID = :runner_id"),
             {"runner_id": runner_id},
         )
         if result.rowcount == 0:
             raise HTTPException(status_code=404, detail="Runner not found")
-    return {"message": "Runner deleted"}
+        return {"message": "Runner deleted successfully"}
 
 
 @router.delete("/checkpoint/{checkpoint_id}")
 async def delete_checkpoint(checkpoint_id: int, dbc: deps.GetDbCtx):
     async with dbc as conn:
-        # First, delete any dependent records in CheckpointPassing
-        await conn.execute(
-            sa.text(
-                "DELETE FROM CheckpointPassing WHERE CheckpointID = :checkpoint_id"
-            ),
-            {"checkpoint_id": checkpoint_id},
-        )
-        # Now, delete the checkpoint
         result = await conn.execute(
             sa.text("DELETE FROM Checkpoint WHERE CheckpointID = :checkpoint_id"),
             {"checkpoint_id": checkpoint_id},
         )
         if result.rowcount == 0:
             raise HTTPException(status_code=404, detail="Checkpoint not found")
-    return {"message": "Checkpoint deleted"}
+        return {"message": "Checkpoint deleted successfully"}
 
 
 @router.get("/race/{race_id}/details")
 async def get_race_details(race_id: int, dbc: deps.GetDbCtx):
     async with dbc as conn:
-        # Fetch race details
         race_details = await conn.execute(
             sa.text("SELECT RaceID, Name, startTime FROM Race WHERE RaceID = :race_id"),
             {"race_id": race_id},
@@ -526,9 +556,9 @@ async def get_race_details(race_id: int, dbc: deps.GetDbCtx):
         racers = await conn.execute(
             sa.text(
                 """
-                SELECT r.email, r.name
+                SELECT r.RunnerID, r.name
                 FROM Runner r
-                JOIN RunnerInRace rir ON r.email = rir.email
+                JOIN RunnerInRace rir ON r.RunnerID = rir.RunnerID
                 WHERE rir.RaceID = :race_id
                 """
             ),
@@ -536,11 +566,11 @@ async def get_race_details(race_id: int, dbc: deps.GetDbCtx):
         )
         racers_list = racers.mappings().all()
 
-        # Fetch checkpoints in this race
+        # Fetch checkpoints in this race with time limits
         checkpoints = await conn.execute(
             sa.text(
                 """
-                SELECT c.CheckpointID, c.Location
+                SELECT c.CheckpointID, c.Location, cir.TimeLimit
                 FROM Checkpoint c
                 JOIN CheckpointInRace cir ON c.CheckpointID = cir.CheckpointID
                 WHERE cir.RaceID = :race_id
@@ -550,16 +580,15 @@ async def get_race_details(race_id: int, dbc: deps.GetDbCtx):
         )
         checkpoints_list = checkpoints.mappings().all()
 
-        # Fetch checkpoint passings for this race, including checkpoint locations and race name
+        # Fetch checkpoint passings for this race, including checkpoint locations
         checkpoint_passings = await conn.execute(
             sa.text(
                 """
-                SELECT cp.CheckpointID, cp.PassingTime, r.name AS RunnerName, c.Location AS CheckpointLocation, ra.Name AS RaceName
+                SELECT cp.CheckpointID, cp.PassingTime, r.name AS RunnerName, c.Location AS CheckpointLocation
                 FROM CheckpointPassing cp
-                JOIN RunnerInRace rir ON cp.email = rir.email
-                JOIN Runner r ON r.email = rir.email
+                JOIN RunnerInRace rir ON cp.RunnerID = rir.RunnerID
+                JOIN Runner r ON r.RunnerID = rir.RunnerID
                 JOIN Checkpoint c ON cp.CheckpointID = c.CheckpointID
-                JOIN Race ra ON rir.RaceID = ra.RaceID
                 WHERE rir.RaceID = :race_id
                 """
             ),

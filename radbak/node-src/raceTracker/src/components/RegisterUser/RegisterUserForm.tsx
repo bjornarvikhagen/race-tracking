@@ -2,15 +2,15 @@ import React, { useState } from 'react';
 import "./RegisterUserForm.css"
 
 interface RegisterUserFormProps {
-  onSubmitUser: (name: string) => void;
+  onSubmitUser: (username: string) => void;
 }
 
 export const RegisterUserForm: React.FC<RegisterUserFormProps> = ({ onSubmitUser }) => {
-  const [name, setName] = useState('');
+  const [username, setUsername] = useState('');
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    onSubmitUser(name);
+    onSubmitUser(username);
   };
 
   return (
@@ -19,8 +19,8 @@ export const RegisterUserForm: React.FC<RegisterUserFormProps> = ({ onSubmitUser
       <input
         type="text"
         id="name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
         required
       />
       <button type="submit">Submit</button>
