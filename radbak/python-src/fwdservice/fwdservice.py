@@ -3,6 +3,7 @@
 # Import necessary libraries
 import json
 import random
+from datetime import datetime, timedelta
 
 import paho.mqtt.client as mqtt
 import paho.mqtt.enums as mqtt_enums
@@ -15,13 +16,20 @@ api_endpoint = "http://localhost:80/checkpoint_passing"  # Real endpoint to send
 # MQTT broker details
 # Some docs on docker to find ports https://www.emqx.io/docs/en/latest/deploy/install-docker.html
 # And for the dashboard: https://www.emqx.io/docs/en/latest/messaging/publish-and-subscribe.html#dashboard-websocket
-broker_port = 1883  # EMQX default TCP listener
-broker_address = "host.docker.internal"  # Docker host address
+broker_port = 8883  # EMQX default TLS listener
+# broker_port = 1883  # EMQX default TCP listener (works only for local dev)
 
-topic = "testtopic/1"  # The topic to which you want to publish/listen  # TODO: Change to real topic
-client_id = f"python-mqtt-{random.randint(0, 1000)}"  # Random ID as the MQTT client-ID
-username = "Erik"
-password = "Erik"
+# # Local server adress
+# broker_address = "host.docker.internal"  # Docker host address
+# Rather use public MQTT:
+broker_address = "o4b81453.ala.eu-central-1.emqxsl.com"
+
+
+topic = "postcheckpoint"  # The topic to which you want to publish/listen  # TODO: Change to real topic
+# client_id = f"python-mqtt-{random.randint(0, 1000)}"  # Random ID as the MQTT client-ID
+client_id = "python-mqtt-fwdservice"  # Fixed ID.
+username = "fwdservice"
+password = "fwdservice"
 
 
 # Define the callback function for when a message is received
@@ -37,14 +45,15 @@ def on_message(client, userdata, message):
 
     # Format the message data
     split_data = data.split(":")
+
     checkpoint_id = split_data[0]
     rfid = split_data[1]
-    timestamp = ":".join(split_data[2:])
+    timestamp = datetime.now() - timedelta(milliseconds=int(split_data[2]))
 
     api_payload = {
         "TagID": rfid,
         "CheckpointID": checkpoint_id,
-        "PassingTime": timestamp,
+        "PassingTime": str(timestamp),
     }
     print("Sending pyload: ", str(api_payload))
 
@@ -59,6 +68,7 @@ def on_message(client, userdata, message):
         print("Data successfully forwarded to API!")
     else:
         print("Failed to send data to API...")
+        print(response.text)
 
 
 # Callback when the client receives a CONNACK response from the server. I.e. This is called once we have a connection.
@@ -84,7 +94,7 @@ def connect_to_mqtt():
         callback_api_version=mqtt_enums.CallbackAPIVersion.VERSION2, client_id=client_id
     )
     client.username_pw_set(username, password)
-    # client.tls_set(ca_certs="./pythonMQTTClient/emqxsl-ca.crt")
+    client.tls_set(ca_certs="./fwdservice/emqxsl-ca.crt")  # Set certificate for TLS
 
     # Assign the on_connect callback function
     client.on_connect = on_connect
@@ -97,7 +107,9 @@ def connect_to_mqtt():
 
     # Connect to the broker
     print(f"Connecting to {broker_address}")
-    client.connect(broker_address, broker_port, keepalive=60)
+    client.connect(
+        broker_address, broker_port, keepalive=10 * 60 * 60
+    )  # Keep alive for 10 hours
 
     # Publishing a hello-message to a topic
     client.publish(topic, "Hello, EMQX!")

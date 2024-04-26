@@ -13,6 +13,9 @@ asyncpg = "^0.29.0"
 sqlalchemy = "^2.0.27"
 pydantic-settings = "^2.2.1"
 asyncpg-listen = "^0.0.6"
+certifi = "^2024.2.2"
+paho-mqtt = "^2.0.0"
+requests = "^2.31.0"
 
 
 [tool.poetry.group.dev.dependencies]
