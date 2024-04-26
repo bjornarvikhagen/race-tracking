@@ -40,6 +40,7 @@ const formatTimeLimit = (time: string | Date | undefined | null) => {
 };
 
 const DataTable: React.FC<DataTableProps> = ({ runners, checkpoints }) => {
+  const sortedCheckpoints = [...checkpoints].sort((a, b) => a.position - b.position);
   const runnerFellOutMap = getRunnerFellOutMap(runners, checkpoints);
   const navigate = useNavigate(); // Initialize useNavigate
 
@@ -122,7 +123,7 @@ const DataTable: React.FC<DataTableProps> = ({ runners, checkpoints }) => {
           <table className="data-table">
             <thead>
               <tr>
-                {checkpoints.map((checkpoint, index) => (
+                {sortedCheckpoints.map((checkpoint, index) => (
                   <th key={index}>
                     CP {index + 1}
                     {checkpoint.timeLimit && (
@@ -138,18 +139,16 @@ const DataTable: React.FC<DataTableProps> = ({ runners, checkpoints }) => {
             <tbody>
               {runners.map((runner, rowIndex) => (
                 <tr key={`checkpoint-row-${rowIndex}`}>
-                  {checkpoints.map((checkpoint, cpIndex) => {
+                  {sortedCheckpoints.map((checkpoint, cpIndex) => {
                     const runnerTime = runner.times[checkpoint.position];
-                    // Check if the checkpoint has a time limit
                     const hasTimeLimit = checkpoint.timeLimit !== null && checkpoint.timeLimit !== undefined;
                     const isTimeBefore = runnerTime && (runnerTime <= (checkpoint.timeLimit as unknown as Date));
 
-                    // Assign 'time-before' or 'time-after' class only if there's a time limit for the checkpoint
                     const timeClass = !hasTimeLimit
                       ? ""
                       : isTimeBefore
                       ? "time-before"
-                      : "time-after"; /// Ugly, but avoids let operators in component
+                      : "time-after";
 
                     return (
                       <td key={cpIndex} className={timeClass}>
