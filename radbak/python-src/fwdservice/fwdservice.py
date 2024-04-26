@@ -46,13 +46,13 @@ def on_message(client, userdata, message):
     # Format the message data
     split_data = data.split(":")
 
-    checkpoint_id = split_data[0]
+    device_id = split_data[0]
     rfid = split_data[1]
     timestamp = datetime.now() - timedelta(milliseconds=int(split_data[2]))
 
     api_payload = {
         "TagID": rfid,
-        "CheckpointID": checkpoint_id,
+        "DeviceID": device_id,
         "PassingTime": str(timestamp),
     }
     print("Sending pyload: ", str(api_payload))
