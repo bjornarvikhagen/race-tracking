@@ -297,7 +297,7 @@ int publish_thread(struct passing_buffer *buffer, uint32_t *rfid_tag, uint64_t *
 				}
 			}
 		} else {
-			k_msleep(10000);
+			k_msleep(CONFIG_MQTT_PUBLISH_TIMER_MS);
 		}
 	}
 }

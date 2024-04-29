@@ -59,6 +59,10 @@ config MQTT_PASSWORD
     string "Set password for mqtt authentication"
     default NULL
 
+config MQTT_PUBLISH_TIMER_MS
+    int "Time in milliseconds for how long the publish thread should sleep before attemping to publish buffered RFID registrations"
+    default 10000
+
 endmenu
 
 source "Kconfig.zephyr"
