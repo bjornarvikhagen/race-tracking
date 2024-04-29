@@ -42,7 +42,7 @@ class RaceOut(BaseModel):
 
 class CheckpointPassing(BaseModel):
     TagID: str
-    CheckpointID: int
+    DeviceID: int
     PassingTime: datetime
 
 
@@ -382,11 +382,6 @@ async def add_checkpoint_to_race(
 @router.post("/checkpoint_passing")
 async def post_checkpoint_passing(passing: CheckpointPassing, dbc: deps.GetDbCtx):
     # Convert PassingTime to offset-naive UTC datetime
-    passing_time_naive = (
-        passing.PassingTime.replace(tzinfo=timezone.utc)
-        .astimezone(tz=None)
-        .replace(tzinfo=None)
-    )
 
     async with dbc as conn:
         # Retrieve the RunnerID based on the TagID
@@ -396,11 +391,27 @@ async def post_checkpoint_passing(passing: CheckpointPassing, dbc: deps.GetDbCtx
         )
         runner_id = result.scalar()
 
+        result = await conn.execute(
+            sa.text(
+                """SELECT * FROM 
+                        checkpoint NATURAL JOIN checkpointinrace  
+                        NATURAL LEFT JOIN (
+                            SELECT * FROM checkpointpassing
+                            WHERE runnerid = :runnerID)
+                        WHERE raceid = :raceID
+                        AND deviceid = :deviceID
+                        AND runnerid ISNULL
+                        ORDER BY position"""
+            ),
+            {"runnerID": runner_id, "raceID": 2, "deviceID": passing.DeviceID},
+        )
+        checkpoint_id = result.scalar()
+
         if runner_id:
             parameters = {
                 "RunnerID": runner_id,
-                "CheckpointID": passing.CheckpointID,
-                "PassingTime": passing_time_naive,
+                "CheckpointID": checkpoint_id,
+                "PassingTime": passing.PassingTime,
             }
             await conn.execute(
                 sa.text(
