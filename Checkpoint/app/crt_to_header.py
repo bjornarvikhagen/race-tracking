@@ -1,5 +1,5 @@
-cer_file ="./app/emqxsl-ca.crt"
-header_file="./app/src/certificate2.h"
+cer_file ="./app/server-certificate.crt"
+header_file="./app/src/certificate.h"
 macro_name = "CA_CERTIFICATE"
 
 key = open(cer_file, "r")
