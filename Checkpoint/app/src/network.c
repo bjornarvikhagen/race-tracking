@@ -14,23 +14,24 @@
 
 LOG_MODULE_DECLARE(PathPatrol);
 
-// mqtt client struct
+/* MQTT client struct. */
 static struct mqtt_client client;
-// file descriptor
+/* File descriptor for MQTT connection. (Similar to fds for sockets.) */
 static struct pollfd fds;
 
+/* Global int to check if the client is still connected to the broker.
+   Set to 1 if it's connected. */
 int is_mqtt_connected = 0;
 
-//static uint8_t data_to_publish[12] = {0};
-static uint8_t data_to_publish[IMEI_LEN + RFID_STR_LEN + 2] = {0};
-
+/* Get GPIO data for LED control. */
 #define LED0_NODE DT_ALIAS(led0)
 static const struct gpio_dt_spec led = GPIO_DT_SPEC_GET(LED0_NODE, gpios);
 
+/* Semaphore to run lte_lc_connect_async() blocking in the main thread. */
 static K_SEM_DEFINE(lte_connected, 0, 1);
-K_SEM_DEFINE(cert_provisioning, 0, 1);
 
-/* Define the event handler for LTE link control. */
+/** @brief Event handler for LTE link control.
+*/
 static void lte_handler(const struct lte_lc_evt *const evt)
 {
 	switch (evt->type) {
@@ -45,19 +46,22 @@ static void lte_handler(const struct lte_lc_evt *const evt)
 				"Connected - home network" : "Connected - roaming");
 		k_sem_give(&lte_connected);
 		break;
+
 	/* On event RRC update, print RRC mode. */
 	case LTE_LC_EVT_RRC_UPDATE:
 		LOG_INF("RRC mode: %s\n", evt->rrc_mode == LTE_LC_RRC_MODE_CONNECTED ?
 				"Connected" : "Idle");
 		break;
+
 	default:
 		break;
 	}
 }
 
 /** @brief Configures the modem and connects to LTE.
- * First configures LED0, then initializes the modem library, then
- * provisions the certificate, and then finally connects to cellular LTE-M.
+ *  First configures LED0, then initializes the modem library, then
+ *  provisions the certificate, and then finally connects to cellular LTE-M.
+ *  @returns Non-zero value on error, 0 if success.
 */
 static int modem_configure(void)
 {
@@ -81,6 +85,8 @@ static int modem_configure(void)
 		return err;
 	}
 
+	/* CircuitDojo nRF9160 Feather likes to conect to LTE before running main,
+	   LTE connection must be offline to provision certificate. */
 	LOG_INF("Disconnecting from open LTE connection.");
 	err = lte_lc_offline();
 	if (err) {
@@ -94,8 +100,6 @@ static int modem_configure(void)
 		LOG_ERR("Failed to provision certificates");
 		return err;
 	}
-	
-	k_sem_take(&cert_provisioning, K_FOREVER);
 
 	/* lte_lc_init deprecated in >= v2.6.0 */
 	#if NCS_VERSION_NUMBER < 0x20600
@@ -127,7 +131,8 @@ static int modem_configure(void)
 }
 
 /** @brief Runs all init functions to set up a client-broker MQTT connection, then
- * runs a keepalive loop in main to keep the MQTT connection alive.
+ *  runs a keepalive loop in main to keep the MQTT connection alive.
+ *  @returns Non-zero value on error, 0 if success.
 */
 int network_init(void)
 {
@@ -147,12 +152,6 @@ int network_init(void)
 
 	err = imei_init();
 	if (err) {
-		LOG_ERR("Failed to initialize IMEI of the device: %d", err);
-		return err;
-	}
-
-	err = imei_str_init();
-	if (err) {
 		LOG_ERR("Failed to initialize IMEI string of the device: %d", err);
 		return err;
 	}
@@ -160,7 +159,12 @@ int network_init(void)
 	return 0;
 }
 
-int mqtt_keepalive_thread(struct passing_buffer *buffer, uint32_t *rfid_tag) {
+/** @brief Entrypoint function for the MQTT connection keepalive thread. This 
+ *  function is intended to run in it's own thread to run mqtt_live and maintain
+ * 	a connection. It also handles return events from the MQTT connection file descriptors.
+ *  @returns This function never returns.
+*/
+int mqtt_keepalive_thread(void) {
     k_sem_take(&keepalive_semaphore, K_FOREVER); // wait for main
 	uint32_t connect_attempt = 0;
 do_connect:
@@ -177,11 +181,7 @@ do_connect:
 	}
 	is_mqtt_connected = 1;
 
-	err = fds_init(&client, &fds);
-	if (err) {
-		LOG_ERR("Error in fds_init: %d", err);
-		return 0;
-	}
+	fds_init(&client, &fds);
 
 	while (1) {
 		int keepalive_time = mqtt_keepalive_time_left(&client);
@@ -216,9 +216,7 @@ do_connect:
 			break;
 		}
 	}
-
 	LOG_INF("Disconnecting MQTT client");
-
 	err = mqtt_disconnect(&client);
 	if (err) {
 		LOG_ERR("Could not disconnect MQTT client: %d", err);
@@ -229,63 +227,44 @@ do_connect:
 	return 0;
 }
 
-void prepare_publish_data(uint32_t rfid_tag) {
-	/* 
-	LOG_INF("RFID tag: %X", rfid_tag);
-	LOG_INF("IMEI: %llu", imei_num);
-	uint64_t temp_imei_num = imei_num;
-	uint32_t temp_rfid_tag = rfid_tag;
-	data_to_publish[0] = (temp_imei_num >> 56) & 0xFF;
-	data_to_publish[1] = (temp_imei_num >> 48) & 0xFF;
-	data_to_publish[2] = (temp_imei_num >> 40) & 0xFF;
-	data_to_publish[3] = (temp_imei_num >> 32) & 0xFF;
-	data_to_publish[4] = (temp_imei_num >> 24) & 0xFF;
-	data_to_publish[5] = (temp_imei_num >> 16) & 0xFF;
-	data_to_publish[6] = (temp_imei_num >> 8) & 0xFF;
-	data_to_publish[7] = temp_imei_num & 0xFF;
-	data_to_publish[8] = (temp_rfid_tag >> 24) & 0xFF;
-	data_to_publish[9] = (temp_rfid_tag >> 16) & 0xFF;
-	data_to_publish[10] = (temp_rfid_tag >> 8) & 0xFF;
-	data_to_publish[11] = temp_rfid_tag & 0xFF;
-	*/
-	snprintf(data_to_publish, IMEI_LEN + RFID_STR_LEN + 2, "%s:%X", imei_str, rfid_tag);
-}
-
-int publish_thread(struct passing_buffer *buffer, uint32_t *rfid_tag, uint64_t *time) {
+/** @brief Entrypoint function for the publish thread. This function runs a loop as 
+ * 	often as defined by CONFIG_MQTT_PUBLISH_TIMER_MS. It dequeues a passing from the 
+ *  passing buffer and attempts to publish it to the configured publishing topic.
+ *  @returns This function never returns.
+*/
+int publish_thread(struct passing_buffer *buffer) {
     k_sem_take(&publish_semaphore, K_FOREVER); // wait for main
 	int fail_count = 0;
 	int err = 0;
 	while (1) {
 		if (is_mqtt_connected == 1 && buffer->size > 0) {
+			uint32_t rfid_tag = 0;
+			uint64_t time = 0;
+
 			k_sem_take(&buffer_semaphore, K_FOREVER);
-			dequeue(buffer, rfid_tag, time);
+			dequeue(buffer, &rfid_tag, &time);
 			k_sem_give(&buffer_semaphore);
+
 			fail_count = 0;
 			while (fail_count >= 0) {
-
-				prepare_publish_data(*rfid_tag);
-
-
-				LOG_INF("RFID tag: %X", *rfid_tag);
-				uint8_t rfid_tag_str[RFID_STR_LEN + 1] = {0};
-
-
-				sprintf(rfid_tag_str, "%X", *rfid_tag);
-
 				uint64_t current_time = (k_cycle_get_32()*1000)/sys_clock_hw_cycles_per_sec();
-				uint64_t time_since_passing = current_time - *time;
+				uint64_t time_since_passing = current_time - time;
 				uint8_t time_since_pass_buf[12] = {0};
 				sprintf(time_since_pass_buf, "%d", time_since_passing);
 				LOG_INF("time since passing: %s", time_since_pass_buf);
 
+				LOG_INF("RFID tag: %X", rfid_tag);
+				char rfid_tag_str[RFID_STR_LEN + 1] = {0};
+				sprintf(rfid_tag_str, "%X", rfid_tag);
+
 				char payload[80] = {0};
-				strcpy(payload, data_to_publish);
+				strcpy(payload, imei_str);
+				strcat(payload, ":");
+				strcat(payload, rfid_tag_str);
 				strcat(payload, ":");
 				strcat(payload, time_since_pass_buf);
 
-				
-
-				err = data_publish(&client, MQTT_QOS_1_AT_LEAST_ONCE, payload, strlen(payload)/* sizeof(rfid_tag_str)-1 */);
+				err = data_publish(&client, MQTT_QOS_1_AT_LEAST_ONCE, payload, strlen(payload));
 				if (err) {
 					fail_count++;
 					LOG_ERR("Failed to send message, %d", err);

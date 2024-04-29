@@ -11,3 +11,4 @@ bootloader
 app/.vscode
 app/build
 *.crt
+app/log-*

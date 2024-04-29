@@ -8,6 +8,12 @@ config MQTT_SUB_TOPIC
     string "MQTT subscribe topic"
     default "devacademy/subscribe/topic"
 
+config MQTT_SUBSCRIBE
+    bool "Subscribe to configure topic"
+    default n
+    help
+      Configure whether or not you wish to subscribe to the configured topic.
+
 config MQTT_CLIENT_ID
     string "MQTT client ID"
     help
@@ -20,7 +26,7 @@ config MQTT_BROKER_HOSTNAME
     
 config MQTT_BROKER_PORT
     int "MQTT broker port"
-    default 1883
+    default 8883
 
 config MQTT_MESSAGE_BUFFER_SIZE
     int "MQTT message buffer size"
@@ -29,10 +35,6 @@ config MQTT_MESSAGE_BUFFER_SIZE
 config MQTT_PAYLOAD_BUFFER_SIZE
     int "MQTT payload buffer size"
     default 128
-
-config PUBLISH_MSG
-    string "message to publish once after init"
-    default "Hiii!"
 
 config MQTT_RECONNECT_DELAY_S
     int "Seconds to delay before attempting to reconnecting to the broker."

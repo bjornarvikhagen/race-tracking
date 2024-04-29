@@ -5,14 +5,13 @@
 
 static const struct gpio_dt_spec led;
 
-int mqtt_keepalive_thread(struct passing_buffer *buffer, uint32_t *rfid_tag);
-int publish_thread(struct passing_buffer *buffer, uint32_t *rfid_tag, uint64_t *time);
+int mqtt_keepalive_thread(void);
+int publish_thread(struct passing_buffer *buffer);
 int network_init(void);
 
 extern struct k_sem publish_semaphore;
 extern struct k_sem keepalive_semaphore;
 extern struct k_sem buffer_semaphore;
-extern struct k_sem tag_reader_semaphore;
 extern struct passing_buffer passing_buffer;
 
 extern int is_mqtt_connected;

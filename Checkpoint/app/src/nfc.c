@@ -5,6 +5,7 @@
 #include <zephyr/sys/util.h>
 #include <zephyr/logging/log.h>
 #include "nfc.h"
+#include "passing_buffer.h"
 
 #define PN532_I2C_ADDRESS 0x24
 
@@ -132,7 +133,6 @@ int pn532_send_receive_message(struct device *dev, uint8_t i2c_address, uint8_t 
     }
 
     return 0;
-
 }
 
 int pn532_nfc_setup(){
@@ -148,7 +148,6 @@ int pn532_nfc_setup(){
 }
 
 int pn532_get_tag(uint32_t *rfid_tag_buffer){
-
     int ret;
     
     uint8_t res_buf[30];
@@ -165,6 +164,4 @@ int pn532_get_tag(uint32_t *rfid_tag_buffer){
         *rfid_tag_buffer = (int)res_buf[14] << 24 | (int)res_buf[15] << 16 | (int)res_buf[16] << 8 | (int)res_buf[17];
         return 0;
     }
-
-
 }
