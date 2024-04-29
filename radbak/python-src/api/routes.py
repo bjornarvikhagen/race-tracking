@@ -329,10 +329,10 @@ async def add_runner_to_race(runner_in_race: RunnerInRace, dbc: deps.GetDbCtx):
         return {"message": "Runner added to the race"}
 
 
-@router.post("/race/{race_id}/checkpoint/{device_id}/{position}")
+@router.post("/race/{race_id}/checkpoint/{checkpoint_id}/{position}")
 async def add_checkpoint_to_race(
     race_id: int,
-    device_id: int,
+    checkpoint_id: int,
     position: int,
     dbc: deps.GetDbCtx,
     time_limit: Optional[str] = None,
@@ -344,14 +344,6 @@ async def add_checkpoint_to_race(
         )
         if race_check.rowcount == 0:
             raise HTTPException(status_code=404, detail="Race not found")
-
-        # Always create a new checkpoint for each position
-        result = await conn.execute(
-            sa.text(
-                f"INSERT INTO Checkpoint (DeviceID, Location) VALUES ({device_id}, 'Checkpoint') RETURNING CheckpointID"
-            )
-        )
-        checkpoint_id = result.scalar()
 
         # Convert time_limit from string to datetime.datetime object if provided
         parsed_time_limit = None
@@ -392,6 +384,12 @@ async def post_checkpoint_passing(passing: CheckpointPassing, dbc: deps.GetDbCtx
         runner_id = result.scalar()
 
         result = await conn.execute(
+            sa.text("SELECT RaceID FROM RunnerInRace WHERE TagID = :TagID"),
+            {"TagID": passing.TagID},
+        )
+        race_id = result.scalar()
+
+        result = await conn.execute(
             sa.text(
                 """SELECT * FROM 
                         checkpoint NATURAL JOIN checkpointinrace  
@@ -403,7 +401,7 @@ async def post_checkpoint_passing(passing: CheckpointPassing, dbc: deps.GetDbCtx
                         AND runnerid ISNULL
                         ORDER BY position"""
             ),
-            {"runnerID": runner_id, "raceID": 2, "deviceID": passing.DeviceID},
+            {"runnerID": runner_id, "raceID": race_id, "deviceID": passing.DeviceID},
         )
         checkpoint_id = result.scalar()
 

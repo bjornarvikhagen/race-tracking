@@ -140,7 +140,7 @@ const DataTable: React.FC<DataTableProps> = ({ runners, checkpoints }) => {
               {runners.map((runner, rowIndex) => (
                 <tr key={`checkpoint-row-${rowIndex}`}>
                   {sortedCheckpoints.map((checkpoint, cpIndex) => {
-                    const runnerTime = runner.times[checkpoint.position];
+                    const runnerTime = runner.times[checkpoint.id];
                     const hasTimeLimit = checkpoint.timeLimit !== null && checkpoint.timeLimit !== undefined;
                     const isTimeBefore = runnerTime && (runnerTime <= (checkpoint.timeLimit as unknown as Date));
 
