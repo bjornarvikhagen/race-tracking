@@ -10,3 +10,4 @@ bootloader
 
 app/.vscode
 app/build
+*.crt
