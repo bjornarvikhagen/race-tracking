@@ -389,6 +389,21 @@ async def post_checkpoint_passing(passing: CheckpointPassing, dbc: deps.GetDbCtx
         )
         race_id = result.scalar()
 
+        # Check if there is a recent passing within the last 30 seconds for the same TagID
+        recent_passing_check = await conn.execute(
+            sa.text(
+                """SELECT 1 FROM CheckpointPassing 
+                   WHERE RunnerID = :runnerID 
+                     AND passingtime > NOW() + INTERVAL ' 120 minute' - INTERVAL '5 second'"""
+            ),
+            {"runnerID": runner_id},
+        )
+        if recent_passing_check.scalar() is not None:
+            raise HTTPException(
+                status_code=400,
+                detail="Checkpoint passing not allowed within 30 seconds of the last passing",
+            )
+
         result = await conn.execute(
             sa.text(
                 """SELECT * FROM 
