@@ -555,6 +555,13 @@ async def delete_checkpoint(checkpoint_id: int, dbc: deps.GetDbCtx):
         return {"message": "Checkpoint deleted successfully"}
 
 
+@router.delete("/checkpoint_passings")
+async def delete_checkpoint_passings(dbc: deps.GetDbCtx):
+    async with dbc as conn:
+        await conn.execute(sa.text("DELETE FROM checkpointpassing"))
+        return {"message": "Checkpointpassings removed"}
+
+
 @router.get("/race/{race_id}/details")
 async def get_race_details(race_id: int, dbc: deps.GetDbCtx):
     async with dbc as conn:
