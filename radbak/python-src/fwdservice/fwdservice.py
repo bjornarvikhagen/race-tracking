@@ -49,7 +49,11 @@ def on_message(client, userdata, message):
 
         device_id = split_data[0]
         rfid = split_data[1]
-        timestamp = datetime.now() - timedelta(milliseconds=int(split_data[2]))
+        timestamp = (
+            datetime.now()
+            - timedelta(milliseconds=int(split_data[2]))
+            + timedelta(hours=2)
+        )
 
         api_payload = {
             "TagID": rfid,
