@@ -65,7 +65,7 @@ async def test_routes(dbc: deps.GetDbCtx):
 
         # Run setup_db
         creation_queries = [
-            "CREATE TABLE IF NOT EXISTS Checkpoint (CheckpointID SERIAL PRIMARY KEY, DeviceID INT NOT NULL, Location VARCHAR(255) NOT NULL);",
+            "CREATE TABLE IF NOT EXISTS Checkpoint (CheckpointID SERIAL PRIMARY KEY, DeviceID BIGINT NOT NULL, Location VARCHAR(255) NOT NULL);",
             "CREATE TABLE IF NOT EXISTS Runner (RunnerID SERIAL PRIMARY KEY, name VARCHAR(255) NOT NULL UNIQUE);",
             "CREATE TABLE IF NOT EXISTS Race (RaceID SERIAL PRIMARY KEY, Name VARCHAR(255) NOT NULL, startTime TIMESTAMP NOT NULL);",
             "CREATE TABLE IF NOT EXISTS RunnerInRace (RunnerID INT NOT NULL, RaceID INT NOT NULL, TagID VARCHAR(255) NOT NULL, PRIMARY KEY (RunnerID, RaceID), FOREIGN KEY (RunnerID) REFERENCES Runner (RunnerID) ON DELETE CASCADE, FOREIGN KEY (RaceID) REFERENCES Race (RaceID) ON DELETE CASCADE);",
@@ -219,7 +219,7 @@ async def delete_db(dbc: deps.GetDbCtx):
 async def setup_db(dbc: deps.GetDbCtx):
     async with dbc as conn:
         tables = [
-            "CREATE TABLE IF NOT EXISTS Checkpoint (CheckpointID SERIAL PRIMARY KEY, DeviceID VARCHAR(255) NOT NULL, Location VARCHAR(255) NOT NULL);",
+            "CREATE TABLE IF NOT EXISTS Checkpoint (CheckpointID SERIAL PRIMARY KEY, DeviceID BIGINT NOT NULL, Location VARCHAR(255) NOT NULL);",
             "CREATE TABLE IF NOT EXISTS Runner (RunnerID SERIAL PRIMARY KEY, name VARCHAR(255) NOT NULL UNIQUE);",
             "CREATE TABLE IF NOT EXISTS Race (RaceID SERIAL PRIMARY KEY, Name VARCHAR(255) NOT NULL, startTime TIMESTAMP NOT NULL);",
             "CREATE TABLE IF NOT EXISTS RunnerInRace (RunnerID INT NOT NULL, RaceID INT NOT NULL, TagID VARCHAR(255) NOT NULL, PRIMARY KEY (RunnerID, RaceID), FOREIGN KEY (RunnerID) REFERENCES Runner (RunnerID) ON DELETE CASCADE, FOREIGN KEY (RaceID) REFERENCES Race (RaceID) ON DELETE CASCADE);",
@@ -329,10 +329,10 @@ async def add_runner_to_race(runner_in_race: RunnerInRace, dbc: deps.GetDbCtx):
         return {"message": "Runner added to the race"}
 
 
-@router.post("/race/{race_id}/checkpoint/{device_id}/{position}")
+@router.post("/race/{race_id}/checkpoint/{checkpoint_id}/{position}")
 async def add_checkpoint_to_race(
     race_id: int,
-    device_id: int,
+    checkpoint_id: int,
     position: int,
     dbc: deps.GetDbCtx,
     time_limit: Optional[str] = None,
@@ -344,14 +344,6 @@ async def add_checkpoint_to_race(
         )
         if race_check.rowcount == 0:
             raise HTTPException(status_code=404, detail="Race not found")
-
-        # Always create a new checkpoint for each position
-        result = await conn.execute(
-            sa.text(
-                f"INSERT INTO Checkpoint (DeviceID, Location) VALUES ({device_id}, 'Checkpoint') RETURNING CheckpointID"
-            )
-        )
-        checkpoint_id = result.scalar()
 
         # Convert time_limit from string to datetime.datetime object if provided
         parsed_time_limit = None
@@ -392,6 +384,27 @@ async def post_checkpoint_passing(passing: CheckpointPassing, dbc: deps.GetDbCtx
         runner_id = result.scalar()
 
         result = await conn.execute(
+            sa.text("SELECT RaceID FROM RunnerInRace WHERE TagID = :TagID"),
+            {"TagID": passing.TagID},
+        )
+        race_id = result.scalar()
+
+        # Check if there is a recent passing within the last 30 seconds for the same TagID
+        recent_passing_check = await conn.execute(
+            sa.text(
+                """SELECT 1 FROM CheckpointPassing 
+                   WHERE RunnerID = :runnerID 
+                     AND passingtime > NOW() + INTERVAL ' 120 minute' - INTERVAL '5 second'"""
+            ),
+            {"runnerID": runner_id},
+        )
+        if recent_passing_check.scalar() is not None:
+            raise HTTPException(
+                status_code=400,
+                detail="Checkpoint passing not allowed within 30 seconds of the last passing",
+            )
+
+        result = await conn.execute(
             sa.text(
                 """SELECT * FROM 
                         checkpoint NATURAL JOIN checkpointinrace  
@@ -403,7 +416,7 @@ async def post_checkpoint_passing(passing: CheckpointPassing, dbc: deps.GetDbCtx
                         AND runnerid ISNULL
                         ORDER BY position"""
             ),
-            {"runnerID": runner_id, "raceID": 2, "deviceID": passing.DeviceID},
+            {"runnerID": runner_id, "raceID": race_id, "deviceID": passing.DeviceID},
         )
         checkpoint_id = result.scalar()
 
@@ -555,6 +568,13 @@ async def delete_checkpoint(checkpoint_id: int, dbc: deps.GetDbCtx):
         if result.rowcount == 0:
             raise HTTPException(status_code=404, detail="Checkpoint not found")
         return {"message": "Checkpoint deleted successfully"}
+
+
+@router.delete("/checkpoint_passings")
+async def delete_checkpoint_passings(dbc: deps.GetDbCtx):
+    async with dbc as conn:
+        await conn.execute(sa.text("DELETE FROM checkpointpassing"))
+        return {"message": "Checkpointpassings removed"}
 
 
 @router.get("/race/{race_id}/details")
