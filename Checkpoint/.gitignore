@@ -1,0 +1,14 @@
+zephyr
+tools
+nrfxlib
+nrf
+modules
+deps
+bootloader
+.west
+.vscode
+
+app/.vscode
+app/build
+*.crt
+app/log-*
