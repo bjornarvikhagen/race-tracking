@@ -30,7 +30,5 @@ This is the frontend for the RaceTracker application, built with React, TypeScri
   - `Constants.ts` - Configuration constants
   - `main.tsx` - Entry point
 - `cypress/` - Cypress end-to-end tests
-## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
 
