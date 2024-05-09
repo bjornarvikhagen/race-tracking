@@ -1,0 +1,70 @@
+menu "KRUKE Trail Running Checkpoints"
+
+config MQTT_PUB_TOPIC
+    string "MQTT publish topic"
+    default "devacademy/publish/topic"
+
+config MQTT_SUB_TOPIC
+    string "MQTT subscribe topic"
+    default "devacademy/subscribe/topic"
+
+config MQTT_SUBSCRIBE
+    bool "Subscribe to configure topic"
+    default n
+    help
+      Configure whether or not you wish to subscribe to the configured topic.
+
+config MQTT_CLIENT_ID
+    string "MQTT client ID"
+    help
+      Use a custom Client ID string. If not set, the Client ID will be generated based on the IMEI number (for nRF91 Series based targets) or randomly (for other platforms).
+    default ""
+
+config MQTT_BROKER_HOSTNAME
+    string "MQTT broker hostname"
+    default "test.mosquitto.org"
+    
+config MQTT_BROKER_PORT
+    int "MQTT broker port"
+    default 8883
+
+config MQTT_MESSAGE_BUFFER_SIZE
+    int "MQTT message buffer size"
+    default 128
+
+config MQTT_PAYLOAD_BUFFER_SIZE
+    int "MQTT payload buffer size"
+    default 128
+
+config MQTT_RECONNECT_DELAY_S
+    int "Seconds to delay before attempting to reconnecting to the broker."
+    default 10
+
+config MQTT_TLS_SEC_TAG
+    int "TLS credentials security tag"
+    default 24
+
+config MQTT_TLS_SESSION_CACHING
+    bool "Enable TLS session caching"
+
+config MQTT_TLS_PEER_VERIFY
+    int "Set peer verification level"
+    default 2
+    help
+      Set to 0 for VERIFY_NONE, 1 for VERIFY_OPTIONAL, and 2 for VERIFY_REQUIRED.
+
+config MQTT_USERNAME
+    string "Set username for mqtt authentication"
+    default NULL
+    
+config MQTT_PASSWORD
+    string "Set password for mqtt authentication"
+    default NULL
+
+config MQTT_PUBLISH_TIMER_MS
+    int "Time in milliseconds for how long the publish thread should sleep before attemping to publish buffered RFID registrations"
+    default 10000
+
+endmenu
+
+source "Kconfig.zephyr"

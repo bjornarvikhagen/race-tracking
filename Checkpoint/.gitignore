@@ -1,4 +1,14 @@
-build*
-!BUILDING_AND_FLASHING.md
+zephyr
+tools
+nrfxlib
+nrf
+modules
+deps
+bootloader
+.west
 .vscode
-log.log
+
+app/.vscode
+app/build
+*.crt
+app/log-*
