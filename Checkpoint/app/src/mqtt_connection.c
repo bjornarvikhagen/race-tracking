@@ -145,6 +145,11 @@ static void data_print(uint8_t *prefix, uint8_t *data, size_t len) {
 
 /** @brief Function to publish data on the configured topic.
  *  See CONFIG_MQTT_PUB_TOPIC for configured publishing topic.
+ *  @param c Pointer to client who is to publish the data.
+ *  @param qos Quality of service for the published message.
+ *  @param data Pointer to bytestream of data to publish.
+ *  @param len Length of data.
+ *  @returns 0 on success, negative error code on error.
 */
 int data_publish(struct mqtt_client *c, enum mqtt_qos qos, uint8_t *data, size_t len) {
     struct mqtt_publish_param param;
@@ -165,6 +170,7 @@ int data_publish(struct mqtt_client *c, enum mqtt_qos qos, uint8_t *data, size_t
 }
 
 /** @brief MQTT client event handler.
+ *  @param c Pointer to constant client whose events are to be handled by this event handler.
 */
 void mqtt_evt_handler(struct mqtt_client *const c, const struct mqtt_evt *evt) {
     int err;
@@ -362,7 +368,8 @@ int imei_init(void) {
     return 0;
 }
 
-/** @brief Initialize MQTT client structure 
+/** @brief Initialize MQTT client structure.
+ *  @param client Pointer to client object to initialize.
  *  @returns Non-zero value on error, 0 if success.
 */
 int client_init(struct mqtt_client *client) {
@@ -430,6 +437,8 @@ int client_init(struct mqtt_client *client) {
 }
 
 /** @brief Initialize the file descriptor structure used by poll.
+ *  @param c Pointer to client whose MQTT file descriptor is to be initialized.
+ *  @param fds Pointer to client's pollfd.
 */
 void fds_init(struct mqtt_client *c, struct pollfd *fds) {
     if (c->transport.type == MQTT_TRANSPORT_NON_SECURE) {
