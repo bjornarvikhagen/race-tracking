@@ -9,7 +9,7 @@
 
 #define PN532_I2C_ADDRESS 0x24
 
-LOG_MODULE_DECLARE(PathPatrol);
+LOG_MODULE_REGISTER(PathPatrolNFC, LOG_LEVEL_INF);
 
 //I2C stuff
 #define I2C1_NODE DT_NODELABEL(i2c1)
@@ -47,12 +47,21 @@ uint8_t SamConfig[12] = {
     0x00, //postamble
 };
 
+
+
+/** @brief Function for printing raw bytes from a byte stream of any length.
+ *  @param bytes Bytestream to print.
+ *  @param len Length of bytestream.
+ */
 void print_bytes(uint8_t bytes[], uint32_t len){
     for(int i = 0; i < len; i++){
-        printk("%02X ", bytes[i]);
+        LOG_INF("%02X ", bytes[i]);
     }
 }
 
+/** @brief Checks to see if the PN532 device is ready for messaging.
+ *  @returns 0 if the device is ready, non-zero value if the device is not ready.
+ */
 int PN532_wait_for_RDY(){
     uint8_t buf[1];
     int ret;
@@ -71,8 +80,8 @@ int PN532_wait_for_RDY(){
     }
     return -1;
 }
-/**
- * @brief Attempts to send a command to the pn532 and waits for the response 
+
+/** @brief Attempts to send a command to the pn532 and waits for the response 
  * 
  * @param dev Pointer to the device structure for an I2C controller driver configured in controller mode.
  * @param i2c_address i2c address of the pn532
@@ -93,7 +102,7 @@ int pn532_send_receive_message(struct device *dev, uint8_t i2c_address, uint8_t 
     }
 
     if (verbose){
-        printk("Msg sent\n");
+        LOG_INF("Msg sent");
     }
 
     ret = PN532_wait_for_RDY();
@@ -102,7 +111,7 @@ int pn532_send_receive_message(struct device *dev, uint8_t i2c_address, uint8_t 
     }
 
     if (verbose){
-        printk("RDY\n");
+        LOG_INF("RDY");
     }
 
     ret = i2c_read(dev, res_buf, 7, i2c_address); //check for ACK
@@ -111,7 +120,7 @@ int pn532_send_receive_message(struct device *dev, uint8_t i2c_address, uint8_t 
     }
 
     if (verbose){
-        printk("Ack recieved\n");
+        LOG_INF("Ack recieved");
     }
 
     ret = PN532_wait_for_RDY();
@@ -120,7 +129,7 @@ int pn532_send_receive_message(struct device *dev, uint8_t i2c_address, uint8_t 
     }
 
     if (verbose){
-        printk("RDY\n");
+        LOG_INF("RDY");
     }
 
     ret = i2c_read(dev, res_buf, res_buf_len, i2c_address); //read response message
@@ -129,12 +138,15 @@ int pn532_send_receive_message(struct device *dev, uint8_t i2c_address, uint8_t 
     }
     
     if (verbose){
-        printk("Response read\n");
+        LOG_INF("Response read");
     }
 
     return 0;
 }
 
+/** @brief Initializes the PN532 for RFID scanning
+ *  @returns 0 on success, non-zero value on error.
+ */
 int pn532_nfc_setup(){
     int ret;
 
@@ -142,11 +154,15 @@ int pn532_nfc_setup(){
 
     ret = pn532_send_receive_message(i2c1_dev, PN532_I2C_ADDRESS, SamConfig, 12, res_buf, 30, false);
     if(ret){
-        LOG_ERR("Send/Receive error: %d\n", ret);
+        LOG_ERR("Send/Receive error: %d", ret);
         return ret;
     }
 }
 
+/** @brief Attempts to read a recently scanned RFID.
+ *  @param rfid_tag_buffer RFID tag buffer to write the gotten tag to.
+ *  @returns 0 successful scan with a new RFID, non-zero value on error or no new RFID scan.
+ */
 int pn532_get_tag(uint32_t *rfid_tag_buffer){
     int ret;
     

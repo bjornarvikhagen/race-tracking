@@ -65,6 +65,10 @@ config MQTT_PUBLISH_TIMER_MS
     int "Time in milliseconds for how long the publish thread should sleep before attemping to publish buffered RFID registrations"
     default 10000
 
+config MQTT_NFC_SCAN_TIMER_MS
+    int "Time in milliseconds for how long the NFC scanning thread should sleep before attemping a new scan"
+    default 2000
+
 endmenu
 
 source "Kconfig.zephyr"

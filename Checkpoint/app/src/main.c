@@ -24,6 +24,7 @@ K_SEM_DEFINE(keepalive_semaphore, 0, 1);
 K_SEM_DEFINE(tag_reader_semaphore, 0, 1);
 
 /** @brief Entrypoint function for the NFC tag reader thread. This function never returns.
+ *  @param buffer The passing_buffer to enqueue RFID reads to.
 */
 void tag_reader_thread(struct passing_buffer *buffer) {
     k_sem_take(&tag_reader_semaphore, K_FOREVER); // wait for main
@@ -40,7 +41,7 @@ void tag_reader_thread(struct passing_buffer *buffer) {
             LOG_INF("%x added to buffer, %d new size", rfid_tag, buffer->size);
         }
         k_sem_give(&buffer_semaphore);
-        k_msleep(1000);
+        k_msleep(CONFIG_MQTT_NFC_SCAN_TIMER_MS);
     }
 }
 
